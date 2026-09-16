@@ -75,6 +75,9 @@ export function Gallery() {
                   return (
                     <button
                       type="button"
+                      // The lightbox finds this element by id to know where
+                      // to grow from and shrink back to.
+                      data-photo-id={photo.id}
                       onClick={() => setOpenAt(index)}
                       aria-label={`Otvori fotografiju: ${photo.alt}`}
                       className="group relative block w-full cursor-zoom-in"

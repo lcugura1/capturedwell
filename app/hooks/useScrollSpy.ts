@@ -10,6 +10,10 @@ import { useEffect, useState } from 'react'
  */
 export function useScrollSpy(ids: string[], headerHeight = 96): string | null {
   const [active, setActive] = useState<string | null>(null)
+  // Callers pass a literal array, so the identity changes every render.
+  // Comparing the joined ids keeps the observer from being torn down and
+  // rebuilt on each one.
+  const key = ids.join(',')
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
@@ -38,12 +42,13 @@ export function useScrollSpy(ids: string[], headerHeight = 96): string | null {
       },
     )
 
-    const elements = ids
+    const elements = key
+      .split(',')
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null)
     elements.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [ids.join(','), headerHeight])
+  }, [key, headerHeight])
 
   return active
 }
