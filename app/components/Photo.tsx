@@ -54,6 +54,10 @@ export function Photo({
         onLoad={() => setLoaded(true)}
         className={`size-full object-cover ${className}`}
         style={{
+          // The intrinsic ratio reserves the right box before the photo
+          // arrives, which is what keeps layout shift at zero. A parent
+          // that sets its own height (the hero, the About portrait) wins
+          // via `size-full`, so this only governs the free-standing case.
           aspectRatio: aspectOf(photo),
           backgroundImage: loaded ? undefined : `url("${photo.lqip}")`,
           backgroundSize: 'cover',

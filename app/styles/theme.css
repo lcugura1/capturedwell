@@ -95,43 +95,55 @@
      webfont degrades in character rather than snapping to Times. */
   --font-display: 'Alfa Slab One', 'Rockwell', 'Courier Bold', Georgia, serif;
 
+  /* ── how the scale breathes ────────────────────────────────────────
+     Every display size below is a clamp() between a phone value and the
+     canvas value, interpolated on viewport width.
+
+       clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
+
+     390px is a phone, 1440px is the artboard the design was drawn on,
+     and 1050 is the distance between them. Below 390 and above 1440 the
+     clamp holds the ends flat.
+
+     This is not polish. The canvas is a fixed 1440px frame, so every
+     size in it is a number that happens to work at exactly that width —
+     136px display type on a 390px phone is four characters per line.
+     Small UI text (nav, label, caption) deliberately does NOT scale:
+     shrinking 13px further makes it unreadable, and it is already
+     small enough to fit anywhere. */
+
   /* The canvas was drawn in Quicksand. We ship Jost, whose x-height is
      460/1000em against Quicksand's 537 — 14% shorter at the same px.
      Display sizes are set by layout fit and stay as designed; the two
      reading sizes are bumped one notch so prose reads at the size it was
      approved at. Canvas values are noted for traceability. */
-  --text-display: 136px;
+  --text-display: clamp(40px, calc(40px + 96 * (100vw - 390px) / 1050), 136px);
   --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
 
   /* Section titles. Smaller than --text-display: a slab this heavy at
      136px stops being a heading and becomes a wall. */
-  --text-section: 104px;
+  --text-section: clamp(34px, calc(34px + 70 * (100vw - 390px) / 1050), 104px);
   --text-section--line-height: 0.95;
   --text-section--letter-spacing: -0.01em;
   --text-section--font-weight: 400;
 
-  --text-h1: 88px;
+  --text-h1: clamp(32px, calc(32px + 56 * (100vw - 390px) / 1050), 88px);
   --text-h1--line-height: 1;
   --text-h1--letter-spacing: -0.015em;
   --text-h1--font-weight: 700;
 
-  --text-h2: 40px;
+  --text-h2: clamp(26px, calc(26px + 14 * (100vw - 390px) / 1050), 40px);
   --text-h2--line-height: 1.1;
   --text-h2--letter-spacing: -0.01em;
   --text-h2--font-weight: 600;
 
-  --text-h3: 22px; /* category card title */
-  --text-h3--line-height: 1.2;
-  --text-h3--letter-spacing: -0.005em;
-  --text-h3--font-weight: 600;
-
-  --text-lead: 28px; /* canvas 26px */
+  --text-lead: clamp(20px, calc(20px + 8 * (100vw - 390px) / 1050), 28px); /* canvas 26px */
   --text-lead--line-height: 1.45;
   --text-lead--font-weight: 400;
 
-  --text-body: 21px; /* canvas 19px */
+  --text-body: clamp(18px, calc(18px + 3 * (100vw - 390px) / 1050), 21px); /* canvas 19px */
   --text-body--line-height: 1.6;
   --text-body--font-weight: 400;
 
@@ -152,9 +164,10 @@
   --text-caption--line-height: 1.2;
   --text-caption--font-weight: 600;
 
-  /* Wordmark set as text (header 26, footer 20). The real logo is the
-     SVG in app/components/Logo.tsx; these are for sizing around it. */
-  --text-mark: 26px;
+  /* The wordmark set as text, in the footer. The header uses the real
+     logo (the SVG in components/Logo.tsx); the footer sets it as type,
+     which is why this token exists. */
+  --text-mark: clamp(20px, calc(20px + 6 * (100vw - 390px) / 1050), 26px);
   --text-mark--line-height: 1;
   --text-mark--letter-spacing: -0.01em;
   --text-mark--font-weight: 700;
@@ -165,13 +178,13 @@
   --spacing-sm: 16px;
   --spacing-md: 24px;
   --spacing-lg: 40px;
-  --spacing-xl: 64px;
-  --spacing-2xl: 104px;
-  --spacing-3xl: 168px;
+  --spacing-xl: clamp(36px, calc(36px + 28 * (100vw - 390px) / 1050), 64px);
+  --spacing-2xl: clamp(48px, calc(48px + 56 * (100vw - 390px) / 1050), 104px);
+  --spacing-3xl: clamp(72px, calc(72px + 96 * (100vw - 390px) / 1050), 168px);
   /* Page gutter and header height are fixed by the design, not free
      choices — they line the wordmark up with the photo edges. */
-  --spacing-gutter: 40px;
-  --spacing-header: 96px;
+  --spacing-gutter: clamp(20px, calc(20px + 20 * (100vw - 390px) / 1050), 40px);
+  --spacing-header: clamp(72px, calc(72px + 24 * (100vw - 390px) / 1050), 96px);
   /* Photos sit 6px apart. Deliberately below the spacing scale: the
      grid should read as one surface, not as separate cards. */
   --spacing-photo-gap: 6px;

@@ -188,6 +188,22 @@ PNG izvozi idu u [design/wireframes/](design/wireframes/) kao zamrznuta arhiva �
 
 **Ako se dizajn i kod raziđu, izvor istine je `src/styles/theme.css`.** Canvas je referenca, ne autoritet.
 
+### Skala je fluidna, ne fiksna
+
+Canvas je okvir od 1440 px, pa je svaka veličina u njemu broj koji radi **točno na toj širini**. Naslov od 136 px na telefonu od 390 px daje četiri znaka po retku.
+
+Zato je svaka display veličina i veći razmak `clamp()` između telefonske i canvas vrijednosti:
+
+```
+clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
+```
+
+390 px je telefon, 1440 px je artboard, 1050 je razmak. Izvan tih granica clamp drži krajeve ravnima.
+
+**Sitan UI tekst (nav, label, caption) se namjerno ne skalira** — 13 px koji se dalje smanjuje postaje nečitljiv, a ionako stane svugdje.
+
+**Hero i wordmark dijele točno jedan ekran.** Stupac je `min-h-svh`, fotka je `flex-1`, naslov ispod uzima svoju prirodnu visinu — pa je `capturedwell_` uvijek cijeli vidljiv bez skrolanja, na svakoj veličini prozora i pri svakoj vrijednosti koju fluidna skala izračuna. Nema magičnog broja koji treba prepodešavati kad se veličina promijeni. `svh` a ne `vh`: na mobilnom Safariju `vh` broji i područje iza URL trake, pa bi naslov ostao ispod nje.
+
 ### Pravila tokena
 
 - Tokeni (boje, tipografija, spacing, radiusi, easing) žive na jednom mjestu: `app/styles/theme.css` unutar Tailwind `@theme` bloka, kao CSS custom properties.
