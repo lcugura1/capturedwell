@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&amp;display=swap">
+  <style>
+    body { margin: 0; background: #0c0c0c; color: #ededed; font-family: 'Quicksand', 'Nunito', 'Varela Round', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #a3a3a3; text-decoration: none; } a:hover { color: #ededed; }
+    img { display: block; }
+  </style>
+</helmet>
+<div style="width: 1440px; background: #0c0c0c; display: flex; flex-direction: column; gap: 120px; padding: 72px 40px 120px 40px; box-sizing: border-box;">
+  <section style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px;">
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;">style tile · v1</span>
+      <span style="font-weight: 700; font-size: 120px; line-height: 0.9; letter-spacing: -0.01em;">capturedwell.</span>
+    </div>
+    <p style="margin: 0; max-width: 380px; font-size: 15px; line-height: 1.6; color: #a3a3a3; text-wrap: pretty;">Jedna tamna tema. Bez brand boje: boju nose fotografije. Quicksand za sve. Točka iz logotipa je jedini ukras.</p>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span><span>boje</span></div>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #0c0c0c; border: 1px solid #262626;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">bg</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#0c0c0c · pozadina</span>
+          <span style="font-size: 12px; color: #808080;">—</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #080808; border: 1px solid #262626;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">bg-deep</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#080808 · lightbox</span>
+          <span style="font-size: 12px; color: #808080;">—</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #151515; border: 1px solid #262626;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">surface</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#151515 · placeholder, polja</span>
+          <span style="font-size: 12px; color: #808080;">—</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #262626; border: 1px solid #262626;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">line</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#262626 · razdjelnici</span>
+          <span style="font-size: 12px; color: #808080;">dekorativno</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #606060; border: 1px solid #606060;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">line-strong</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#606060 · obrub gumba</span>
+          <span style="font-size: 12px; color: #808080;">3.1:1 na bg (obrub kontrole)</span>
+        </div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #ededed; border: 1px solid #ededed;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">text</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#ededed · naslovi, primarni tekst</span>
+          <span style="font-size: 12px; color: #808080;">16.7:1 na bg</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #a3a3a3; border: 1px solid #a3a3a3;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">text-muted</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#a3a3a3 · linkovi, sekundarno</span>
+          <span style="font-size: 12px; color: #808080;">7.7:1 na bg</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: #808080; border: 1px solid #808080;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">text-subtle</span>
+          <span style="font-size: 13px; color: #a3a3a3;">#808080 · oznake, meta</span>
+          <span style="font-size: 12px; color: #808080;">4.9:1 na bg</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="height: 120px; background: rgba(237,237,237,.72); border: 1px solid #262626;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span style="font-size: 15px; font-weight: 700;">text-body</span>
+          <span style="font-size: 13px; color: #a3a3a3;">rgba(237,237,237,.72) · dugi tekst (o meni)</span>
+          <span style="font-size: 12px; color: #808080;">8.8:1 na bg</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span><span>tipografija · quicksand 300–700</span></div>
+    <div style="display: flex; flex-direction: column;">
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">display</span><span style="font-size: 12px; color: #808080;">136 / 0.9 · 700 · -0.02em · razvučen (uzorak 112)</span></div>
+        <div style="font-size: 112px; line-height: 0.9; font-weight: 700; letter-spacing: -0.02em; display: flex; justify-content: space-between;"><span>dobro</span><span>uhvaćeno.</span></div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">h1</span><span style="font-size: 12px; color: #808080;">88 / 1 · 700 · -0.015em</span></div>
+        <div style="font-size: 88px; line-height: 1; font-weight: 700; letter-spacing: -0.015em;">damir sukop.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">h2</span><span style="font-size: 12px; color: #808080;">40 / 1.1 · 600 · -0.01em</span></div>
+        <div style="font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em;">imaš datum? javi se.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">lead</span><span style="font-size: 12px; color: #808080;">26 / 1.45 · 400</span></div>
+        <div style="font-size: 26px; line-height: 1.45; font-weight: 400; max-width: 760px;">Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">body</span><span style="font-size: 12px; color: #808080;">19 / 1.6 · 400 · text-body</span></div>
+        <div style="font-size: 19px; line-height: 1.6; color: rgba(237, 237, 237, 0.72); max-width: 640px;">Čađa, šuma, đurđica, žeđ, ćup: sva dijakritika mora proći subset (latin-ext).</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">nav</span><span style="font-size: 12px; color: #808080;">15 · 500</span></div>
+        <div style="font-size: 15px; font-weight: 500;">galerija · o meni · kontakt</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">label</span><span style="font-size: 12px; color: #808080;">13 · 600 · +0.02em</span></div>
+        <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;">odabrano · događaji · 3 / 4</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 40px; align-items: baseline; padding: 24px 0; border-top: 1px solid #262626;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 15px; font-weight: 700;">caption</span><span style="font-size: 12px; color: #808080;">12 · 600</span></div>
+        <div style="font-size: 12px; font-weight: 600; color: #808080;">lifestyle</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px;">
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span><span>razmaci</span></div>
+      <div style="display: flex; align-items: flex-end; gap: 20px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 4px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">2xs · 4</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 8px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">xs · 8</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 16px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">sm · 16</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 24px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">md · 24</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 40px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">lg · 40</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 64px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">xl · 64</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 104px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">2xl · 104</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;"><div style="width: 168px; height: 40px; background: #3a3a3a;"></div><span style="font-size: 12px; color: #a3a3a3;">3xl · 168</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; line-height: 1.6; color: #a3a3a3;">
+        <span>gutter stranice · 40</span>
+        <span>razmak između fotki · 6</span>
+        <span>radius · 999 (pill, točka) · fotke 0</span>
+        <span>header · 96 visine</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span><span>točka · motiv</span></div>
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-top: 1px solid #262626;">
+          <span style="font-size: 12px; color: #808080;">aktivna stavka navigacije</span>
+          <div style="display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500;">
+            <span style="display: flex; align-items: center; gap: 8px;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #ededed;"></span><span>galerija</span></span>
+            <span style="color: #a3a3a3;">o meni</span>
+            <span style="color: #a3a3a3;">kontakt</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-top: 1px solid #262626;">
+          <span style="font-size: 12px; color: #808080;">prefiks oznake ispod fotke</span>
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>studio</span></span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-top: 1px solid #262626;">
+          <span style="font-size: 12px; color: #808080;">separator u meta podacima</span>
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600;"><span style="color: #a3a3a3;">galerija</span><span style="width: 4px; height: 4px; border-radius: 999px; background: #808080;"></span><span style="color: #808080;">događaji</span></span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-top: 1px solid #262626; border-bottom: 1px solid #262626;">
+          <span style="font-size: 12px; color: #808080;">kraj sekcije</span>
+          <span style="width: 8px; height: 8px; border-radius: 999px; background: #ededed;"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px;">
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span><span>gumbi · stanja</span></div>
+    <div style="display: flex; flex-direction: column; gap: 40px;">
+      <div style="display: flex; align-items: flex-start; gap: 40px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; background: #ededed; color: #0c0c0c;">pogledaj galeriju</a><span style="font-size: 12px; color: #808080;">primarni · default</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; background: #d4d4d4; color: #0c0c0c;">pogledaj galeriju</a><span style="font-size: 12px; color: #808080;">hover · #d4d4d4</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; background: #ededed; color: #0c0c0c; outline: 2px solid #ededed; outline-offset: 3px;">pogledaj galeriju</a><span style="font-size: 12px; color: #808080;">focus · prsten 2px, odmak 3px</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; background: #bdbdbd; color: #0c0c0c;">pogledaj galeriju</a><span style="font-size: 12px; color: #808080;">pressed · #bdbdbd</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; background: #ededed; color: #0c0c0c; opacity: 0.4;">pogledaj galeriju</a><span style="font-size: 12px; color: #808080;">disabled · 40 %</span></div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 40px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid #606060; color: #ededed;">javi se</a><span style="font-size: 12px; color: #808080;">sekundarni · default</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid #ededed; color: #ededed;">javi se</a><span style="font-size: 12px; color: #808080;">hover · obrub text</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid #606060; color: #ededed; outline: 2px solid #ededed; outline-offset: 3px;">javi se</a><span style="font-size: 12px; color: #808080;">focus</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid #ededed; background: #151515; color: #ededed;">javi se</a><span style="font-size: 12px; color: #808080;">pressed · surface</span></div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;"><a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; box-sizing: border-box; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; border: 1px solid #606060; color: #ededed; opacity: 0.4;">javi se</a><span style="font-size: 12px; color: #808080;">disabled · 40 %</span></div>
+      </div>
+      <div style="display: flex; align-items: flex-start; gap: 40px;">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 999px; border: 1px solid #606060; box-sizing: border-box; color: #ededed;"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"></path></svg></span>
+          <span style="font-size: 12px; color: #808080;">ikona · default</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;">
+          <span style="display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 999px; background: #ededed; color: #0c0c0c;"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"></path></svg></span>
+          <span style="font-size: 12px; color: #808080;">ikona · hover</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;">
+          <span style="display: flex; align-items: center; justify-content: center; height: 40px; border-radius: 999px; background: #ededed; color: #0c0c0c; font-size: 13px; font-weight: 700; padding: 0 20px;">događaji</span>
+          <span style="font-size: 12px; color: #808080;">filter · aktivan</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;">
+          <span style="display: flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 999px; border: 1px solid #606060; box-sizing: border-box; color: #a3a3a3; font-size: 13px; font-weight: 700;">studio</span>
+          <span style="font-size: 12px; color: #808080;">filter · neaktivan</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 14px;">
+          <span style="position: relative; display: block; width: 120px; height: 80px;"><img src="studio-profil.jpg" alt="" style="width: 120px; height: 80px; object-fit: cover;"><span style="position: absolute; inset: 6px; border: 2px solid #ededed; border-radius: 2px;"></span></span>
+          <span style="font-size: 12px; color: #808080;">fotka · focus (unutarnji prsten)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

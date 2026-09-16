@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&amp;display=swap">
+  <style>
+    body { margin: 0; background: #0c0c0c; color: #ededed; font-family: 'Quicksand', 'Nunito', 'Varela Round', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #a3a3a3; text-decoration: none; } a:hover { color: #ededed; }
+    img { display: block; }
+  </style>
+</helmet>
+<div style="width: 1440px; background: #0c0c0c;">
+
+  <!-- Hero: full-bleed photo, header overlaid -->
+  <section style="position: relative; width: 1440px; height: 860px; overflow: hidden;">
+    <img src="vjencanje-crkva.jpg" alt="Mladenci izlaze iz crkve niz prolaz između klupa" style="width: 100%; height: 100%; object-fit: cover; object-position: center 55%;">
+    <div style="position: absolute; left: 0; right: 0; top: 0; height: 180px; background: linear-gradient(to bottom, rgba(12,12,12,0.55), rgba(12,12,12,0));"></div>
+    <header style="position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 32px 40px;">
+      <a href="#" style="color: #ededed; font-weight: 700; font-size: 26px; letter-spacing: -0.01em;">capturedwell.</a>
+      <nav style="display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500;">
+        <a href="#" style="color: #ededed;">galerija</a>
+        <a href="#" style="color: #ededed;">o meni</a>
+        <a href="#" style="color: #ededed;">kontakt</a>
+      </nav>
+    </header>
+  </section>
+
+  <!-- Stretched headline -->
+  <section style="padding: 72px 40px 0 40px;">
+    <h1 style="margin: 0; display: flex; justify-content: space-between; align-items: baseline; font-size: 136px; line-height: 0.9; font-weight: 700; letter-spacing: -0.02em;">
+      <span>dobro</span>
+      <span>uhvaćeno.</span>
+    </h1>
+  </section>
+
+  <!-- Intro -->
+  <section style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; padding: 64px 40px 104px 40px;">
+    <div style="grid-column: 1 / span 4; display: flex; align-items: center; gap: 10px; height: 36px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;">
+      <span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span>
+      <span>damir sukop, fotograf</span>
+    </div>
+    <div style="grid-column: 6 / span 7; display: flex; flex-direction: column; gap: 40px;">
+      <p style="margin: 0; font-size: 26px; line-height: 1.45; font-weight: 400; text-wrap: pretty;">Vjenčanja, lifestyle, događaji i studio. Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.</p>
+      <div style="display: flex; gap: 12px;">
+        <a href="#" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; border-radius: 999px; background: #ededed; color: #0c0c0c; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;">pogledaj galeriju</a>
+        <a href="#" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid #606060; color: #ededed; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; box-sizing: border-box;">javi se</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selected work: justified rows, edge to edge -->
+  <section style="display: flex; flex-direction: column; gap: 40px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 40px;">
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #808080;">
+        <span style="width: 6px; height: 6px; border-radius: 999px; background: #808080;"></span>
+        <span>odabrano</span>
+      </div>
+      <a href="#" style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; letter-spacing: 0.02em;">cijela galerija
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L11 5M6 5h5v5"></path></svg>
+      </a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div style="display: flex; gap: 6px;">
+        <figure style="margin: 0; flex: 0.8 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="lifestyle-par.jpg" alt="Par u zagrljaju na ulici, crno-bijelo" style="width: 100%; aspect-ratio: 0.8; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>lifestyle</span></figcaption>
+        </figure>
+        <figure style="margin: 0; flex: 1.5 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="dogadaji-klub.jpg" alt="Puni plesni podij u klubu pod snopovima svjetla" style="width: 100%; aspect-ratio: 1.5; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>događaji</span></figcaption>
+        </figure>
+        <figure style="margin: 0; flex: 0.8 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="lifestyle-crvena.jpg" alt="Žena u crvenoj haljini u vrtu s cvijećem" style="width: 100%; aspect-ratio: 0.8; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>lifestyle</span></figcaption>
+        </figure>
+      </div>
+      <div style="display: flex; gap: 6px;">
+        <figure style="margin: 0; flex: 1.5 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="dogadaji-krstenje.jpg" alt="Otac drži bebu dok joj stariji brat pruža ruku na krštenju" style="width: 100%; aspect-ratio: 1.5; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>događaji</span></figcaption>
+        </figure>
+        <figure style="margin: 0; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="studio-profil.jpg" alt="Studijski portret žene u profilu, pogled prema gore" style="width: 100%; aspect-ratio: 1; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>studio</span></figcaption>
+        </figure>
+        <figure style="margin: 0; flex: 0.8 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <img src="studio-dvije.jpg" alt="Dvije žene naslonjene leđima u studiju, jedna sjedi na stolcu" style="width: 100%; aspect-ratio: 0.8; object-fit: cover;">
+          <figcaption style="display: flex; align-items: center; gap: 8px; padding-left: 16px; font-size: 12px; font-weight: 600; color: #808080;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #808080;"></span><span>studio</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section style="display: flex; flex-direction: column; align-items: center; gap: 32px; padding: 136px 40px 136px 40px;">
+    <span style="width: 8px; height: 8px; border-radius: 999px; background: #ededed;"></span>
+    <p style="margin: 0; font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; text-align: center;">imaš datum? javi se.</p>
+    <a href="#" style="display: flex; align-items: center; height: 48px; padding: 0 24px; border-radius: 999px; background: #ededed; color: #0c0c0c; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;">pošalji e-mail</a>
+  </section>
+
+  <!-- Footer -->
+  <footer style="display: flex; align-items: center; justify-content: space-between; padding: 32px 40px 40px 40px; border-top: 1px solid #262626;">
+    <div style="display: flex; align-items: baseline; gap: 16px;">
+      <span style="font-weight: 700; font-size: 20px; letter-spacing: -0.01em;">capturedwell.</span>
+      <span style="font-size: 13px; color: #808080;">Damir Sukop · fotograf</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 28px; font-size: 13px; font-weight: 500;">
+      <a href="#">instagram</a>
+      <a href="#">e-mail</a>
+      <span style="color: #808080;">© 2026</span>
+      <a href="#" aria-label="Administracija" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;"><span style="width: 5px; height: 5px; border-radius: 999px; background: #3a3a3a;"></span></a>
+    </div>
+  </footer>
+</div>
+</x-dc>
+</body>
+</html>
