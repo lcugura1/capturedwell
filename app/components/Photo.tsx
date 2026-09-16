@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import type { Photo as PhotoType } from '~/lib/gallery-types'
-import { aspect } from '~/lib/gallery-types'
-import { fallbackSrc, srcSet } from '~/lib/images'
+import { aspectOf, fallbackSrc, srcSet, type Kind, type Renderable } from '~/lib/images'
 
 /**
  * One photograph, at the right size for the viewport.
@@ -22,12 +20,17 @@ import { fallbackSrc, srcSet } from '~/lib/images'
  */
 export function Photo({
   photo,
+  alt,
   sizes,
+  kind = 'img',
   priority = false,
   className = '',
 }: {
-  photo: PhotoType
+  photo: Renderable & { alt?: string }
+  /** Overrides the manifest's alt — page images carry no alt of their own. */
+  alt?: string
   sizes: string
+  kind?: Kind
   /** Set on the one photo above the fold. Never on more than one. */
   priority?: boolean
   className?: string
@@ -36,13 +39,13 @@ export function Photo({
 
   return (
     <picture>
-      <source type="image/avif" srcSet={srcSet(photo, 'avif')} sizes={sizes} />
-      <source type="image/webp" srcSet={srcSet(photo, 'webp')} sizes={sizes} />
+      <source type="image/avif" srcSet={srcSet(photo, 'avif', kind)} sizes={sizes} />
+      <source type="image/webp" srcSet={srcSet(photo, 'webp', kind)} sizes={sizes} />
       <img
-        src={fallbackSrc(photo)}
-        srcSet={srcSet(photo, 'jpg')}
+        src={fallbackSrc(photo, kind)}
+        srcSet={srcSet(photo, 'jpg', kind)}
         sizes={sizes}
-        alt={photo.alt}
+        alt={alt ?? photo.alt ?? ''}
         width={photo.width}
         height={photo.height}
         loading={priority ? 'eager' : 'lazy'}
@@ -51,7 +54,7 @@ export function Photo({
         onLoad={() => setLoaded(true)}
         className={`size-full object-cover ${className}`}
         style={{
-          aspectRatio: aspect(photo),
+          aspectRatio: aspectOf(photo),
           backgroundImage: loaded ? undefined : `url("${photo.lqip}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',

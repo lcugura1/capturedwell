@@ -1,4 +1,3 @@
-import { Link } from 'react-router'
 import { SITE } from '~/lib/site'
 import { MailLink } from './MailLink'
 
@@ -9,13 +8,16 @@ import { MailLink } from './MailLink'
  * security: /admin sits behind Cloudflare Access, which stops unauthorised
  * requests at the edge before they reach the app. Anyone who finds the dot
  * gets a login screen, which is the correct outcome.
+ *
+ * A plain <a>, not a <Link>: /admin is the one route outside the single
+ * page, and it should be a real navigation rather than a client-side one.
  */
 export function Footer() {
   return (
-    <footer className="flex items-center justify-between border-t border-line px-gutter pb-lg pt-xl">
+    <footer className="flex flex-col items-start justify-between gap-lg border-t border-line px-gutter pb-lg pt-xl sm:flex-row sm:items-center">
       <div className="flex items-baseline gap-sm">
         <span className="text-[20px] font-bold tracking-[-0.01em]">{SITE.name}.</span>
-        <span className="text-label font-medium tracking-normal text-ink-subtle">
+        <span className="text-label text-ink-subtle">
           {SITE.owner} · {SITE.role}
         </span>
       </div>
@@ -32,13 +34,9 @@ export function Footer() {
           e-mail
         </MailLink>
         <span className="text-ink-subtle">© {new Date().getFullYear()}</span>
-        <Link
-          to="/admin"
-          aria-label="Administracija"
-          className="flex size-6 items-center justify-center"
-        >
+        <a href="/admin" aria-label="Administracija" className="flex size-6 items-center justify-center">
           <span aria-hidden="true" className="size-[5px] rounded-pill bg-faint" />
-        </Link>
+        </a>
       </div>
     </footer>
   )

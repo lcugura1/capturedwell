@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import type { Photo as PhotoType } from '~/lib/gallery-types'
-import { aspect } from '~/lib/gallery-types'
-import { fallbackSrc, srcSet } from '~/lib/images'
+import { aspectOf, fallbackSrc, srcSet } from '~/lib/images'
 import { ChevronLeft, ChevronRight, Close } from '~/components/icons'
 import { Dot } from '~/components/Dot'
 
@@ -113,7 +112,7 @@ export function Lightbox({
             alt={photo.alt}
             width={photo.width}
             height={photo.height}
-            style={{ aspectRatio: aspect(photo) }}
+            style={{ aspectRatio: aspectOf(photo) }}
             className="max-h-full max-w-full object-contain"
           />
         </picture>
@@ -158,11 +157,9 @@ export function Lightbox({
       </button>
 
       <p className="absolute inset-x-0 bottom-0 m-0 flex h-header items-center justify-center gap-md text-caption font-medium text-ink-subtle">
-        <span className="flex items-center gap-1.5">
-          <ChevronLeft className="size-3" />
-          <ChevronRight className="size-3" />
-          <span>listanje</span>
-        </span>
+        {/* The canvas replaced the two chevron glyphs with literal arrows.
+            They read the same at 12px and cost two fewer inline SVGs. */}
+        <span>← → listanje</span>
         <Dot size="xs" />
         <span>esc zatvaranje</span>
       </p>

@@ -61,17 +61,25 @@ Free tier: 1 GB storage, **5 GB egress/mj**, i **projekt se auto-pauzira nakon 7
 
 ## 3. Arhitektura
 
+**Stranica je jedna.** Izbornik ne navigira — scrolla na sidro unutar iste stranice.
+
 ```
-/                        → naslovnica (prerenderirano)
-/galerija                → pregled sve četiri kategorije (prerenderirano)
-/galerija/vjencanja      → kategorija; fotke iz gallery.json preko CDN-a
-/galerija/lifestyle
-/galerija/dogadaji
-/galerija/studio
-/o-meni, /kontakt        → prerenderirano
-/admin/*                 → Cloudflare Access štiti na edgeu; JS chunk se lazy-loada
-/api/admin/*             → Worker; provjerava Access JWT; jedini put do R2 writea
+/                → cijela stranica, prerenderirana u jedan HTML
+  #vrh           → hero
+  #galerija      → sve četiri kategorije, filter umjesto navigacije
+  #o-meni        → portret + biografija
+  #kontakt       → mailto, telefon, instagram
+/admin/*         → jedina prava ruta; Cloudflare Access štiti na edgeu
+/api/admin/*     → Worker; provjerava Access JWT; jedini put do R2 writea
 ```
+
+**Kategorije su stanje, ne rute.** Klik na `vjenčanja` mijenja `useState`, ne URL.
+
+Sve četiri mreže se renderiraju, neaktivne nose `hidden`. Dva razloga, oba nose težinu:
+- Dokument je sad jedan. Ako kategorija nije u HTML-u, njezine fotke i alt tekstovi **ne postoje za tražilice**.
+- `hidden` je `display: none`, a lazy slike u skrivenom elementu se **ne preuzimaju**. Višak košta bajtove HTML-a, ne prijenos.
+
+**Cijena koju smo platili:** izgubili smo `/galerija/vjencanja` kao zasebnu stranicu. Za „fotograf vjenčanja Zagreb" sad se natječe jedna stranica umjesto četiri ciljane. Ako organski promet postane bitan, rješenje nije vraćanje rutanja nego nekoliko prerenderiranih landing stranica koje vode na `#galerija`.
 
 **Kako radi „mini admin gumb"**
 1. Diskretan gumb/ikonica (footer ili `Ctrl+Shift+A`) vodi na `/admin`.
@@ -196,6 +204,7 @@ PNG izvozi idu u [design/wireframes/](design/wireframes/) kao zamrznuta arhiva �
 
 **Pristupačnost (nije opcionalna)**
 - Kontrast tekst/pozadina ≥ 4.5:1.
+- **Iznimka, svjesna:** obrub kontrola je `#3a3a3a` = **1.72:1**, ispod praga od 3:1 iz WCAG 1.4.11. Canvas je to namjerno spustio s `#606060` (3.11:1). Prolazi jer svaka kontrola nosi vlastiti tekst ili ikonu visokog kontrasta — obrub pojačava, ne identificira. Hover diže obrub na `ink`, focus crta prsten. **Paziti na neaktivne filter pillove**: tamo je obrub najveći dio onoga što gumb razlikuje od riječi.
 - Svaka fotka ima smislen hrvatski `alt`; dekorativne dobivaju `alt=""`.
 - Galerija i lightbox moraju raditi tipkovnicom (Tab, Enter, Esc, strelice), s vidljivim focus stanjem i focus trapom u lightboxu.
 - `prefers-reduced-motion` gasi parallax i veće tranzicije.
@@ -206,7 +215,9 @@ PNG izvozi idu u [design/wireframes/](design/wireframes/) kao zamrznuta arhiva �
 
 ```
 src/
-  routes/          # React Router v7 rute
+  routes/          # home.tsx (cijela stranica) + admin.tsx
+  sections/        # Hero, Gallery, About, Contact — sekcije jedne stranice
+  hooks/           # useScrollSpy — aktivna točka u izborniku
   components/      # dijeljene prezentacijske komponente
   features/
     gallery/       # javna galerija: grid, lightbox, data loading
@@ -273,7 +284,7 @@ Nisu instalirani, ali razmisliti kasnije: `chrome-devtools-mcp` (stvarni perform
 - **Faza 0 — dogovor stacka.** ✅ (ovaj dokument)
 - **Faza 1 — design system.** Claude Design canvas → tokeni u `theme.css`.
 - **Faza 2 — skeleton.** ✅ Vite + RR + TS + Tailwind, rute, prerender.
-- **Faza 3 — javna galerija.** ✅ Manifest, justified grid, lightbox, responsive slike. Ostaje: deploy na Cloudflare, stvarne fotke, pravi alt tekstovi.
+- **Faza 3 — javna galerija.** ✅ Single page, manifest, justified grid s filterom, lightbox, responsive slike. Ostaje: deploy na Cloudflare, stvarne fotke, pravi alt tekstovi.
 - **Faza 4 — admin.** Cloudflare Access, Worker API, drag & drop upload, image pipeline, reorder, brisanje.
 - **Faza 5 — sadržaj i polish.** O meni, kontakt (`mailto:`), SEO (`hr` meta, Open Graph, JSON-LD `LocalBusiness`), sitemap.
 - **Faza 6 — lansiranje.** `capturedwell.hr`, analitika bez kolačića (Cloudflare Web Analytics), backup strategija za `originals/`.

@@ -1,16 +1,22 @@
 {
+  "pages": [
+    { "id": "page-1", "name": "jedna stranica" },
+    { "id": "page-2", "name": "višestranična (arhiva)" }
+  ],
   "artboards": [
-    { "file": "Main.dc.html", "title": "1 · naslovnica", "x": 0, "y": 0, "w": 1440, "h": 3100 },
-    { "file": "Galerija.dc.html", "title": "2 · galerija", "x": 1560, "y": 0, "w": 1440, "h": 1900 },
-    { "file": "Kategorija.dc.html", "title": "3 · kategorija (događaji)", "x": 3120, "y": 0, "w": 1440, "h": 1960 },
-    { "file": "Lightbox.dc.html", "title": "4 · lightbox", "x": 4680, "y": 0, "w": 1440, "h": 900 },
-    { "file": "OMeni.dc.html", "title": "5 · o meni + kontakt", "x": 6240, "y": 0, "w": 1440, "h": 1860 },
-    { "file": "StyleTile.dc.html", "title": "6 · style tile", "x": 7800, "y": 0, "w": 1440, "h": 3200 }
+    { "file": "Main.dc.html", "title": "1 · stranica (hero → o meni → galerija → kontakt)", "x": 0, "y": 0, "w": 1440, "h": 5700, "page": "page-1" },
+    { "file": "Header.dc.html", "title": "2 · header nakon scrolla", "x": 1560, "y": 0, "w": 1440, "h": 240, "page": "page-1" },
+    { "file": "Lightbox.dc.html", "title": "3 · lightbox", "x": 1560, "y": 400, "w": 1440, "h": 900, "page": "page-1" },
+    { "file": "StyleTile.dc.html", "title": "4 · style tile", "x": 3120, "y": 0, "w": 1440, "h": 3200, "page": "page-1" },
+    { "file": "Galerija.dc.html", "title": "galerija (arhiva)", "x": 0, "y": 0, "w": 1440, "h": 1900, "page": "page-2" },
+    { "file": "Kategorija.dc.html", "title": "kategorija (arhiva)", "x": 1560, "y": 0, "w": 1440, "h": 1960, "page": "page-2" },
+    { "file": "OMeni.dc.html", "title": "o meni + kontakt (arhiva)", "x": 3120, "y": 0, "w": 1440, "h": 1860, "page": "page-2" }
   ],
   "annotations": [
-    { "id": "note-kategorija", "x": 3120, "y": -260, "w": 420, "text": "Redovi su poravnati po omjeru stranica (flex-grow = omjer), pa svaki red ima jednaku visinu bez rezanja. Bijeli unutarnji okvir na drugoj fotki prikazuje stanje fokusa tipkovnicom." },
-    { "id": "note-lightbox", "x": 4680, "y": -260, "w": 420, "text": "Prikazana je samo fotka, bez tehničkih podataka (objektiv, blenda). To je još otvoreno pitanje. Gumb 'sljedeća' prikazan je u stanju hover + focus." },
-    { "id": "note-footer", "x": 0, "y": -260, "w": 420, "text": "Mala siva točka desno u footeru je diskretan ulaz u admin (/admin). Hero i odabrani radovi su oboje na naslovnici; to je prijedlog za otvoreno pitanje o naslovnici." }
+    { "id": "note-single", "x": 0, "y": -300, "w": 440, "page": "page-1", "text": "Jedna stranica: hero → o meni → galerija → kontakt. Navigacija su sidra (#o-meni, #galerija, #kontakt). Filteri u galeriji rade na mjestu, bez novih stranica. Mala siva točka desno u footeru vodi na /admin." },
+    { "id": "note-header", "x": 1560, "y": -300, "w": 440, "page": "page-1", "text": "Nakon hera header postaje ljepljiv: tamna podloga s blurom, a točka označava sekciju u kojoj se posjetitelj nalazi." },
+    { "id": "note-lightbox", "x": 1560, "y": 1340, "w": 440, "page": "page-1", "text": "Prikazana je samo fotka, bez tehničkih podataka (to je još otvoreno). Brojač prati trenutni filter; ovdje je filter 'sve', pa je fotka 7 / 10. Gumb 'sljedeća' prikazan je u stanju hover + focus." },
+    { "id": "note-arhiva", "x": 0, "y": -300, "w": 440, "page": "page-2", "text": "Prethodna, višestranična verzija. Ostaje ovdje radi usporedbe." }
   ],
-  "launch": { "view": "canvas" }
+  "launch": { "view": "canvas", "page": "page-1" }
 }

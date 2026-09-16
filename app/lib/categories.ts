@@ -2,12 +2,15 @@
  * The only place category identity is defined.
  *
  * Categories are fixed: Damir cannot add or remove them from the admin.
- * Adding one is a code change, which is deliberate — the homepage, the
- * gallery overview and the prerender list all assume this set.
+ * Adding one is a code change, which is deliberate — the gallery section
+ * and its filter both assume this set.
  *
- * Slugs carry no diacritics. `/galerija/vjencanja` stays readable when
- * pasted into a message; `/galerija/vjenčanja` becomes percent-encoded
- * noise the moment it leaves the browser.
+ * `slug` no longer routes anywhere: the site is one page and categories are
+ * a filter inside it. It stays because it is the stable, diacritic-free
+ * name for a category — the one you would put in a shareable link, an
+ * analytics event or a future landing page. Slugs carry no diacritics on
+ * purpose: `vjenčanja` becomes percent-encoded noise the moment it leaves
+ * the browser.
  */
 export const CATEGORIES = [
   { id: 'weddings', slug: 'vjencanja', name: 'vjenčanja' },
@@ -19,21 +22,3 @@ export const CATEGORIES = [
 export type Category = (typeof CATEGORIES)[number]
 export type CategoryId = Category['id']
 export type CategorySlug = Category['slug']
-
-export function categoryBySlug(slug: string): Category | undefined {
-  return CATEGORIES.find((c) => c.slug === slug)
-}
-
-export function categoryById(id: CategoryId): Category {
-  const found = CATEGORIES.find((c) => c.id === id)
-  // CategoryId is a union of the ids above, so this cannot happen at
-  // runtime unless the array and the type drift apart.
-  if (!found) throw new Error(`Unknown category id: ${id}`)
-  return found
-}
-
-/** The category after this one, wrapping — drives the "sljedeće: …" link. */
-export function nextCategory(slug: string): Category {
-  const i = CATEGORIES.findIndex((c) => c.slug === slug)
-  return CATEGORIES[(i + 1) % CATEGORIES.length]!
-}

@@ -52,6 +52,54 @@ async function lqip(input) {
   return `data:image/jpeg;base64,${buf.toString('base64')}`
 }
 
+/**
+ * Fixed page images — the About portrait, and whatever joins it.
+ *
+ * Same renditions and same LQIP as gallery photos, but kept out of the
+ * gallery manifest: they belong to a page, not to a category, and nothing
+ * about them should show up in a category grid or the lightbox.
+ */
+async function buildPageImages() {
+  const dir = join(SRC, 'page')
+  let entries
+  try {
+    entries = await readdir(dir)
+  } catch {
+    return // no page images in this checkout
+  }
+  const files = entries.filter((f) => /\.(jpe?g|png|tiff?|webp)$/i.test(f)).sort()
+  if (files.length === 0) return
+
+  const images = {}
+  for (const file of files) {
+    const path = join(dir, file)
+    const { name } = parse(file)
+    const meta = await sharp(path).rotate().metadata()
+    const width = meta.width ?? 0
+    const height = meta.height ?? 0
+    if (!width || !height) continue
+
+    const out = join(OUT, 'page', name)
+    await mkdir(out, { recursive: true })
+    const widths = WIDTHS.filter((w) => w <= width)
+    if (widths.length === 0) widths.push(width)
+
+    for (const w of widths) {
+      const resized = sharp(path).rotate().resize(w, null, { withoutEnlargement: true })
+      await Promise.all([
+        resized.clone().avif({ quality: 55, effort: 6 }).toFile(join(out, `${w}.avif`)),
+        resized.clone().webp({ quality: 74 }).toFile(join(out, `${w}.webp`)),
+        resized.clone().jpeg({ quality: 80, mozjpeg: true }).toFile(join(out, `${w}.jpg`)),
+      ])
+    }
+    images[name] = { id: name, width, height, widths, lqip: await lqip(path) }
+    console.log(`page/${file} -> ${widths.length} widths x 3 formats`)
+  }
+
+  await mkdir('app/data', { recursive: true })
+  await writeFile('app/data/page-images.json', JSON.stringify(images, null, 2) + '\n')
+}
+
 async function main() {
   const files = (await readdir(SRC)).filter((f) => /\.(jpe?g|png|tiff?|webp)$/i.test(f)).sort()
   if (files.length === 0) {
@@ -133,6 +181,8 @@ async function main() {
     if (old?.alt && !old.alt.startsWith('TODO')) photo.alt = old.alt
     if (old?.pinned) photo.pinned = true
   }
+
+  await buildPageImages()
 
   await mkdir('app/data', { recursive: true })
   await writeFile(

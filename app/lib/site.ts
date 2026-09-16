@@ -14,10 +14,12 @@ export const SITE = {
   url: 'https://capturedwell.hr',
   /** PLACEHOLDER — split so the address is never a literal mailto: in the HTML. */
   email: { user: 'info', domain: 'capturedwell.hr' },
-  /** PLACEHOLDER — set to null to hide the row entirely. */
-  phone: null as string | null,
-  /** PLACEHOLDER */
-  instagram: { handle: '@capturedwell', url: 'https://instagram.com/capturedwell' },
+  /** Set to null to hide the row entirely. */
+  phone: '+385 95 711 9680' as string | null,
+  instagram: {
+    handle: '@capturedwell_',
+    url: 'https://instagram.com/capturedwell_',
+  },
   /** PLACEHOLDER — used in the About page and the JSON-LD area served. */
   city: 'Zagreb',
 } as const

@@ -1,5 +1,4 @@
-import { Layout } from '~/components/Layout'
-import { SectionLabel } from '~/components/Layout'
+import { Layout, SectionLabel } from '~/components/Layout'
 
 /**
  * Placeholder for phase 4.

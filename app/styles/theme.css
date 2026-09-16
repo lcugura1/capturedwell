@@ -45,10 +45,17 @@
   --color-bg-deep: #080808;
   --color-surface: #151515;
   --color-line: #262626;
-  /* Control borders. 3.1:1 against bg — above the 3:1 floor for
-     non-text UI, below what a divider needs to be. */
-  --color-line-strong: #606060;
-  /* Barely-there. The admin dot in the footer, spacing swatches. */
+  /* Control borders. 1.72:1 against bg — below WCAG 1.4.11's 3:1 floor for
+     non-text UI, which the canvas moved to deliberately (it was #606060 at
+     3.11:1). It holds because every control here carries its own
+     high-contrast label or icon — the text identifies the button, the
+     border only reinforces it. Hover lifts the border to --color-ink and
+     focus draws the 2px ring, so the faint edge is the resting state only.
+     Watch the inactive filter pills: there the outline is most of what
+     separates a button from a word. */
+  --color-line-strong: #3a3a3a;
+  /* Same value as line-strong today, different job: the admin dot in the
+     footer. Kept apart so one can move without dragging the other. */
   --color-faint: #3a3a3a;
 
   /* ── ink (measured contrast against --color-bg) ───────────────────── */
@@ -162,9 +169,12 @@
 
 @layer base {
   html {
-    /* Croatian text, everywhere. */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* The menu scrolls to anchors on one long page, so the glide is the
+       navigation, not decoration. The reduced-motion block below turns it
+       back to an instant jump for anyone who asked for that. */
+    scroll-behavior: smooth;
   }
 
   body {

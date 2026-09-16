@@ -1,6 +1,6 @@
-import { StretchedHeading } from './Layout'
-import { MailLink } from './MailLink'
-import { Mail } from './icons'
+import { StretchedHeading } from '~/components/Layout'
+import { MailLink } from '~/components/MailLink'
+import { Mail } from '~/components/icons'
 import { SITE, EMAIL_TEXT } from '~/lib/site'
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -13,16 +13,19 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 /**
- * Contact, shared by /kontakt and the bottom of /o-meni.
+ * The closing section of the page.
  *
  * No form: that was a deliberate call. A form means a server endpoint, spam
- * handling and a delivery service to keep alive, and it buys nothing a
- * mail client does not already do better.
+ * handling and a delivery service to keep alive, and it buys nothing a mail
+ * client does not already do better.
  */
-export function ContactBlock() {
+export function Contact() {
   return (
-    <section className="flex flex-col gap-xl px-gutter pb-3xl pt-3xl">
-      <StretchedHeading as="h2" words={['javi', 'se.']} />
+    <section
+      id="kontakt"
+      className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-3xl"
+    >
+      <StretchedHeading as="h2" words={['javi se']} />
 
       <div className="grid grid-cols-1 gap-md lg:grid-cols-12">
         <div className="flex flex-col items-start gap-xl lg:col-span-5">
