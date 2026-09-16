@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { Photo as PhotoType } from '~/lib/gallery-types'
 import { aspectOf, fallbackSrc, srcSet } from '~/lib/images'
+import { genieKeyframes, type Neck } from '~/lib/genie'
 
 /** Matches the retro palette used by section titles. */
 const CONTROLS = {
@@ -9,9 +10,13 @@ const CONTROLS = {
   next: 'text-retro-rust',
 } as const
 
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
-const OPEN_MS = 460
-const CLOSE_MS = 320
+// Less front-loaded than a plain ease-out: at 8% of the way through, an
+// easeOutQuint is already a third of the distance and the warp never gets
+// seen. This holds the shape long enough to read as one.
+const EASE = 'cubic-bezier(0.32, 0.72, 0, 1)'
+/** The Dock's own genie runs about this long; anything faster reads as a pop. */
+const OPEN_MS = 620
+const CLOSE_MS = 420
 
 function prefersReducedMotion() {
   return (
@@ -28,11 +33,16 @@ function prefersReducedMotion() {
  * released. Only `transform` and `opacity` move, so it runs on the
  * compositor and never reflows a full-bleed photograph mid-flight.
  *
- * The genie part is the middle keyframe: horizontal distance and width close
- * faster than vertical, so the photo stretches upward out of its cell before
- * settling instead of scaling uniformly. Closing replays it in reverse and
- * unmounts on finish, which is why `closing` exists rather than the parent
- * dropping the component immediately.
+ * The genie is two animations on the same element. The transform carries the
+ * travel, with horizontal distance closing faster than vertical so the photo
+ * stretches rather than scaling uniformly. The clip-path carries the shape:
+ * a polygon that necks down to the width of the thumbnail and bows inward
+ * between the two, which is the part a transform physically cannot do — an
+ * affine transform cannot bend an edge. See lib/genie.ts.
+ *
+ * Closing replays both in reverse and unmounts on finish, which is why
+ * `closing` exists rather than the parent dropping the component
+ * immediately.
  *
  * Keyboard is a first-class path, not an afterthought — a gallery you cannot
  * arrow through is broken for anyone not using a mouse:
@@ -78,11 +88,20 @@ export function Lightbox({
     const from = thumb.getBoundingClientRect()
     const to = figure.getBoundingClientRect()
     if (to.width === 0 || to.height === 0 || from.width === 0) return null
+    const pct = (n: number) => Math.min(100, Math.max(0, n * 100))
+    const neck: Neck = {
+      cx: pct((from.left + from.width / 2 - to.left) / to.width),
+      cy: pct((from.top + from.height / 2 - to.top) / to.height),
+      // Never let the slot close completely: a zero-width neck renders as
+      // nothing at all for the first frames instead of a sliver.
+      half: Math.max(3, Math.min(50, (from.width / to.width) * 50)),
+    }
     return {
       dx: from.left - to.left,
       dy: from.top - to.top,
       sx: from.width / to.width,
       sy: from.height / to.height,
+      neck,
     }
   }, [photo])
 
@@ -92,7 +111,12 @@ export function Lightbox({
     const from = collapsed()
     if (!figure || !backdrop || !from || prefersReducedMotion()) return
 
-    const { dx, dy, sx, sy } = from
+    const { dx, dy, sx, sy, neck } = from
+    figure.animate(genieKeyframes(neck), {
+      duration: OPEN_MS,
+      easing: EASE,
+      fill: 'both',
+    })
     figure.animate(
       [
         { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, opacity: 0.7 },
@@ -126,7 +150,12 @@ export function Lightbox({
       return
     }
     setClosing(true)
-    const { dx, dy, sx, sy } = to
+    const { dx, dy, sx, sy, neck } = to
+    figure.animate([...genieKeyframes(neck)].reverse(), {
+      duration: CLOSE_MS,
+      easing: EASE,
+      fill: 'both',
+    })
     backdrop.animate([{ opacity: 1 }, { opacity: 0 }], {
       duration: CLOSE_MS,
       easing: 'linear',
@@ -205,19 +234,36 @@ export function Lightbox({
   }, [closing, dismiss, go])
 
   if (!photo) return null
+  const ratio = aspectOf(photo)
 
   return (
     <div
       ref={dialogRef}
       role="dialog"
       aria-modal="true"
-      aria-label="Pregled fotografije"
+      // The visible caption is gone, so the position in the set lives here.
+      // A screen-reader user otherwise has no idea how many photos there
+      // are or where in them they have got to.
+      aria-label={`Pregled fotografije — ${categoryName}, ${index + 1} od ${photos.length}`}
       className="fixed inset-0 z-50"
     >
       <div ref={backdropRef} className="absolute inset-0 bg-bg-deep" />
 
       <div className="absolute inset-0 flex items-center justify-center p-header">
-        <div ref={figureRef} className="max-h-full max-w-full will-change-transform">
+        <div
+          ref={figureRef}
+          style={{
+            aspectRatio: ratio,
+            // Fit the photo to the space and let it grow into it. max-width
+            // and max-height alone only ever shrink, so a 640px original sat
+            // at 640px in the middle of a 1440px screen. Taking the smaller
+            // of "all the width there is" and "the width this photo would
+            // need to use all the height" gives the largest box that still
+            // fits, and aspect-ratio supplies the height.
+            width: `min(100% , calc((100svh - 2 * var(--spacing-header)) * ${ratio}))`,
+          }}
+          className="will-change-transform"
+        >
           <picture>
             <source type="image/avif" srcSet={srcSet(photo, 'avif')} sizes="90vw" />
             <source type="image/webp" srcSet={srcSet(photo, 'webp')} sizes="90vw" />
@@ -228,8 +274,7 @@ export function Lightbox({
               alt={photo.alt}
               width={photo.width}
               height={photo.height}
-              style={{ aspectRatio: aspectOf(photo) }}
-              className="max-h-[calc(100svh-2*var(--spacing-header))] max-w-full object-contain"
+              className="size-full object-contain"
             />
           </picture>
         </div>
@@ -257,14 +302,6 @@ export function Lightbox({
       >
         ›
       </GlyphButton>
-
-      <p className="absolute inset-x-0 bottom-lg m-0 flex items-center justify-center gap-md text-caption font-medium text-ink-subtle">
-        <span>
-          {categoryName} · {index + 1} / {photos.length}
-        </span>
-        <span aria-hidden="true">·</span>
-        <span>← → listanje · esc zatvaranje</span>
-      </p>
     </div>
   )
 }
