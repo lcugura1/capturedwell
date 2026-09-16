@@ -31,12 +31,13 @@ export function About() {
         <h2 className="m-0 text-h1">{SITE.owner.toLowerCase()}.</h2>
         <div className="flex max-w-[520px] flex-col gap-5 text-body text-ink-body">
           <p className="m-0 text-pretty">
-            TODO(Damir): kratka biografija, 2–3 rečenice — odakle je, kako je počeo i
-            kako radi na snimanju.
+            Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
+            Fotografiram već sedam godina.
           </p>
           <p className="m-0 text-pretty">
-            Snima vjenčanja, lifestyle, događaje i studijske portrete. Radi iz{' '}
-            {SITE.city}a i okolice.
+            Rodom sam iz Vinkovaca i magistrirao sam grafički dizajn — kreativnost
+            spajam s tehničkim znanjem i tako svakom projektu dajem vlastitu
+            perspektivu.
           </p>
         </div>
       </div>

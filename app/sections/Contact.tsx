@@ -25,7 +25,15 @@ export function Contact() {
       id="kontakt"
       className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-3xl"
     >
-      <StretchedHeading as="h2" words={['javi se']} />
+      <div className="flex flex-col gap-lg">
+        <StretchedHeading as="h2" words={['javi se']} />
+        {/* The city is written out, not `{SITE.city}u`: gluing a Croatian
+            case ending onto a token happens to work for Zagreb and breaks
+            the moment the token changes. Copy belongs in the copy. */}
+        <p className="m-0 text-lead text-ink-muted">
+          Fotograf lifestylea i događaja u Zagrebu.
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 gap-md lg:grid-cols-12">
         <div className="flex flex-col items-start gap-xl lg:col-span-5">
