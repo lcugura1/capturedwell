@@ -38,8 +38,8 @@ URL slugovi su bez dijakritike (`vjencanja`, `dogadaji`) — dijakritika u URL-u
 
 | Sloj | Izbor | Zašto |
 |---|---|---|
-| Jezik | TypeScript, `strict: true` | — |
-| Build / app | **Vite + React 19 + React Router v7 (framework mode)** | Vite DX koji želimo; RR7 daje file-based rute i **prerender** (SSG) pa portfolio ima pravi statički HTML za Google. |
+| Jezik | TypeScript **6**, `strict: true` | Ne 7. `typescript-eslint` tvrdo odbija TS 7 (`does not support TS 7.0`), a lint nam vrijedi više od brzine kompajlera. Vratiti na 7 kad ekosustav stigne. |
+| Build / app | **Vite + React 19 + React Router v8 (framework mode)** | Vite DX koji želimo; RR daje rute i **prerender** (SSG) pa portfolio ima pravi statički HTML za Google. |
 | Stiliziranje | **Tailwind v4** + design tokeni kao CSS custom properties u `@theme` | 1:1 preslikavanje design systema iz Claude Designa. |
 | Hosting | **Cloudflare Workers/Pages** | Besplatno, neograničen static bandwidth, globalni CDN. |
 | Storage fotki | **Cloudflare R2** | 10 GB besplatno, **egress 0 €** — ključno za foto-heavy stranicu. |
@@ -128,6 +128,14 @@ type Photo = {
 
 **Trajne vs. rotirajuće fotke.** Damir je rekao da dio fotki ostaje na stranici stalno, a dio se mijenja. `pinned: true` znači da fotka ide na vrh svoje kategorije i da admin traži potvrdu prije brisanja. Sve ostalo se slobodno rotira.
 
+### Odakle dolazi manifest
+
+`app/data/gallery.json` se **importa**, ne dohvaća. Time svaka stranica u statičkom HTML-u već ima svoje fotke — dobro za tražilice i jedan round-trip manje prije nego se išta pojavi. Cijena je da novi upload traži rebuild.
+
+Zato Faza 4: Worker upiše u R2, pa okine deploy hook. Za portfolio koji se mijenja povremeno to je ispravan smjer trgovine — posjetitelj dobije brzinu, Damir čeka minutu.
+
+`scripts/build-media.mjs` je build-time blizanac browser pipelinea iz admina. **Oba moraju proizvoditi isti oblik** — iste širine, iste formate, isti LQIP — da se fotka dodana kroz admin ne razlikuje od one iz seeda.
+
 ### Serviranje
 - Uvijek `<picture>` s AVIF → WebP → JPEG i točnim `srcset` + `sizes`.
 - Uvijek eksplicitni `width`/`height` (ili `aspect-ratio`) → nula layout shifta.
@@ -173,7 +181,9 @@ PNG izvozi idu u [design/wireframes/](design/wireframes/) kao zamrznuta arhiva �
 
 ### Pravila tokena
 
-- Tokeni (boje, tipografija, spacing, radiusi, sjene, easing) žive na jednom mjestu: `src/styles/theme.css` unutar Tailwind `@theme` bloka, kao CSS custom properties.
+- Tokeni (boje, tipografija, spacing, radiusi, easing) žive na jednom mjestu: `app/styles/theme.css` unutar Tailwind `@theme` bloka, kao CSS custom properties.
+- `@theme` prvo **gasi Tailwindove defaulte** (`--color-*: initial` i dalje). Bez toga se u CSS izvozi ~40 boja plave i zelene koje monokromatski dizajn nikad neće koristiti, a `bg-blue-500` tiho radi i izlazi iz sustava.
+- Tailwind skenira **samo `app/`** (`source(none)` + `@source`). Automatska detekcija čita cijeli repo, uključujući izvezeni canvas u `design/canvas/` — 3 MB tuđeg markupa iz kojeg je generirao ~1000 smeća-selektora i napuhao CSS s 24 KB na 89 KB.
 - **Nijedna komponenta ne smije imati hardkodiranu boju ili px vrijednost izvan tokena.** Ako token ne postoji — dodaj ga u `theme.css`, ne u komponentu.
 - Kad se design canvas promijeni, prvo se ažurira `theme.css`, pa tek onda komponente.
 - Fotografija je glavni junak stranice: UI je suzdržan, tipografija i whitespace nose dizajn, boje su neutralne da ne konkuriraju fotkama.
@@ -205,7 +215,11 @@ src/
     categories.ts  # jedini izvor istine za id ↔ slug ↔ hrvatski naziv
     gallery-types.ts
     image/         # pipeline: resize, encode, LQIP, EXIF strip
+    images.ts      # URL-ovi varijanti, srcset
+  data/gallery.json # manifest, baked u build
   styles/theme.css # design tokeni
+scripts/           # build-media.mjs — originali -> varijante + manifest
+media-src/         # originali za seed (Damirovi idu ovdje)
 worker/            # Cloudflare Worker: /api/admin/*, /api/me
 content/           # statički hrvatski tekstovi (o-meni, kontakt) — uređuju se u kodu
 design/            # brand assetovi, inspiracija, PNG arhiva canvasa — ne build input
@@ -258,8 +272,8 @@ Nisu instalirani, ali razmisliti kasnije: `chrome-devtools-mcp` (stvarni perform
 
 - **Faza 0 — dogovor stacka.** ✅ (ovaj dokument)
 - **Faza 1 — design system.** Claude Design canvas → tokeni u `theme.css`.
-- **Faza 2 — skeleton.** Vite + RR7 + TS + Tailwind, rute, prerender, deploy na Cloudflare.
-- **Faza 3 — javna galerija.** Manifest, grid, lightbox, responsive slike, performance budžeti.
+- **Faza 2 — skeleton.** ✅ Vite + RR + TS + Tailwind, rute, prerender.
+- **Faza 3 — javna galerija.** ✅ Manifest, justified grid, lightbox, responsive slike. Ostaje: deploy na Cloudflare, stvarne fotke, pravi alt tekstovi.
 - **Faza 4 — admin.** Cloudflare Access, Worker API, drag & drop upload, image pipeline, reorder, brisanje.
 - **Faza 5 — sadržaj i polish.** O meni, kontakt (`mailto:`), SEO (`hr` meta, Open Graph, JSON-LD `LocalBusiness`), sitemap.
 - **Faza 6 — lansiranje.** `capturedwell.hr`, analitika bez kolačića (Cloudflare Web Analytics), backup strategija za `originals/`.

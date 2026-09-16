@@ -1,0 +1,200 @@
+/* Scan only the app source. Tailwind's automatic detection walks the whole
+   repo, which here means it also reads design/canvas/ — a 3 MB published
+   design canvas whose markup generated roughly a thousand junk utilities
+   (--cds-* variables, animation classes, other people's design system).
+   Pointing it at app/ cut the stylesheet from 89 KB to what it should be. */
+@import 'tailwindcss' source(none);
+@source '../../app';
+
+/**
+ * Design tokens — the single source of truth for the look of the site.
+ *
+ * Values come from the "style tile" artboard of the Claude Design canvas,
+ * read from its CSS rather than eyeballed from an export. If the canvas and
+ * this file disagree, this file wins and the canvas gets updated.
+ *
+ * Nothing outside this file may hardcode a colour or a px value. If a token
+ * is missing, add it here — never inline it in a component.
+ *
+ * Colour naming: the canvas calls the foreground tones text / text-muted /
+ * text-subtle / text-body. Here they are ink / ink-muted / ink-subtle /
+ * ink-body, because Tailwind derives utilities from the token name and
+ * `text-text-muted` is unreadable. The mapping is one-to-one:
+ *
+ *   canvas          code            utility
+ *   text        ->  ink         ->  text-ink
+ *   text-muted  ->  ink-muted   ->  text-ink-muted
+ *   text-subtle ->  ink-subtle  ->  text-ink-subtle
+ *   text-body   ->  ink-body    ->  text-ink-body
+ */
+@theme {
+  /* Drop Tailwind's defaults before defining ours. The stock palette alone
+     is ~40 colours of blue, green and gray that this monochrome design will
+     never use, and every one of them ships as a CSS variable. Clearing the
+     namespaces also makes `bg-blue-500` fail loudly instead of silently
+     working and quietly leaving the design system. */
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+
+  /* ── surfaces ─────────────────────────────────────────────────────── */
+  --color-bg: #0c0c0c;
+  /* Lightbox only. A shade below the page so a contained photo still
+     separates from its surround when the photo itself is dark. */
+  --color-bg-deep: #080808;
+  --color-surface: #151515;
+  --color-line: #262626;
+  /* Control borders. 3.1:1 against bg — above the 3:1 floor for
+     non-text UI, below what a divider needs to be. */
+  --color-line-strong: #606060;
+  /* Barely-there. The admin dot in the footer, spacing swatches. */
+  --color-faint: #3a3a3a;
+
+  /* ── ink (measured contrast against --color-bg) ───────────────────── */
+  --color-ink: #ededed; /* 16.7:1 — headings, primary text */
+  --color-ink-muted: #a3a3a3; /*  7.7:1 — links, secondary */
+  --color-ink-subtle: #808080; /*  4.9:1 — labels, meta */
+  --color-ink-body: rgb(237 237 237 / 0.72); /* 8.8:1 — long prose */
+
+  /* ── inverted controls (ink-on-light buttons) ─────────────────────── */
+  --color-solid: #ededed;
+  --color-solid-hover: #d4d4d4;
+  --color-solid-active: #bdbdbd;
+
+  /* ── type ─────────────────────────────────────────────────────────── */
+  /* One token, so swapping the whole typeface is a one-line change.
+     Fallbacks are geometric sans of a similar build, so a failed webfont
+     degrades in proportion rather than snapping to a grotesque. */
+  --font-sans: 'Jost', 'Futura', 'Century Gothic', system-ui, sans-serif;
+
+  /* The canvas was drawn in Quicksand. We ship Jost, whose x-height is
+     460/1000em against Quicksand's 537 — 14% shorter at the same px.
+     Display sizes are set by layout fit and stay as designed; the two
+     reading sizes are bumped one notch so prose reads at the size it was
+     approved at. Canvas values are noted for traceability. */
+  --text-display: 136px;
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 700;
+
+  --text-h1: 88px;
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h1--font-weight: 700;
+
+  --text-h2: 40px;
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 22px; /* category card title */
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.005em;
+  --text-h3--font-weight: 600;
+
+  --text-lead: 28px; /* canvas 26px */
+  --text-lead--line-height: 1.45;
+  --text-lead--font-weight: 400;
+
+  --text-body: 21px; /* canvas 19px */
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+
+  --text-field: 17px; /* contact rows */
+  --text-field--line-height: 1.4;
+  --text-field--font-weight: 500;
+
+  --text-nav: 15px;
+  --text-nav--line-height: 1.2;
+  --text-nav--font-weight: 500;
+
+  --text-label: 13px;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.02em;
+  --text-label--font-weight: 600;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.2;
+  --text-caption--font-weight: 600;
+
+  /* Wordmark set as text (header 26, footer 20). The real logo is the
+     SVG in app/components/Logo.tsx; these are for sizing around it. */
+  --text-mark: 26px;
+  --text-mark--line-height: 1;
+  --text-mark--letter-spacing: -0.01em;
+  --text-mark--font-weight: 700;
+
+  /* ── spacing ──────────────────────────────────────────────────────── */
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 40px;
+  --spacing-xl: 64px;
+  --spacing-2xl: 104px;
+  --spacing-3xl: 168px;
+  /* Page gutter and header height are fixed by the design, not free
+     choices — they line the wordmark up with the photo edges. */
+  --spacing-gutter: 40px;
+  --spacing-header: 96px;
+  /* Photos sit 6px apart. Deliberately below the spacing scale: the
+     grid should read as one surface, not as separate cards. */
+  --spacing-photo-gap: 6px;
+
+  /* ── radii ────────────────────────────────────────────────────────── */
+  /* Pills and dots. Photos are never rounded. */
+  --radius-pill: 999px;
+  --radius-focus: 2px;
+
+  /* ── motion ───────────────────────────────────────────────────────── */
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/**
+ * One theme, and it is dark. "No dark mode" means no theme toggle, not a
+ * light page — so there is no prefers-color-scheme branch here on purpose.
+ * Dead code nobody tests is worse than no code.
+ */
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    /* Croatian text, everywhere. */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /* The design leans on full-bleed photography; a stray inline gap under
+     an image breaks the 6px rhythm between them. */
+  img {
+    display: block;
+  }
+
+  /* Visible, consistent, and matching the style tile: 2px ring, 3px off.
+     :focus-visible so a mouse click never paints a ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  /* Parallax and long transitions are decoration. Honour the setting. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

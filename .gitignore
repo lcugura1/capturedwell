@@ -144,3 +144,16 @@ vite.config.ts.timestamp-*
 
 # macOS
 .DS_Store
+node_modules
+.react-router
+build
+.wrangler
+
+# Generated image renditions — rebuilt from media-src/ by `npm run media`.
+# Derived files do not belong in git, and this folder grows with every photo.
+/public/media
+
+# The published design canvas: 3.3 MB of editor bundle wrapped around 56 KB
+# of actual design. The .dc.html artboards next to it are the part worth
+# keeping; the file stays on disk for reference but out of the history.
+/design/canvas/capturedwell-web.html
