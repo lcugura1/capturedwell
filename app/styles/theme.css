@@ -64,6 +64,18 @@
   --color-ink-subtle: #808080; /*  4.9:1 — labels, meta */
   --color-ink-body: rgb(237 237 237 / 0.72); /* 8.8:1 — long prose */
 
+  /* ── vintage accents ──────────────────────────────────────────────
+     Used only on section titles, one colour per letter. This is the one
+     place the site breaks its own "no brand colour" rule — see the note
+     above --font-display. Contrast against --color-bg, measured:
+     cream 15.84:1, mustard 8.89:1, teal 5.18:1, rust 4.49:1. All clear
+     the 3:1 floor for large text; rust is the floor of the set, so it
+     never goes below display size. */
+  --color-retro-cream: #f2e6d0;
+  --color-retro-mustard: #e0a43c;
+  --color-retro-rust: #c9552e;
+  --color-retro-teal: #4a8f86;
+
   /* ── inverted controls (ink-on-light buttons) ─────────────────────── */
   --color-solid: #ededed;
   --color-solid-hover: #d4d4d4;
@@ -75,6 +87,14 @@
      degrades in proportion rather than snapping to a grotesque. */
   --font-sans: 'Jost', 'Futura', 'Century Gothic', system-ui, sans-serif;
 
+  /* Section titles only — three of them on the page. A vintage slab of the
+     kind old comic covers were set in: heavy, warm, and with real
+     lowercase, so the brand's all-lowercase rule survives intact.
+     Deliberately never used for reading text; at body size a slab this
+     heavy is exhausting. Serif fallbacks are slabs too, so a failed
+     webfont degrades in character rather than snapping to Times. */
+  --font-display: 'Alfa Slab One', 'Rockwell', 'Courier Bold', Georgia, serif;
+
   /* The canvas was drawn in Quicksand. We ship Jost, whose x-height is
      460/1000em against Quicksand's 537 — 14% shorter at the same px.
      Display sizes are set by layout fit and stay as designed; the two
@@ -84,6 +104,13 @@
   --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
+
+  /* Section titles. Smaller than --text-display: a slab this heavy at
+     136px stops being a heading and becomes a wall. */
+  --text-section: 104px;
+  --text-section--line-height: 0.95;
+  --text-section--letter-spacing: -0.01em;
+  --text-section--font-weight: 400;
 
   --text-h1: 88px;
   --text-h1--line-height: 1;

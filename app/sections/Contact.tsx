@@ -1,4 +1,4 @@
-import { StretchedHeading } from '~/components/Layout'
+import { SectionTitle } from '~/components/SectionTitle'
 import { MailLink } from '~/components/MailLink'
 import { Mail } from '~/components/icons'
 import { SITE, EMAIL_TEXT } from '~/lib/site'
@@ -26,7 +26,7 @@ export function Contact() {
       className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-3xl"
     >
       <div className="flex flex-col gap-lg">
-        <StretchedHeading as="h2" words={['javi se']} />
+        <SectionTitle>javi se</SectionTitle>
         {/* The city is written out, not `{SITE.city}u`: gluing a Croatian
             case ending onto a token happens to work for Zagreb and breaks
             the moment the token changes. Copy belongs in the copy. */}

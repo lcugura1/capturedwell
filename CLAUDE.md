@@ -169,7 +169,8 @@ Iz njega slijedi cijeli vizualni smjer — nemamo ga pravo ignorirati:
 
 - **Mala slova svugdje** u brand kontekstu. Logotip se nikad ne piše verzalom, ni u naslovima, ni u navigaciji, ni u `<title>`.
 - **Točka je potpis brenda.** Jedini karakter u logotipu koji nije slovo. Koristimo je kao motiv: oznaka aktivne stavke u navigaciji, separator u meta podacima, marker kraja sekcije. Suzdržano — motiv, ne dekoracija.
-- **Paleta je monokromatska.** Logo nema boje. Stranica ne uvodi brand boju; crna, bijela i par neutralnih sivih. **Boju nose fotografije, ne UI.** Akcentna boja bi se tukla s Damirovim radovima.
+- **Naslovi sekcija su iznimka od svega ispod.** Alfa Slab One, vintage slab, jedna boja po slovu iz retro palete (cream / mustard / rust / teal). Tri naslova na stranici: `o meni`, ime kategorije, `javi se`. Font ima prava mala slova pa pravilo o malim slovima preživi. **Nikad za tekst koji se čita** — slab ove težine u tijelu teksta je iscrpljujući. Vidi [design/references/03-naslovi-uzivo.png](design/references/03-naslovi-uzivo.png).
+- **Paleta je monokromatska** *(osim naslova sekcija, gore).* Logo nema boje. Stranica ne uvodi brand boju; crna, bijela i par neutralnih sivih. **Boju nose fotografije, ne UI.** Akcentna boja bi se tukla s Damirovim radovima.
 - **Tipografija: Quicksand** (Google Fonts, OFL). Varijabilni font 300–700 u [design/brand/fonts/](design/brand/fonts/). Provjereno sadrži sve hrvatske dijakritike uključujući `đ`/`Đ` — **kod subsetiranja obavezno uključiti `latin-ext`**, inače `đ` nestane. Self-hosta se iz `public/fonts/` kao woff2; ne učitavamo s Google CDN-a.
 - **Logo SVG ne postoji**, samo PNG 500 × 500. Rekonstruiramo ga iz Quicksanda (wordmark → krivulje → SVG) jer je PNG mutan na retini i boja mu je zaključana. Detalji u [design/brand/README.md](design/brand/README.md).
 - **Bez razmaka u `capturedwell`.** Nikad `captured well`.

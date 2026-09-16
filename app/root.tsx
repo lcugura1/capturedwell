@@ -12,6 +12,7 @@ import { Layout as SiteLayout } from '~/components/Layout'
 import { ButtonLink } from '~/components/Button'
 import './styles/theme.css'
 import fontUrl from '/fonts/jost-latin-ext.woff2?url'
+import displayFontUrl from '/fonts/alfa-slab-latin-ext.woff2?url'
 
 export const links: LinksFunction = () => [
   // Self-hosted: one round-trip fewer than Google Fonts, and no visitor IP
@@ -32,7 +33,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           // Inlined rather than imported so the face is defined in the first
           // HTML, before any stylesheet has finished arriving.
           dangerouslySetInnerHTML={{
-            __html: `@font-face{font-family:'Jost';src:url('${fontUrl}') format('woff2');font-weight:400 700;font-style:normal;font-display:swap;}`,
+            __html:
+              `@font-face{font-family:'Jost';src:url('${fontUrl}') format('woff2');font-weight:400 700;font-style:normal;font-display:swap;}` +
+              // Not preloaded, unlike Jost: it dresses three section titles,
+              // all below the fold, and an early request for it would
+              // compete with the hero photograph, which is the LCP.
+              `@font-face{font-family:'Alfa Slab One';src:url('${displayFontUrl}') format('woff2');font-weight:400;font-style:normal;font-display:swap;}`,
           }}
         />
       </head>

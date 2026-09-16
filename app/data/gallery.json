@@ -1,6 +1,6 @@
 {
-  "version": 7,
-  "updatedAt": "2026-09-16T16:11:28.470Z",
+  "version": 9,
+  "updatedAt": "2026-09-16T16:17:01.621Z",
   "photos": [
     {
       "id": "dogadaji-klub",
@@ -117,14 +117,17 @@
       "id": "vjencanje-crkva",
       "category": "weddings",
       "order": 0,
-      "width": 920,
-      "height": 548,
+      "width": 3024,
+      "height": 1688,
       "widths": [
         400,
-        800
+        800,
+        1200,
+        1600,
+        2400
       ],
       "alt": "TODO opis: vjencanje crkva",
-      "lqip": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAOABgDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAMFAQT/xAAdEAABBQEBAQEAAAAAAAAAAAABAAIDBBESISJR/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AMhhjj6a4D6OKXLRa27meE7qVauSCw8acBT55y6vG73r9Qd0ldpYMzxCkQW5DO0dHCUIP//Z"
+      "lqip": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAANABgDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIDBf/EAB8QAAICAQQDAAAAAAAAAAAAAAECAAMEERMhMQUSQf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDNvz29NBxrJbRFBuc99RWQWkAyvmhs4uPWp4IgZhY2cmEdgFVdB8hA/9k="
     }
   ]
 }

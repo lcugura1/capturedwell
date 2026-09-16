@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Photo } from '~/components/Photo'
 import { JustifiedRows } from '~/components/JustifiedRows'
 import { Lightbox } from '~/components/Lightbox'
-import { StretchedHeading } from '~/components/Layout'
+import { SectionTitle } from '~/components/SectionTitle'
 import { CATEGORIES, type CategoryId } from '~/lib/categories'
 import { gallery } from '~/lib/gallery'
 import { photosInCategory } from '~/lib/gallery-types'
@@ -31,7 +31,7 @@ export function Gallery() {
   return (
     <section id="galerija" className="scroll-mt-header pt-3xl">
       <div className="flex flex-col items-start justify-between gap-lg px-gutter pb-xl lg:flex-row lg:items-end">
-        <StretchedHeading as="h2" words={[`${active.name}.`]} />
+        <SectionTitle>{`${active.name}.`}</SectionTitle>
         <nav aria-label="Kategorije" className="flex flex-wrap gap-xs pb-2">
           {CATEGORIES.map((c) => {
             const isActive = c.id === category

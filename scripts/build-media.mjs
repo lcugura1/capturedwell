@@ -37,6 +37,19 @@ const PREFIX = {
 }
 
 /**
+ * One prepared source stream.
+ *
+ * `rotate()` bakes EXIF orientation into the pixels, so nothing downstream
+ * has to care about it. `flatten()` composites any alpha onto the page
+ * background: a PNG with real transparency would otherwise land on black in
+ * the JPEG rendition and on nothing in AVIF/WebP, so the same photo would
+ * differ by format. Fully opaque files pass through untouched.
+ */
+function source(path) {
+  return sharp(path).rotate().flatten({ background: '#0c0c0c' })
+}
+
+/**
  * A 24px-wide blurred JPEG, inlined into the manifest as a data URI.
  *
  * Kept tiny on purpose: it ships inside the manifest on every page load, so
@@ -44,7 +57,7 @@ const PREFIX = {
  * but JPEG decodes everywhere without a format negotiation.
  */
 async function lqip(input) {
-  const buf = await sharp(input)
+  const buf = await source(input)
     .resize(24, null, { fit: 'inside' })
     .blur(1.2)
     .jpeg({ quality: 40 })
@@ -85,7 +98,7 @@ async function buildPageImages() {
     if (widths.length === 0) widths.push(width)
 
     for (const w of widths) {
-      const resized = sharp(path).rotate().resize(w, null, { withoutEnlargement: true })
+      const resized = source(path).resize(w, null, { withoutEnlargement: true })
       await Promise.all([
         resized.clone().avif({ quality: 55, effort: 6 }).toFile(join(out, `${w}.avif`)),
         resized.clone().webp({ quality: 74 }).toFile(join(out, `${w}.webp`)),
@@ -120,8 +133,7 @@ async function main() {
       continue
     }
 
-    const image = sharp(path).rotate() // bake EXIF orientation into pixels
-    const meta = await image.metadata()
+    const meta = await sharp(path).rotate().metadata()
     const width = meta.width ?? 0
     const height = meta.height ?? 0
     if (!width || !height) {
@@ -140,7 +152,7 @@ async function main() {
     if (widths.length === 0) widths.push(width)
 
     for (const w of widths) {
-      const resized = sharp(path).rotate().resize(w, null, { withoutEnlargement: true })
+      const resized = source(path).resize(w, null, { withoutEnlargement: true })
       await Promise.all([
         resized.clone().avif({ quality: 55, effort: 6 }).toFile(join(dir, `${w}.avif`)),
         resized.clone().webp({ quality: 74 }).toFile(join(dir, `${w}.webp`)),
@@ -163,7 +175,7 @@ async function main() {
       alt: `TODO opis: ${name.replace(/-/g, ' ')}`,
       lqip: await lqip(path),
     })
-    console.log(`${file} -> ${widths.length} widths x 3 formats`)
+    console.log(`${file} ${width}x${height} -> ${widths.join('/')} x 3 formats`)
   }
 
   // Preserve alt text and pinned flags already written by hand: this script

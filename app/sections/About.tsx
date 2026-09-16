@@ -1,5 +1,5 @@
 import { Photo } from '~/components/Photo'
-import { SectionLabel } from '~/components/Layout'
+import { SectionTitle } from '~/components/SectionTitle'
 import pageImages from '~/data/page-images.json'
 import { SITE } from '~/lib/site'
 import type { Renderable } from '~/lib/images'
@@ -27,8 +27,8 @@ export function About() {
         )}
       </div>
       <div className="flex flex-col justify-end gap-lg px-gutter pb-xs lg:pl-xl">
-        <SectionLabel>o meni</SectionLabel>
-        <h2 className="m-0 text-h1">{SITE.owner.toLowerCase()}.</h2>
+        <SectionTitle>o meni</SectionTitle>
+        <p className="m-0 text-h2 text-ink">{SITE.owner.toLowerCase()}.</p>
         <div className="flex max-w-[520px] flex-col gap-5 text-body text-ink-body">
           <p className="m-0 text-pretty">
             Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
