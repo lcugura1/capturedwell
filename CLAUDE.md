@@ -219,6 +219,12 @@ clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
   - **Pozadina nije čista crna** (`#000`). Čisto bijelo na čistoj crnoj je naporno za čitanje i fotke izgledaju kao da lebde u praznini. Koristi near-black (oko `#0a0a0a`–`#111`), a tekst near-white umjesto `#fff`. Duži tekstovi (O meni) idu na sniženi opacitet, ne na punu bjelinu.
   - Kontrast i dalje ≥ 4.5:1 — provjeriti, ne pretpostaviti.
 
+**Layout se provjerava u pregledniku, ne u glavi**
+
+`node scripts/shoot.mjs` (uz posluženi build) snimi stranicu na 1440×900, 1280×720 i 390×844 i ispiše je li wordmark unutar prvog ekrana.
+
+Postoji jer su dva layout buga prošla upravo zato što su i markup i CSS izgledali ispravno odvojeno: hero je prelazio pregib, a `<picture>` je tiho ignorirao `height: 100%` — inline element nema definiranu visinu pa se postotak ne razriješi i `aspect-ratio` preuzme. Nijedno se ne vidi iz terminala.
+
 **Pristupačnost (nije opcionalna)**
 - Kontrast tekst/pozadina ≥ 4.5:1.
 - **Iznimka, svjesna:** obrub kontrola je `#3a3a3a` = **1.72:1**, ispod praga od 3:1 iz WCAG 1.4.11. Canvas je to namjerno spustio s `#606060` (3.11:1). Prolazi jer svaka kontrola nosi vlastiti tekst ili ikonu visokog kontrasta — obrub pojačava, ne identificira. Hover diže obrub na `ink`, focus crta prsten. **Paziti na neaktivne filter pillove**: tamo je obrub najveći dio onoga što gumb razlikuje od riječi.
@@ -246,7 +252,10 @@ src/
     images.ts      # URL-ovi varijanti, srcset
   data/gallery.json # manifest, baked u build
   styles/theme.css # design tokeni
-scripts/           # build-media.mjs — originali -> varijante + manifest
+scripts/
+  build-media.mjs  # originali -> varijante + manifest
+  shoot.mjs        # snimi stranicu na tri veličine ekrana, izmjeri layout
+  rasterize.mjs    # SVG -> PNG preko instaliranog Chromea
 media-src/         # originali za seed (Damirovi idu ovdje)
 worker/            # Cloudflare Worker: /api/admin/*, /api/me
 content/           # statički hrvatski tekstovi (o-meni, kontakt) — uređuju se u kodu

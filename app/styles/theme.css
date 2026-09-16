@@ -179,8 +179,8 @@
   --spacing-md: 24px;
   --spacing-lg: 40px;
   --spacing-xl: clamp(36px, calc(36px + 28 * (100vw - 390px) / 1050), 64px);
-  --spacing-2xl: clamp(48px, calc(48px + 56 * (100vw - 390px) / 1050), 104px);
-  --spacing-3xl: clamp(72px, calc(72px + 96 * (100vw - 390px) / 1050), 168px);
+  --spacing-2xl: clamp(40px, calc(40px + 32 * (100vw - 390px) / 1050), 72px);
+  --spacing-3xl: clamp(56px, calc(56px + 56 * (100vw - 390px) / 1050), 112px);
   /* Page gutter and header height are fixed by the design, not free
      choices — they line the wordmark up with the photo edges. */
   --spacing-gutter: clamp(20px, calc(20px + 20 * (100vw - 390px) / 1050), 40px);

@@ -23,7 +23,7 @@ export function Contact() {
   return (
     <section
       id="kontakt"
-      className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-3xl"
+      className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-2xl"
     >
       <div className="flex flex-col gap-lg">
         <SectionTitle>javi se</SectionTitle>

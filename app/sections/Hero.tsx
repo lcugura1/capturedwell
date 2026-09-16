@@ -27,7 +27,7 @@ export function Hero() {
           user scrolled — which is the thing we are fixing. */}
       <div id="vrh" className="flex min-h-svh flex-col">
         <section className="relative min-h-[50svh] flex-1 overflow-hidden">
-          {hero && <Photo photo={hero} sizes="100vw" priority className="size-full object-cover" />}
+          {hero && <Photo photo={hero} sizes="100vw" fill priority />}
           {/* Scrim under the header only: the nav has to stay legible over a
               bright photo without dimming the photograph as a whole. */}
           <div

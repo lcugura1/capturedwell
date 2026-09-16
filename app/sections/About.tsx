@@ -10,13 +10,14 @@ export function About() {
   return (
     <section
       id="o-meni"
-      className="grid scroll-mt-header grid-cols-1 gap-photo-gap pt-3xl lg:grid-cols-2"
+      className="grid scroll-mt-header grid-cols-1 gap-photo-gap pt-2xl lg:grid-cols-2"
     >
-      <div className="h-[min(70vh,860px)] bg-surface">
+      <div className="relative h-[min(70vh,860px)] bg-surface">
         {portrait ? (
           <Photo
             photo={portrait}
             kind="page"
+            fill
             alt={`${SITE.owner} u studiju, sjedi ispred bež pozadine`}
             sizes="(max-width: 1024px) 100vw, 50vw"
           />

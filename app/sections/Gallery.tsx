@@ -29,7 +29,7 @@ export function Gallery() {
   const photos = photosInCategory(gallery, category)
 
   return (
-    <section id="galerija" className="scroll-mt-header pt-3xl">
+    <section id="galerija" className="scroll-mt-header pt-2xl">
       <div className="flex flex-col items-start justify-between gap-lg px-gutter pb-xl lg:flex-row lg:items-end">
         <SectionTitle>{`${active.name}.`}</SectionTitle>
         <nav aria-label="Kategorije" className="flex flex-wrap gap-xs pb-2">

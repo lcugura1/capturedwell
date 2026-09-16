@@ -5,7 +5,8 @@
 | Fajl | Što je |
 |---|---|
 | `capturedwell.png` | original od Damira, 500 × 500, wordmark ~350 px širine |
-| `capturedwell-logo.svg` | **ovo koristimo** — vektoriziran iz PNG-a, 7.2 KB (3.1 KB gzipano) |
+| `capturedwell-logo.svg` | **ovo koristimo** — vektoriziran iz PNG-a |
+| `capturedwell-mark.svg` | kvadratni znak za favicon: samo slovo `c` iz logotipa |
 
 SVG je jedan `<path>` s `fill="currentColor"`, viewBox `0 0 1000 155.8`.
 Boja se postavlja CSS-om (`color`), pa isti fajl radi i bijel na tamnoj pozadini
@@ -29,6 +30,20 @@ antialias rub — oblici su identični.
 
 Blur (`-f 12`) je ključan. Bez njega potrace prati i šum antialiasa, pa ispadne
 625 nodova i **lošija** vjernost. S blurom: 253 noda, manji fajl, veća točnost.
+
+### Točka je postala podvlaka
+
+Slova su Damirova, interpunkcija je naša. Vektorizirana točka je izvađena iz putanje, a na njeno mjesto nacrtana podvlaka — u debljini poteza izmjerenoj sa stabala slova `l` (24.8), spuštena u prostor ispod bazne linije koji rep slova `p` ionako zauzima. Zato se čita kao dio istog slovopisa, a ne kao nalijepljen znak.
+
+### Favicon nije wordmark
+
+`capturedwell-mark.svg` je samo slovo `c`. Wordmark ima omjer 6.7:1 — u kvadratnoj ikoni od 16 px bio bi tri piksela visok i čitao bi se kao mrlja. `c` je autentičan oblik iz Damirovog logotipa i preživi tu veličinu.
+
+Varijanta „c + podvlaka" je isprobana i neupotrebljiva: njih dvoje stoje na suprotnim krajevima wordmarka, pa im zajednički okvir stisne slovo u ništa.
+
+```sh
+node scripts/rasterize.mjs public/favicon.svg public/icon 32 180
+```
 
 ### Ako Damir ikad nađe originalni vektor
 

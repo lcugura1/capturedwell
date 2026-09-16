@@ -23,6 +23,7 @@ export function Photo({
   alt,
   sizes,
   kind = 'img',
+  fill = false,
   priority = false,
   className = '',
 }: {
@@ -31,6 +32,22 @@ export function Photo({
   alt?: string
   sizes: string
   kind?: Kind
+  /**
+   * Let the parent decide the box and crop the photo into it.
+   *
+   * Without this the photo always sizes itself from its own ratio, which
+   * is right for a grid but wrong for the hero, where the height is
+   * whatever the viewport has left. Setting `height: 100%` is not enough:
+   * <picture> is an inline element with no definite height, so the
+   * percentage never resolves and `aspect-ratio` silently takes over —
+   * which is exactly how the hero grew past the fold. Absolute
+   * positioning skips the percentage chain entirely.
+   *
+   * The parent must be positioned. There is no aspect-ratio to reserve
+   * the box in this mode, and none is needed: the parent already has a
+   * height before the photo arrives, so there is nothing to shift.
+   */
+  fill?: boolean
   /** Set on the one photo above the fold. Never on more than one. */
   priority?: boolean
   className?: string
@@ -38,7 +55,7 @@ export function Photo({
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <picture>
+    <picture className={fill ? 'absolute inset-0 block size-full' : undefined}>
       <source type="image/avif" srcSet={srcSet(photo, 'avif', kind)} sizes={sizes} />
       <source type="image/webp" srcSet={srcSet(photo, 'webp', kind)} sizes={sizes} />
       <img
@@ -54,11 +71,10 @@ export function Photo({
         onLoad={() => setLoaded(true)}
         className={`size-full object-cover ${className}`}
         style={{
-          // The intrinsic ratio reserves the right box before the photo
-          // arrives, which is what keeps layout shift at zero. A parent
-          // that sets its own height (the hero, the About portrait) wins
-          // via `size-full`, so this only governs the free-standing case.
-          aspectRatio: aspectOf(photo),
+          // Reserves the right box before the photo arrives, which is what
+          // keeps layout shift at zero. Skipped under `fill`, where the
+          // parent owns the box and this would fight it.
+          aspectRatio: fill ? undefined : aspectOf(photo),
           backgroundImage: loaded ? undefined : `url("${photo.lqip}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',

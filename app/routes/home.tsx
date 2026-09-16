@@ -42,7 +42,7 @@ export default function Home() {
         <Gallery />
         {/* The section-end dot from the style tile, used here as the seam
             between the work and the person who made it. */}
-        <div className="flex justify-center py-2xl">
+        <div className="flex justify-center py-xl">
           <Dot size="lg" className="bg-ink" />
         </div>
         <About />
