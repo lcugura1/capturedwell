@@ -229,6 +229,15 @@ Mjeri se po elementima, ne po `scrollWidth`. `fixed` zaglavlje ne širi dokument
 
 Postoji jer su dva layout buga prošla upravo zato što su i markup i CSS izgledali ispravno odvojeno: hero je prelazio pregib, a `<picture>` je tiho ignorirao `height: 100%` — inline element nema definiranu visinu pa se postotak ne razriješi i `aspect-ratio` preuzme. Nijedno se ne vidi iz terminala.
 
+**Staklo i squircle su progresivna poboljšanja**
+
+Oboje je **samo Chromium** (~65 % korisnika), bez najave iz Safarija i Firefoxa. Zato se oboje piše dvoslojno:
+
+- `.glass` prvo deklarira `backdrop-filter: blur() saturate()` sam za sebe, pa tek unutar `@supports` dodaje `url(#liquid-glass)`. Bez tog reda Safari odbacuje **cijelu** deklaraciju i ostaje bez ikakvog zamućenja.
+- `.squircle` nosi oblik u `border-radius`, a `corner-shape: superellipse(2)` ga samo profinjuje gdje se razumije.
+
+Pozadina stakla je **78 % neprozirna, namjerno.** Efekt je efekt, ali tekst na njemu i dalje mora proći 4.5:1 preko bilo koje fotografije — a ovdje je iza njega uvijek fotografija.
+
 **Pristupačnost (nije opcionalna)**
 - Kontrast tekst/pozadina ≥ 4.5:1.
 - **Iznimka, svjesna:** obrub kontrola je `#3a3a3a` = **1.72:1**, ispod praga od 3:1 iz WCAG 1.4.11. Canvas je to namjerno spustio s `#606060` (3.11:1). Prolazi jer svaka kontrola nosi vlastiti tekst ili ikonu visokog kontrasta — obrub pojačava, ne identificira. Hover diže obrub na `ink`, focus crta prsten. **Paziti na neaktivne filter pillove**: tamo je obrub najveći dio onoga što gumb razlikuje od riječi.

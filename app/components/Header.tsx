@@ -69,12 +69,13 @@ export function Header({ active }: { active: string | null }) {
     }
   }, [open])
 
-  const solid = scrolled || open
-
   return (
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ease-out-soft ${
-        solid ? 'bg-bg/95 backdrop-blur-sm' : 'bg-transparent'
+        // Glass once it is over content, transparent over the hero. The
+        // open menu no longer tints the header: it is its own pane now, and
+        // a second wash behind it flattened the effect.
+        scrolled ? 'glass' : 'bg-transparent'
       }`}
     >
       <div className="flex h-header items-center justify-between px-gutter">
@@ -108,11 +109,23 @@ export function Header({ active }: { active: string | null }) {
         </button>
       </div>
 
+      {/* A floating card, not a full-width drawer. The old panel spanned
+          the header and swallowed half the hero photograph; this is sized
+          to its three labels and tucked under the button that opened it.
+
+          Kept mounted and hidden with `inert` rather than `hidden`:
+          `hidden` is `display: none`, which cancels the transition, so the
+          menu would vanish instead of leaving. `inert` takes it out of the
+          tab order and the accessibility tree just as thoroughly. */}
       <div
         id={panelId}
         ref={panelRef}
-        hidden={!open}
-        className="border-t border-line px-gutter pb-md sm:hidden"
+        inert={!open}
+        data-open={open ? '' : undefined}
+        className={
+          'menu-panel glass squircle absolute right-gutter top-[calc(100%-1.25rem)] z-10 ' +
+          'w-[min(11rem,calc(100vw-2*var(--spacing-gutter)))] origin-top-right p-xs sm:hidden'
+        }
       >
         <nav className="flex flex-col">
           {SECTIONS.map(({ id, label }) => (
@@ -121,9 +134,12 @@ export function Header({ active }: { active: string | null }) {
               href={`#${id}`}
               onClick={() => setOpen(false)}
               aria-current={active === id ? 'true' : undefined}
-              className={`flex min-h-12 items-center gap-xs text-lead transition-colors duration-150 ease-out-soft ${
-                active === id ? 'text-ink' : 'text-ink-muted'
-              }`}
+              // Full ink, not the muted tone the desktop nav uses: this
+              // text sits on glass over a photograph, and the muted tone
+              // was only ever measured against flat background.
+              // min-h-11 is 44px — the floor for a tap target. The type
+              // came down with the panel, the target did not.
+              className="flex min-h-11 items-center gap-xs px-sm text-nav text-ink transition-opacity duration-150 ease-out-soft hover:opacity-70"
             >
               {active === id && <Dot size="md" className="bg-ink" />}
               <span>{label}</span>

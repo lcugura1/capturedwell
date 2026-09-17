@@ -10,6 +10,7 @@ import type { LinksFunction } from 'react-router'
 import { SITE } from '~/lib/site'
 import { Layout as SiteLayout } from '~/components/Layout'
 import { ButtonLink } from '~/components/Button'
+import { GlassFilter } from '~/components/GlassFilter'
 import './styles/theme.css'
 import fontUrl from '/fonts/jost-latin-ext.woff2?url'
 import displayFontUrl from '/fonts/alfa-slab-latin-ext.woff2?url'
@@ -56,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
       </head>
       <body>
+        <GlassFilter />
         {children}
         <ScrollRestoration />
         <Scripts />
