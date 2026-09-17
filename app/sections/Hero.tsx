@@ -1,5 +1,6 @@
 import { Photo } from '~/components/Photo'
-import { SectionLabel, StretchedHeading } from '~/components/Layout'
+import { StretchedHeading } from '~/components/Layout'
+import { Dot } from '~/components/Dot'
 import { MailLink } from '~/components/MailLink'
 import { scrollToSection } from '~/lib/scroll-to-section'
 import { Mail } from '~/components/icons'
@@ -47,10 +48,21 @@ export function Hero() {
       </div>
 
       <section className="grid grid-cols-1 gap-md px-gutter pb-2xl pt-xl lg:grid-cols-12" data-reveal>
-        <div className="lg:col-span-4">
-          <SectionLabel>
-            {SITE.owner.toLowerCase()}, {SITE.role}
-          </SectionLabel>
+        {/* A colophon rather than a credit line.
+            The name is already on this page four times — here, twice in
+            About and once in the footer — so repeating it fifth would fill
+            the column and say nothing. These three say something, each of
+            them straight out of Damir's own copy, and set in the display
+            face they hold their side of the grid instead of leaving it
+            blank. Deliberately a step below the section titles: it belongs
+            to the brand's voice without competing with them. */}
+        <div className="flex flex-col gap-2.5 lg:col-span-4">
+          <Dot size="md" />
+          <p className="m-0 font-display text-h2 leading-[1.1]">
+            <span className="block text-retro-cream">{SITE.role}</span>
+            <span className="block text-retro-mustard">{SITE.city}</span>
+            <span className="block text-retro-teal">sedam godina</span>
+          </p>
         </div>
         <div className="flex flex-col gap-lg lg:col-span-7 lg:col-start-6">
           <p className="m-0 text-lead text-pretty">
