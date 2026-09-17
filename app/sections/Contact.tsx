@@ -23,7 +23,9 @@ export function Contact() {
   return (
     <section
       id="kontakt"
-      className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-2xl"
+      // No top padding: the section break above owns that gap. See
+      // components/SectionBreak.tsx.
+      className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl"
     >
       <div className="flex flex-col gap-lg" data-reveal>
         <SectionTitle>javi se</SectionTitle>

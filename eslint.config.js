@@ -40,6 +40,7 @@ export default tseslint.config(
         window: 'readonly',
         requestAnimationFrame: 'readonly',
         setTimeout: 'readonly',
+        getComputedStyle: 'readonly',
       },
     },
   },

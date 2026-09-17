@@ -31,11 +31,17 @@ export function Gallery() {
   return (
     <section id="galerija" className="scroll-mt-header pt-2xl">
       <div
-        className="flex flex-col items-start justify-between gap-lg px-gutter pb-xl lg:flex-row lg:items-end"
+        className="flex flex-col items-start justify-between gap-md px-gutter pb-lg lg:flex-row lg:items-end lg:gap-lg lg:pb-xl"
         data-reveal
       >
         <SectionTitle>{`${active.name}.`}</SectionTitle>
-        <nav aria-label="Kategorije" className="flex flex-wrap gap-xs pb-2">
+        {/* One scrolling strip on a phone, a plain row once there is width
+            for it. `shrink-0` on the pills so the strip scrolls instead of
+            squeezing them into unreadable slivers. */}
+        <nav
+          aria-label="Kategorije"
+          className="rail -mb-1 flex w-full gap-xs pb-1 lg:m-0 lg:w-auto lg:flex-wrap lg:overflow-visible lg:p-0 lg:pb-2"
+        >
           {CATEGORIES.map((c) => {
             const isActive = c.id === category
             return (
@@ -49,7 +55,7 @@ export function Gallery() {
                   setOpenAt(null)
                 }}
                 aria-pressed={isActive}
-                className={`flex h-10 items-center rounded-pill px-5 text-label transition-colors duration-150 ease-out-soft ${
+                className={`flex h-10 shrink-0 items-center rounded-pill px-5 text-label transition-colors duration-150 ease-out-soft ${
                   isActive
                     ? 'bg-solid text-bg'
                     : 'border border-line-strong text-ink-muted hover:border-ink hover:text-ink'

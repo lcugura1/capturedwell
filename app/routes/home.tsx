@@ -1,7 +1,7 @@
 import type { MetaFunction } from 'react-router'
 import { Header, SECTIONS } from '~/components/Header'
 import { Footer } from '~/components/Footer'
-import { Dot } from '~/components/Dot'
+import { SectionBreak } from '~/components/SectionBreak'
 import { Hero } from '~/sections/Hero'
 import { Gallery } from '~/sections/Gallery'
 import { About } from '~/sections/About'
@@ -42,12 +42,9 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Gallery />
-        {/* The section-end dot from the style tile, used here as the seam
-            between the work and the person who made it. */}
-        <div className="flex justify-center py-xl">
-          <Dot size="lg" className="bg-ink" />
-        </div>
+        <SectionBreak />
         <About />
+        <SectionBreak />
         <Contact />
       </main>
       <Footer />

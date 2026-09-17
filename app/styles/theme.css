@@ -129,9 +129,11 @@
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
 
-  /* Section titles. Smaller than --text-display: a slab this heavy at
-     136px stops being a heading and becomes a wall. */
-  --text-section: clamp(2.125rem, calc(2.125rem + 4.375 * (100vw - 24.375rem) / 65.625), 6.5rem);
+  /* Section titles. Still smaller than --text-display — a slab this heavy
+     set as large as the wordmark stops being a heading and becomes a wall
+     — but the phone end was timid: at 34px the one piece of personality on
+     a phone screen was the same size as a paragraph. */
+  --text-section: clamp(2.875rem, calc(2.875rem + 4.375 * (100vw - 24.375rem) / 65.625), 7.25rem);
   --text-section--line-height: 0.95;
   --text-section--letter-spacing: -0.01em;
   --text-section--font-weight: 400;
@@ -291,9 +293,10 @@
    * up the displacement map on top, which is what turns frost into a
    * surface that bends what is behind it.
    *
-   * The inset hairline is the lit edge: on real glass the top rim catches
-   * the light. One pixel, and white at a third opacity so it reads as a
-   * highlight rather than a border.
+   * The lit edge is a separate class. On a floating pane the top rim
+   * catching the light is the whole tell, but on a bar pinned to the top of
+   * the screen there is no rim to catch anything — it just reads as a thin
+   * white line across the top of the phone, which is what it looked like.
    */
   .glass {
     /* Mostly opaque on purpose. Glass is the effect, but the text on it
@@ -302,6 +305,12 @@
        ink lands at 13.5:1 over the worst case, a white wedding dress. */
     background: color-mix(in srgb, var(--color-bg) 78%, transparent);
     backdrop-filter: blur(0.75rem) saturate(180%);
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.45);
+  }
+
+  /* One pixel, white at a third opacity so it reads as a highlight rather
+     than a border. Only for panes that float. */
+  .glass-rim {
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.36),
       0 1.5rem 3rem rgb(0 0 0 / 0.45);
@@ -311,6 +320,34 @@
     .glass {
       backdrop-filter: url(#liquid-glass) blur(0.625rem) saturate(180%);
     }
+  }
+
+  /**
+   * A row that scrolls sideways inside itself.
+   *
+   * For the category filter on a phone: four Croatian labels will not fit
+   * 390px, and wrapping them to a second line costs a whole row of height
+   * on the screen with the least of it. Scrolling the strip is the familiar
+   * phone pattern, and it is contained — the page itself still cannot pan,
+   * which is the rule this does not break.
+   */
+  .rail {
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    /* Bleed to both edges so the strip reads as continuing off-screen
+       rather than being clipped by the gutter, then pad the content back
+       in so the first and last pill still line up with everything else. */
+    margin-inline: calc(-1 * var(--spacing-gutter));
+    padding-inline: var(--spacing-gutter);
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail > * {
+    scroll-snap-align: start;
   }
 
   /**

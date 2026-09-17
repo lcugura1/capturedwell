@@ -88,11 +88,21 @@ for (const width of WIDTHS) {
     () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
   )
   const worst = await page.evaluate((vw) => {
+    // Content inside a sideways scroller is meant to extend past its box —
+    // that is what makes it scroll. Only content that pushes the page
+    // itself counts.
+    const inRail = (el) => {
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        const x = getComputedStyle(p).overflowX
+        if (x === 'auto' || x === 'scroll') return true
+      }
+      return false
+    }
     const out = []
     for (const el of document.querySelectorAll('*')) {
       const r = el.getBoundingClientRect()
       if (r.width === 0) continue
-      if (r.right > vw + 1)
+      if (r.right > vw + 1 && !inRail(el))
         out.push({
           over: Math.round(r.right - vw),
           tag: el.tagName.toLowerCase(),
@@ -101,6 +111,15 @@ for (const width of WIDTHS) {
     }
     return out.sort((a, b) => b.over - a.over).slice(0, 2)
   }, width)
+
+  // Belt as well as braces: whatever the elements say, the document must
+  // not be pannable.
+  const docWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+  if (docWidth > width + 1) {
+    overflow += 1
+    console.log(`${String(width).padStart(5)}px  DOCUMENT SCROLLS (${docWidth})`)
+  }
+
   if (worst.length > 0) {
     overflow += 1
     console.log(`${String(width).padStart(5)}px  OVERFLOWS`)

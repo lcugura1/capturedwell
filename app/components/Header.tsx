@@ -123,7 +123,7 @@ export function Header({ active }: { active: string | null }) {
         inert={!open}
         data-open={open ? '' : undefined}
         className={
-          'menu-panel glass squircle absolute right-gutter top-[calc(100%-1.25rem)] z-10 ' +
+          'menu-panel glass glass-rim squircle absolute right-gutter top-[calc(100%-1.25rem)] z-10 ' +
           'w-[min(11rem,calc(100vw-2*var(--spacing-gutter)))] origin-top-right p-xs sm:hidden'
         }
       >

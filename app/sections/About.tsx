@@ -8,11 +8,19 @@ const portrait = (pageImages as Record<string, Renderable>)['damir']
 
 export function About() {
   return (
+    // No top padding. The dot that closes the gallery already owns the gap
+    // between the two sections, and adding a step on top of it put 64px
+    // above the dot and 136px below — the divider sat off-centre in its own
+    // space. Contact keeps its padding because nothing precedes it.
     <section
       id="o-meni"
-      className="grid scroll-mt-header grid-cols-1 gap-photo-gap pt-2xl lg:grid-cols-2"
+      className="grid scroll-mt-header grid-cols-1 gap-photo-gap lg:grid-cols-2"
     >
-      <div className="relative h-[min(70vh,53.75rem)] bg-surface">
+      {/* Shorter on a phone. At 70vh the portrait filled the screen and
+          pushed everything Damir actually says below the fold, so the
+          section read as a photograph with a caption somewhere underneath
+          it. */}
+      <div className="relative h-[min(56svh,53.75rem)] bg-surface lg:h-[min(70vh,53.75rem)]">
         {portrait ? (
           <Photo
             photo={portrait}
@@ -27,9 +35,15 @@ export function About() {
           </div>
         )}
       </div>
-      <div className="flex flex-col justify-end gap-lg px-gutter pb-xs lg:pl-xl" data-reveal>
+      <div
+        className="flex flex-col justify-end gap-md px-gutter pb-xs pt-lg lg:gap-lg lg:pl-xl lg:pt-0"
+        data-reveal
+      >
         <SectionTitle>o meni</SectionTitle>
-        <p className="m-0 text-h2 text-ink">{SITE.owner.toLowerCase()}.</p>
+        {/* Tucked up against the title rather than given its own step of
+            air: the two are one unit, and on a phone the gap between them
+            was reading as a section break. */}
+        <p className="-mt-2 m-0 text-h2 text-ink lg:mt-0">{SITE.owner.toLowerCase()}.</p>
         <div className="flex max-w-[32.5rem] flex-col gap-5 text-body text-ink-body">
           <p className="m-0 text-pretty">
             Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
