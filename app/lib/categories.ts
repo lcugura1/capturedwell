@@ -11,12 +11,14 @@
  * analytics event or a future landing page. Slugs carry no diacritics on
  * purpose: `vjenčanja` becomes percent-encoded noise the moment it leaves
  * the browser.
+ *
+ * Names stay lowercase, as everything in the brand's own voice does.
  */
 export const CATEGORIES = [
   { id: 'weddings', slug: 'vjencanja', name: 'vjenčanja' },
   { id: 'lifestyle', slug: 'lifestyle', name: 'lifestyle' },
-  { id: 'events', slug: 'dogadaji', name: 'događaji' },
-  { id: 'studio', slug: 'studio', name: 'studio' },
+  { id: 'products', slug: 'proizvodi', name: 'proizvodi' },
+  { id: 'events', slug: 'eventi', name: 'eventi' },
 ] as const
 
 export type Category = (typeof CATEGORIES)[number]

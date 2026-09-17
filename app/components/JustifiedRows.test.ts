@@ -4,7 +4,7 @@ import type { Photo } from '~/lib/gallery-types'
 
 const p = (id: string, w: number, h: number): Photo => ({
   id,
-  category: 'studio',
+  category: 'products',
   order: 0,
   width: w,
   height: h,

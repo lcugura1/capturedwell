@@ -31,9 +31,16 @@ const PREFIX = {
   vjencanje: 'weddings',
   vjencanja: 'weddings',
   lifestyle: 'lifestyle',
+  proizvodi: 'products',
+  proizvod: 'products',
+  // The seed photographs are studio portraits and predate the category
+  // being renamed; the prefix still resolves so they keep working until
+  // Damir's own product shots replace them.
+  studio: 'products',
+  eventi: 'events',
+  event: 'events',
   dogadaji: 'events',
   dogadaj: 'events',
-  studio: 'studio',
 }
 
 /**

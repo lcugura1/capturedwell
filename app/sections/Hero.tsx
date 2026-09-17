@@ -76,8 +76,7 @@ export function Hero() {
         </ul>
         <div className="flex flex-col gap-lg lg:col-span-7 lg:col-start-6">
           <p className="m-0 text-lead text-pretty">
-            Vjenčanja, lifestyle, događaji i studio. Fotografiram ljude onakve kakvi
-            jesu kad zaborave na objektiv.
+            Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.
           </p>
           <div className="flex flex-wrap gap-3">
             <a

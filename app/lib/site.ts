@@ -1,3 +1,5 @@
+import { CATEGORIES } from './categories'
+
 /**
  * Everything about the business that is not a photo.
  *
@@ -25,12 +27,11 @@ export const SITE = {
   /**
    * The occasions Damir shoots, in the order they appear in the hero.
    *
-   * Not the same list as the gallery's four categories, and deliberately
-   * so — this answers "is this photographer for me", which is the first
-   * question a visitor has, while the categories organise the work that
-   * already exists. They will need reconciling before launch.
+   * Kept identical to the gallery's categories on purpose. A visitor who
+   * reads one of these and then cannot find it in the gallery below has
+   * been told something the site does not back up.
    */
-  shoots: ['vjenčanja', 'krštenja', 'proizvodi', 'studio'],
+  shoots: CATEGORIES.map((c) => c.name),
 } as const
 
 export const EMAIL_TEXT = `${SITE.email.user}@${SITE.email.domain}`

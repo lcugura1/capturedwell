@@ -21,14 +21,14 @@
 - `<html lang="hr">`.
 - Imena varijabli, funkcija, fajlova, commit poruke i komentari u kodu → **engleski**. Hrvatski je samo ono što korisnik vidi.
 
-**Kategorije galerije** — fiksne, četiri. Nema dodavanja kroz admin; nova kategorija znači promjenu koda.
+**Kategorije galerije** — fiksne, četiri. `CATEGORIES` je jedini izvor: hero popis, meta opis i filteri svi ga izvode iz njega, pa preimenovanje ne može ostaviti zaostali tekst negdje drugdje. Nema dodavanja kroz admin; nova kategorija znači promjenu koda.
 
 | Naziv (UI) | `id` u kodu | URL slug |
 |---|---|---|
-| Vjenčanja | `weddings` | `/galerija/vjencanja` |
-| Lifestyle | `lifestyle` | `/galerija/lifestyle` |
-| Događaji | `events` | `/galerija/dogadaji` |
-| Studio | `studio` | `/galerija/studio` |
+| vjenčanja | `weddings` | `vjencanja` |
+| lifestyle | `lifestyle` | `lifestyle` |
+| proizvodi | `products` | `proizvodi` |
+| eventi | `events` | `eventi` |
 
 URL slugovi su bez dijakritike (`vjencanja`, `dogadaji`) — dijakritika u URL-u znači percent-encoding i ružne linkove pri dijeljenju. Mapiranje id ↔ slug ↔ hrvatski naziv živi na jednom mjestu: `src/lib/categories.ts`.
 
@@ -356,7 +356,7 @@ Bez forme. `mailto:` link, plus telefon i Instagram ako Damir želi.
 
 ## 11. Preostalo za dogovoriti
 
-- **Popis snimanja i kategorije galerije se ne poklapaju.** Hero kaže `vjenčanja, krštenja, proizvodi, studio` (`SITE.shoots`), a filter galerije nudi `vjenčanja, lifestyle, događaji, studio` (`CATEGORIES`). Posjetitelj koji pročita „proizvodi" pa u galeriji ne nađe nijednu fotografiju proizvoda ima pravo biti zbunjen. Riješiti prije lansiranja — ili uskladiti kategorije s uslugama, ili jasno razdvojiti „što radim" od „što je u galeriji".
+- **Sample fotke pod „proizvodi" su zapravo studijski portreti.** Kategorija je preimenovana, a seed fotke su starije od toga; prefiks `studio-` u `build-media.mjs` i dalje se razrješava da ne puknu. Nestaje kad Damir da prave fotografije proizvoda.
 
 Ovo blokira Fazu 1 (dizajn), riješiti kroz `/grill-me`:
 

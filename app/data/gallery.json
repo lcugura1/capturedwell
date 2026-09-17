@@ -1,6 +1,6 @@
 {
-  "version": 53,
-  "updatedAt": "2026-09-17T11:17:32.394Z",
+  "version": 59,
+  "updatedAt": "2026-09-17T11:22:24.655Z",
   "photos": [
     {
       "id": "dogadaji-klub",
@@ -90,7 +90,7 @@
     },
     {
       "id": "studio-dvije",
-      "category": "studio",
+      "category": "products",
       "order": 0,
       "width": 480,
       "height": 600,
@@ -102,7 +102,7 @@
     },
     {
       "id": "studio-profil",
-      "category": "studio",
+      "category": "products",
       "order": 1,
       "width": 960,
       "height": 960,

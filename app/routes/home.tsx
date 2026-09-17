@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => [
   {
     name: 'description',
     content:
-      'Vjenčanja, lifestyle, događaji i studio. Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.',
+      `${SHOOTS} Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.`,
   },
   { property: 'og:title', content: `${SITE.name} — ${SITE.owner}` },
   { property: 'og:type', content: 'website' },
@@ -24,6 +24,11 @@ export const meta: MetaFunction = () => [
 ]
 
 const SECTION_IDS = SECTIONS.map((s) => s.id)
+
+// The list of occasions, sentence-cased for the search result. Built from
+// the categories rather than typed out again: the last time it was typed
+// out it went stale the day they were renamed.
+const SHOOTS = `${SITE.shoots.join(', ').replace(/^./, (c) => c.toUpperCase())}.`
 
 /**
  * The whole site.

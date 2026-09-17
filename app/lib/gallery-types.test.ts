@@ -3,7 +3,7 @@ import { photosInCategory, aspect, type Gallery, type Photo } from './gallery-ty
 
 function photo(over: Partial<Photo> & Pick<Photo, 'id'>): Photo {
   return {
-    category: 'studio',
+    category: 'products',
     order: 0,
     width: 1000,
     height: 1000,
@@ -23,10 +23,10 @@ const gallery = (photos: Photo[]): Gallery => ({
 describe('photosInCategory', () => {
   it('keeps only the requested category', () => {
     const g = gallery([
-      photo({ id: 'a', category: 'studio' }),
+      photo({ id: 'a', category: 'products' }),
       photo({ id: 'b', category: 'events' }),
     ])
-    expect(photosInCategory(g, 'studio').map((p) => p.id)).toEqual(['a'])
+    expect(photosInCategory(g, 'products').map((p) => p.id)).toEqual(['a'])
   })
 
   it('sorts by order', () => {
@@ -34,7 +34,7 @@ describe('photosInCategory', () => {
       photo({ id: 'second', order: 2 }),
       photo({ id: 'first', order: 1 }),
     ])
-    expect(photosInCategory(g, 'studio').map((p) => p.id)).toEqual(['first', 'second'])
+    expect(photosInCategory(g, 'products').map((p) => p.id)).toEqual(['first', 'second'])
   })
 
   it('floats pinned photos above everything else, whatever their order', () => {
@@ -44,7 +44,7 @@ describe('photosInCategory', () => {
       photo({ id: 'newest', order: 1 }),
       photo({ id: 'keeper', order: 99, pinned: true }),
     ])
-    expect(photosInCategory(g, 'studio').map((p) => p.id)).toEqual(['keeper', 'newest'])
+    expect(photosInCategory(g, 'products').map((p) => p.id)).toEqual(['keeper', 'newest'])
   })
 })
 
