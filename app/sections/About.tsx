@@ -54,12 +54,9 @@ export function About() {
         <div className="flex max-w-[32.5rem] flex-col gap-5 text-body text-ink-body">
           <p className="m-0 text-pretty">
             Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
-            Fotografiram već sedam godina.
           </p>
           <p className="m-0 text-pretty">
-            Rodom sam iz Vinkovaca i magistrirao sam grafički dizajn — kreativnost
-            spajam s tehničkim znanjem i tako svakom projektu dajem vlastitu
-            perspektivu.
+            Radim s parovima, obiteljima i brendovima.
           </p>
         </div>
       </div>

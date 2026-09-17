@@ -8,6 +8,14 @@ import { gallery } from '~/lib/gallery'
 import { aspect } from '~/lib/gallery-types'
 import { SITE } from '~/lib/site'
 
+/** One retro tone per line, cycled. */
+const SHOOT_COLOURS = [
+  'text-retro-cream',
+  'text-retro-mustard',
+  'text-retro-rust',
+  'text-retro-teal',
+] as const
+
 /**
  * The hero photograph is the widest one in the gallery: a portrait crammed
  * into a full-bleed band gets cropped to almost nothing.
@@ -48,22 +56,24 @@ export function Hero() {
       </div>
 
       <section className="grid grid-cols-1 gap-md px-gutter pb-2xl pt-xl lg:grid-cols-12" data-reveal>
-        {/* A colophon rather than a credit line.
-            The name is already on this page four times — here, twice in
-            About and once in the footer — so repeating it fifth would fill
-            the column and say nothing. These three say something, each of
-            them straight out of Damir's own copy, and set in the display
-            face they hold their side of the grid instead of leaving it
-            blank. Deliberately a step below the section titles: it belongs
-            to the brand's voice without competing with them. */}
-        <div className="flex flex-col gap-2.5 lg:col-span-4">
-          <Dot size="md" />
-          <p className="m-0 font-display text-h2 leading-[1.1]">
-            <span className="block text-retro-cream">{SITE.role}</span>
-            <span className="block text-retro-mustard">{SITE.city}</span>
-            <span className="block text-retro-teal">sedam godina</span>
-          </p>
-        </div>
+        {/* What Damir shoots, stacked, in the display face.
+            The first thing a visitor needs is whether this photographer is
+            for them, and the fastest answer is the list of occasions. It
+            reads as a list rather than a sentence, and holds its side of
+            the grid instead of leaving it blank. Deliberately a step below
+            the section titles: same voice, no competition. */}
+        <ul className="m-0 flex list-none flex-col gap-2.5 p-0 lg:col-span-4">
+          {SITE.shoots.map((what, i) => (
+            <li key={what} className="flex items-center gap-2.5">
+              <Dot size="sm" className={SHOOT_COLOURS[i % SHOOT_COLOURS.length]} />
+              <span
+                className={`font-display text-h2 leading-none ${SHOOT_COLOURS[i % SHOOT_COLOURS.length]}`}
+              >
+                {what}
+              </span>
+            </li>
+          ))}
+        </ul>
         <div className="flex flex-col gap-lg lg:col-span-7 lg:col-start-6">
           <p className="m-0 text-lead text-pretty">
             Vjenčanja, lifestyle, događaji i studio. Fotografiram ljude onakve kakvi

@@ -22,6 +22,15 @@ export const SITE = {
   },
   /** PLACEHOLDER — used in the About page and the JSON-LD area served. */
   city: 'Zagreb',
+  /**
+   * The occasions Damir shoots, in the order they appear in the hero.
+   *
+   * Not the same list as the gallery's four categories, and deliberately
+   * so — this answers "is this photographer for me", which is the first
+   * question a visitor has, while the categories organise the work that
+   * already exists. They will need reconciling before launch.
+   */
+  shoots: ['vjenčanja', 'krštenja', 'proizvodi', 'studio'],
 } as const
 
 export const EMAIL_TEXT = `${SITE.email.user}@${SITE.email.domain}`

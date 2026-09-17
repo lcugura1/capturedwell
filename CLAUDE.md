@@ -356,6 +356,8 @@ Bez forme. `mailto:` link, plus telefon i Instagram ako Damir želi.
 
 ## 11. Preostalo za dogovoriti
 
+- **Popis snimanja i kategorije galerije se ne poklapaju.** Hero kaže `vjenčanja, krštenja, proizvodi, studio` (`SITE.shoots`), a filter galerije nudi `vjenčanja, lifestyle, događaji, studio` (`CATEGORIES`). Posjetitelj koji pročita „proizvodi" pa u galeriji ne nađe nijednu fotografiju proizvoda ima pravo biti zbunjen. Riješiti prije lansiranja — ili uskladiti kategorije s uslugama, ili jasno razdvojiti „što radim" od „što je u galeriji".
+
 Ovo blokira Fazu 1 (dizajn), riješiti kroz `/grill-me`:
 
 - Redoslijed kategorija u navigaciji (predloženo: Vjenčanja → Lifestyle → Događaji → Studio).
