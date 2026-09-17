@@ -219,6 +219,19 @@ clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
   - **Pozadina nije čista crna** (`#000`). Čisto bijelo na čistoj crnoj je naporno za čitanje i fotke izgledaju kao da lebde u praznini. Koristi near-black (oko `#0a0a0a`–`#111`), a tekst near-white umjesto `#fff`. Duži tekstovi (O meni) idu na sniženi opacitet, ne na punu bjelinu.
   - Kontrast i dalje ≥ 4.5:1 — provjeriti, ne pretpostaviti.
 
+**Otvaranje na telefonu**
+
+```sh
+npm run dev:phone                      # dev server, uživo, HMR
+npm run build && npm run preview:phone # produkcijski build
+```
+
+Oba ispišu mrežnu adresu (`http://192.168.x.x:port`). Telefon mora biti na **istoj Wi-Fi mreži**.
+
+Za ocjenu izgleda koristi `dev:phone`; za ocjenu **brzine** koristi `preview:phone` — dev bundle je neminificiran, nesplitan i bez kompresije, pa o vremenu učitavanja ne govori ništa.
+
+Ovo je ujedno jedini način da se vide Safari fallbackovi uživo: staklo bez refrakcije i obični zaobljeni rubovi umjesto squirclea.
+
 **Layout se provjerava u pregledniku, ne u glavi**
 
 `node scripts/shoot.mjs` (uz posluženi build) snimi stranicu na 1440×900, 1280×720 i 390×844, ispiše je li wordmark unutar prvog ekrana, i **prođe devet širina tražeći vodoravno prelijevanje**.

@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "media": "node scripts/build-media.mjs"
+    "media": "node scripts/build-media.mjs",
+    "dev:phone": "react-router dev --host",
+    "preview:phone": "node scripts/serve.mjs"
   },
   "dependencies": {
     "isbot": "^5",
