@@ -12,7 +12,7 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex h-header items-center px-gutter">
-        <a href="/" className="h-[18px] text-ink" aria-label="capturedwell — naslovnica">
+        <a href="/" className="h-[1.125rem] text-ink" aria-label="capturedwell — naslovnica">
           <Logo className="block h-full" />
         </a>
       </header>
@@ -26,7 +26,7 @@ export function Layout({ children }: { children: ReactNode }) {
 export function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center gap-2.5 text-label text-ink-subtle">
-      <span aria-hidden="true" className="size-[6px] rounded-pill bg-ink-subtle" />
+      <span aria-hidden="true" className="size-[0.375rem] rounded-pill bg-ink-subtle" />
       <span>{children}</span>
     </div>
   )

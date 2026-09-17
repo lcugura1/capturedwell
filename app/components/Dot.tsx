@@ -9,10 +9,10 @@
  *   lg (8px)  end of a section
  */
 const SIZES = {
-  xs: 'size-[4px]',
-  sm: 'size-[5px]',
-  md: 'size-[6px]',
-  lg: 'size-[8px]',
+  xs: 'size-[0.25rem]',
+  sm: 'size-[0.3125rem]',
+  md: 'size-[0.375rem]',
+  lg: 'size-[0.5rem]',
 } as const
 
 export function Dot({

@@ -47,7 +47,8 @@ export function JustifiedRows({
   const rows = rowsOf(photos, targetAspect)
 
   return (
-    <div className="flex flex-col gap-photo-gap">
+    // Rows arrive in sequence rather than as a block.
+    <div className="flex flex-col gap-photo-gap" data-reveal-stagger="0.07">
       {rows.map((row, i) => {
         const rowSum = row.reduce((total, p) => total + aspect(p), 0)
         return (

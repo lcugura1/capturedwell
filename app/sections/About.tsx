@@ -12,7 +12,7 @@ export function About() {
       id="o-meni"
       className="grid scroll-mt-header grid-cols-1 gap-photo-gap pt-2xl lg:grid-cols-2"
     >
-      <div className="relative h-[min(70vh,860px)] bg-surface">
+      <div className="relative h-[min(70vh,53.75rem)] bg-surface">
         {portrait ? (
           <Photo
             photo={portrait}
@@ -27,10 +27,10 @@ export function About() {
           </div>
         )}
       </div>
-      <div className="flex flex-col justify-end gap-lg px-gutter pb-xs lg:pl-xl">
+      <div className="flex flex-col justify-end gap-lg px-gutter pb-xs lg:pl-xl" data-reveal>
         <SectionTitle>o meni</SectionTitle>
         <p className="m-0 text-h2 text-ink">{SITE.owner.toLowerCase()}.</p>
-        <div className="flex max-w-[520px] flex-col gap-5 text-body text-ink-body">
+        <div className="flex max-w-[32.5rem] flex-col gap-5 text-body text-ink-body">
           <p className="m-0 text-pretty">
             Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
             Fotografiram već sedam godina.

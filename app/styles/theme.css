@@ -99,11 +99,18 @@
      Every display size below is a clamp() between a phone value and the
      canvas value, interpolated on viewport width.
 
-       clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
+       clamp(MIN, MIN + (MAX − MIN) × (100vw − 24.375rem) / 65.625, MAX)
 
-     390px is a phone, 1440px is the artboard the design was drawn on,
-     and 1050 is the distance between them. Below 390 and above 1440 the
-     clamp holds the ends flat.
+     24.375rem is a phone (390px at the default root size), 90rem is the
+     artboard the design was drawn on, and 65.625 is the distance between
+     them. Below and above, the clamp holds the ends flat.
+
+     Everything is in rem, not px, and that is not cosmetic. Page zoom
+     scales px text perfectly well, but a reader who has raised the
+     default font size in their browser settings gets nothing from a px
+     scale — the page ignores them. In rem the whole design grows with
+     that setting. The one exception below is where a value is a hairline
+     or a physical rendering detail rather than a size anyone reads.
 
      This is not polish. The canvas is a fixed 1440px frame, so every
      size in it is a number that happens to work at exactly that width —
@@ -117,85 +124,88 @@
      Display sizes are set by layout fit and stay as designed; the two
      reading sizes are bumped one notch so prose reads at the size it was
      approved at. Canvas values are noted for traceability. */
-  --text-display: clamp(40px, calc(40px + 96 * (100vw - 390px) / 1050), 136px);
+  --text-display: clamp(2.5rem, calc(2.5rem + 6 * (100vw - 24.375rem) / 65.625), 8.5rem);
   --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.02em;
   --text-display--font-weight: 700;
 
   /* Section titles. Smaller than --text-display: a slab this heavy at
      136px stops being a heading and becomes a wall. */
-  --text-section: clamp(34px, calc(34px + 70 * (100vw - 390px) / 1050), 104px);
+  --text-section: clamp(2.125rem, calc(2.125rem + 4.375 * (100vw - 24.375rem) / 65.625), 6.5rem);
   --text-section--line-height: 0.95;
   --text-section--letter-spacing: -0.01em;
   --text-section--font-weight: 400;
 
-  --text-h1: clamp(32px, calc(32px + 56 * (100vw - 390px) / 1050), 88px);
+  --text-h1: clamp(2rem, calc(2rem + 3.5 * (100vw - 24.375rem) / 65.625), 5.5rem);
   --text-h1--line-height: 1;
   --text-h1--letter-spacing: -0.015em;
   --text-h1--font-weight: 700;
 
-  --text-h2: clamp(26px, calc(26px + 14 * (100vw - 390px) / 1050), 40px);
+  --text-h2: clamp(1.625rem, calc(1.625rem + 0.875 * (100vw - 24.375rem) / 65.625), 2.5rem);
   --text-h2--line-height: 1.1;
   --text-h2--letter-spacing: -0.01em;
   --text-h2--font-weight: 600;
 
-  --text-lead: clamp(20px, calc(20px + 8 * (100vw - 390px) / 1050), 28px); /* canvas 26px */
+  --text-lead: clamp(1.25rem, calc(1.25rem + 0.5 * (100vw - 24.375rem) / 65.625), 1.75rem); /* canvas 26px */
   --text-lead--line-height: 1.45;
   --text-lead--font-weight: 400;
 
-  --text-body: clamp(18px, calc(18px + 3 * (100vw - 390px) / 1050), 21px); /* canvas 19px */
+  --text-body: clamp(1.125rem, calc(1.125rem + 0.1875 * (100vw - 24.375rem) / 65.625), 1.3125rem); /* canvas 19px */
   --text-body--line-height: 1.6;
   --text-body--font-weight: 400;
 
-  --text-field: 17px; /* contact rows */
+  --text-field: 1.0625rem; /* contact rows */
   --text-field--line-height: 1.4;
   --text-field--font-weight: 500;
 
-  --text-nav: 15px;
+  --text-nav: 0.9375rem;
   --text-nav--line-height: 1.2;
   --text-nav--font-weight: 500;
 
-  --text-label: 13px;
+  --text-label: 0.8125rem;
   --text-label--line-height: 1.2;
   --text-label--letter-spacing: 0.02em;
   --text-label--font-weight: 600;
 
-  --text-caption: 12px;
+  --text-caption: 0.75rem;
   --text-caption--line-height: 1.2;
   --text-caption--font-weight: 600;
 
   /* The wordmark set as text, in the footer. The header uses the real
      logo (the SVG in components/Logo.tsx); the footer sets it as type,
      which is why this token exists. */
-  --text-mark: clamp(20px, calc(20px + 6 * (100vw - 390px) / 1050), 26px);
+  --text-mark: clamp(1.25rem, calc(1.25rem + 0.375 * (100vw - 24.375rem) / 65.625), 1.625rem);
   --text-mark--line-height: 1;
   --text-mark--letter-spacing: -0.01em;
   --text-mark--font-weight: 700;
 
   /* ── spacing ──────────────────────────────────────────────────────── */
-  --spacing-2xs: 4px;
-  --spacing-xs: 8px;
-  --spacing-sm: 16px;
-  --spacing-md: 24px;
-  --spacing-lg: 40px;
-  --spacing-xl: clamp(36px, calc(36px + 28 * (100vw - 390px) / 1050), 64px);
-  --spacing-2xl: clamp(40px, calc(40px + 32 * (100vw - 390px) / 1050), 72px);
-  --spacing-3xl: clamp(56px, calc(56px + 56 * (100vw - 390px) / 1050), 112px);
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: clamp(2.25rem, calc(2.25rem + 1.75 * (100vw - 24.375rem) / 65.625), 4rem);
+  --spacing-2xl: clamp(2.5rem, calc(2.5rem + 2 * (100vw - 24.375rem) / 65.625), 4.5rem);
+  --spacing-3xl: clamp(3.5rem, calc(3.5rem + 3.5 * (100vw - 24.375rem) / 65.625), 7rem);
   /* Page gutter and header height are fixed by the design, not free
      choices — they line the wordmark up with the photo edges. */
-  --spacing-gutter: clamp(20px, calc(20px + 20 * (100vw - 390px) / 1050), 40px);
-  --spacing-header: clamp(72px, calc(72px + 24 * (100vw - 390px) / 1050), 96px);
+  --spacing-gutter: clamp(1.25rem, calc(1.25rem + 1.25 * (100vw - 24.375rem) / 65.625), 2.5rem);
+  --spacing-header: clamp(4.5rem, calc(4.5rem + 1.5 * (100vw - 24.375rem) / 65.625), 6rem);
   /* Photos sit 6px apart. Deliberately below the spacing scale: the
      grid should read as one surface, not as separate cards. */
-  --spacing-photo-gap: 6px;
+  --spacing-photo-gap: 0.375rem;
 
   /* ── radii ────────────────────────────────────────────────────────── */
   /* Pills and dots. Photos are never rounded. */
   --radius-pill: 999px;
-  --radius-focus: 2px;
+  --radius-focus: 0.125rem;
 
   /* ── motion ───────────────────────────────────────────────────────── */
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Reveals travel a little further than they fade, so the movement is
+     what you notice rather than the opacity. */
+  --reveal-rise: 1.5rem;
 }
 
 /**
@@ -209,6 +219,14 @@
 
 @layer base {
   html {
+    /* The scrollbar is part of the page, not the browser's furniture.
+       Mustard thumb on a recessed near-black track, picking up the same
+       accent the section titles use. `scrollbar-color` is the standard
+       property and now the one Chrome, Safari and Firefox all honour; the
+       ::-webkit rules below cover Safari versions that predate it. */
+    scrollbar-color: var(--color-retro-mustard) var(--color-bg-deep);
+    scrollbar-width: thin;
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     /* The menu scrolls to anchors on one long page, so the glide is the
@@ -230,10 +248,53 @@
     font-family: var(--font-sans);
   }
 
+  /* Older WebKit, which has no `scrollbar-color`. Scoped to the root
+     scroller: the thin overlay bars inside the page are not this. */
+  @supports not (scrollbar-color: auto) {
+    html::-webkit-scrollbar {
+      width: 0.625rem;
+    }
+    html::-webkit-scrollbar-track {
+      background: var(--color-bg-deep);
+    }
+    html::-webkit-scrollbar-thumb {
+      background: var(--color-retro-mustard);
+      border-radius: var(--radius-pill);
+      border: 0.1875rem solid var(--color-bg-deep);
+    }
+    html::-webkit-scrollbar-thumb:hover {
+      background: var(--color-retro-cream);
+    }
+  }
+
   /* The design leans on full-bleed photography; a stray inline gap under
      an image breaks the 6px rhythm between them. */
   img {
     display: block;
+  }
+
+  /**
+   * Sections rise into place as they come into view.
+   *
+   * Gated behind `.js`, which an inline script in <head> adds. Without
+   * that gate the starting state is `opacity: 0` in the served HTML, and
+   * a visitor whose JavaScript never arrives — a bad connection, a
+   * blocked bundle — gets a blank page instead of a photographer's
+   * portfolio. The prerendered HTML has to be readable on its own.
+   */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(var(--reveal-rise));
+    transition:
+      opacity 0.7s var(--ease-out-soft),
+      transform 0.7s var(--ease-out-soft);
+    /* Staggered by the hook, in seconds. */
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  .js [data-reveal][data-revealed] {
+    opacity: 1;
+    transform: none;
   }
 
   /* Visible, consistent, and matching the style tile: 2px ring, 3px off.
@@ -245,6 +306,13 @@
 
   /* Parallax and long transitions are decoration. Honour the setting. */
   @media (prefers-reduced-motion: reduce) {
+    /* Reveals must land visible, not just fast: zeroing the duration on an
+       element still at `opacity: 0` would leave it hidden forever. */
+    .js [data-reveal] {
+      opacity: 1;
+      transform: none;
+    }
+
     *,
     *::before,
     *::after {

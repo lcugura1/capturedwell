@@ -81,7 +81,7 @@ export function Header({ active }: { active: string | null }) {
         <a
           href="#vrh"
           onClick={() => setOpen(false)}
-          className="h-3.5 text-ink sm:h-[18px]"
+          className="h-3.5 text-ink sm:h-[1.125rem]"
           aria-label="capturedwell — na vrh"
         >
           <Logo className="block h-full" />
@@ -159,6 +159,9 @@ function NavLink({ id, label, active }: { id: string; label: string; active: boo
  * carries the label and the state.
  */
 function Burger({ open }: { open: boolean }) {
+  // 2px, not rem: this is a hairline, a rendering detail rather than a size
+  // anyone reads. Growing it with the reader's font setting would thicken
+  // the icon without making it any clearer.
   const bar = 'absolute h-[2px] w-5 bg-current transition-transform duration-200 ease-out-soft'
   return (
     <span aria-hidden="true" className="relative flex size-5 items-center justify-center">

@@ -14,7 +14,7 @@ export default function Admin() {
       <section className="flex flex-col gap-lg px-gutter py-3xl">
         <SectionLabel>administracija</SectionLabel>
         <h1 className="m-0 text-h2">još nije spremno.</h1>
-        <p className="m-0 max-w-[560px] text-body text-ink-body">
+        <p className="m-0 max-w-[35rem] text-body text-ink-body">
           Upload galerije dolazi u fazi 4: Cloudflare Access za prijavu, Worker za
           upis u R2, drag &amp; drop iz Findera.
         </p>

@@ -32,7 +32,7 @@ export function Hero() {
               bright photo without dimming the photograph as a whole. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-[180px] bg-gradient-to-b from-bg/55 to-transparent"
+            className="absolute inset-x-0 top-0 h-[11.25rem] bg-gradient-to-b from-bg/55 to-transparent"
           />
         </section>
 
@@ -45,7 +45,7 @@ export function Hero() {
         </section>
       </div>
 
-      <section className="grid grid-cols-1 gap-md px-gutter pb-2xl pt-xl lg:grid-cols-12">
+      <section className="grid grid-cols-1 gap-md px-gutter pb-2xl pt-xl lg:grid-cols-12" data-reveal>
         <div className="lg:col-span-4">
           <SectionLabel>
             {SITE.owner.toLowerCase()}, {SITE.role}

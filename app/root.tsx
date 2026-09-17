@@ -35,6 +35,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {/* Paints the browser chrome to match the page on mobile, so the
             dark site does not sit in a white frame. */}
         <meta name="theme-color" content="#0c0c0c" />
+        {/* Gates the reveal animations. Their starting state is
+            `opacity: 0`, so it must never reach a visitor whose JavaScript
+            does not arrive — this runs before first paint and only when
+            scripting is on. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <Meta />
         <Links />
         <style
@@ -69,7 +74,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
     <SiteLayout>
       <section className="flex flex-col items-center gap-xl px-gutter py-3xl text-center">
         <h1 className="m-0 text-h1">{is404 ? 'nema ničega ovdje.' : 'nešto je puklo.'}</h1>
-        <p className="m-0 max-w-[520px] text-lead text-ink-body">
+        <p className="m-0 max-w-[32.5rem] text-lead text-ink-body">
           {is404
             ? 'Stranica koju tražiš ne postoji ili je preseljena.'
             : `Dogodila se greška. Ako se ponovi, javi se na ${SITE.email.user}@${SITE.email.domain}.`}

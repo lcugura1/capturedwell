@@ -7,6 +7,7 @@ import { Gallery } from '~/sections/Gallery'
 import { About } from '~/sections/About'
 import { Contact } from '~/sections/Contact'
 import { useScrollSpy } from '~/hooks/useScrollSpy'
+import { useReveal } from '~/hooks/useReveal'
 import { SITE } from '~/lib/site'
 
 export const meta: MetaFunction = () => [
@@ -33,6 +34,7 @@ const SECTION_IDS = SECTIONS.map((s) => s.id)
  */
 export default function Home() {
   const active = useScrollSpy(SECTION_IDS)
+  useReveal()
 
   return (
     <div className="flex min-h-screen flex-col">

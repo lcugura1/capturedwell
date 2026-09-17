@@ -333,7 +333,7 @@ function GlyphButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`absolute font-display text-[clamp(48px,8vw,96px)] leading-none transition-[transform,opacity] duration-200 ease-out-soft hover:scale-110 active:scale-95 ${className}`}
+      className={`absolute font-display text-[clamp(3rem,8vw,6rem)] leading-none transition-[transform,opacity] duration-200 ease-out-soft hover:scale-110 active:scale-95 ${className}`}
     >
       <span aria-hidden="true">{children}</span>
     </button>

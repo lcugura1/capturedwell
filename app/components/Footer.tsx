@@ -35,7 +35,7 @@ export function Footer() {
         </MailLink>
         <span className="text-ink-subtle">© {new Date().getFullYear()}</span>
         <a href="/admin" aria-label="Administracija" className="flex size-6 items-center justify-center">
-          <span aria-hidden="true" className="size-[5px] rounded-pill bg-faint" />
+          <span aria-hidden="true" className="size-[0.3125rem] rounded-pill bg-faint" />
         </a>
       </div>
     </footer>

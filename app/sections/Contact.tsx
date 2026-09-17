@@ -25,7 +25,7 @@ export function Contact() {
       id="kontakt"
       className="flex scroll-mt-header flex-col gap-xl px-gutter pb-3xl pt-2xl"
     >
-      <div className="flex flex-col gap-lg">
+      <div className="flex flex-col gap-lg" data-reveal>
         <SectionTitle>javi se</SectionTitle>
         {/* The city is written out, not `{SITE.city}u`: gluing a Croatian
             case ending onto a token happens to work for Zagreb and breaks
@@ -35,7 +35,7 @@ export function Contact() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-md lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-md lg:grid-cols-12" data-reveal>
         <div className="flex flex-col items-start gap-xl lg:col-span-5">
           <p className="m-0 text-lead text-pretty">
             Za termine, upite i cijene najbrže je e-mailom.
