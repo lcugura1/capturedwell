@@ -364,6 +364,12 @@
     width: calc(100% + 2 * var(--spacing-gutter));
     margin-inline: calc(-1 * var(--spacing-gutter));
     padding-inline: var(--spacing-gutter);
+    /* Snapping aligns to the snapport, and `padding` does not move the
+       snapport — `scroll-padding` does. Without this the strip settled
+       twenty pixels in, cancelling its own left padding, and the first chip
+       sat hard against the edge of the screen instead of on the gutter
+       every other line of text uses. */
+    scroll-padding-inline: var(--spacing-gutter);
   }
 
   .rail::-webkit-scrollbar {
