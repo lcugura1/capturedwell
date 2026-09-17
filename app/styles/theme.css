@@ -267,10 +267,29 @@
     }
   }
 
+  /* Controls are not text. Dragging across the lightbox's × or its
+     guillemets highlighted them like a paragraph, which is never what
+     anyone was trying to do — and on a photo viewer a drag is far more
+     likely to be an attempt to pan or scroll. Headings and prose stay
+     selectable; only the things you press do not. */
+  button,
+  [role='button'] {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
   /* The design leans on full-bleed photography; a stray inline gap under
      an image breaks the 6px rhythm between them. */
   img {
     display: block;
+  }
+
+  /* A photograph is not a document either: dragging one in the grid
+     starts a native image drag or paints a selection over it. */
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   /**
