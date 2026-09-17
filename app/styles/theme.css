@@ -213,8 +213,11 @@
   /* ── motion ───────────────────────────────────────────────────────── */
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
   /* Reveals travel a little further than they fade, so the movement is
-     what you notice rather than the opacity. */
-  --reveal-rise: 1.5rem;
+     what you notice rather than the opacity. Far enough to register as
+     arriving — at 1.5rem it read as a flicker — and no further: this
+     happens on every section of a long page, and a big move repeated a
+     dozen times stops being an entrance and becomes a tic. */
+  --reveal-rise: 2.75rem;
   /* Overshoots and settles. Used where something should feel like it
      arrived rather than appeared — the menu, mainly. */
   --ease-bounce: cubic-bezier(0.28, 1.68, 0.52, 1);
@@ -465,8 +468,10 @@
     opacity: 0;
     transform: translateY(var(--reveal-rise));
     transition:
-      opacity 0.7s var(--ease-out-soft),
-      transform 0.7s var(--ease-out-soft);
+      opacity 0.5s var(--ease-out-soft),
+      /* Slower than the fade, so the movement outlasts it and is the part
+         you actually see. */
+      transform 0.85s var(--ease-out-soft);
     /* Staggered by the hook, in seconds. */
     transition-delay: var(--reveal-delay, 0s);
   }

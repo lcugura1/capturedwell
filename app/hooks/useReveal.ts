@@ -16,9 +16,10 @@ import { useEffect } from 'react'
  * container instead would leave the children carrying the hidden starting
  * state with nothing to ever clear it.
  *
- * Revealing is one-way. Re-hiding on scroll-up makes a page feel like it is
- * fighting you, and means content can be missing from a screenshot or a
- * print.
+ * Elements re-arm once they are fully off screen, so the animation plays
+ * whichever way the page is being read rather than only on the first trip
+ * down. Fully off screen is the important part: un-arming anything still
+ * visible would fade out something the reader is looking at.
  *
  * A second observer watches for `hidden` being toggled. The gallery keeps
  * all four category grids in the DOM and hides the inactive ones, and an
@@ -52,31 +53,29 @@ export function useReveal() {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          entry.target.setAttribute('data-revealed', '')
-          observer.unobserve(entry.target)
+          if (entry.isIntersecting) entry.target.setAttribute('data-revealed', '')
+          else entry.target.removeAttribute('data-revealed')
         }
       },
-      // A little before the element is fully on screen, so it is already
-      // settling by the time it is properly in view rather than starting
-      // its animation once the reader is looking straight at it.
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.01 },
+      // No margin, and the observation is kept. The margin used to pull the
+      // trigger slightly early, which is a nice touch in one direction and
+      // wrong in the other: it also reports an element as gone while it is
+      // still visible in the bottom of the screen, which would un-arm
+      // something the reader can see.
+      { rootMargin: '0px', threshold: 0 },
     )
     const scan = () => {
       for (const el of document.querySelectorAll<HTMLElement>('[data-reveal]')) {
+        observer.observe(el)
         if (el.hasAttribute('data-revealed')) continue
-        // Measure rather than re-observe. `observe()` on an element the
-        // observer already holds is a no-op, so an element that was judged
+        // Measure rather than trust the observer here. `observe()` on an
+        // element it already holds is a no-op, so an element judged
         // off-screen while its category was `display: none` never gets a
         // second opinion — one gallery row stayed invisible in plain view
         // on every category switch.
         const box = el.getBoundingClientRect()
-        const onScreen = box.width > 0 && box.bottom > 0 && box.top < window.innerHeight
-        if (onScreen) {
+        if (box.width > 0 && box.bottom > 0 && box.top < window.innerHeight) {
           el.setAttribute('data-revealed', '')
-          observer.unobserve(el)
-        } else {
-          observer.observe(el)
         }
       }
     }

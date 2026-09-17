@@ -232,6 +232,12 @@ Za ocjenu izgleda koristi `dev:phone`; za ocjenu **brzine** koristi `preview:pho
 
 Ovo je ujedno jedini način da se vide Safari fallbackovi uživo: staklo bez refrakcije i obični zaobljeni rubovi umjesto squirclea.
 
+**Mjerenje razmaka pored reveal animacija**
+
+Sekcije se otkrivaju pomakom, pa im `getBoundingClientRect()` vraća **animirani** položaj, ne layout. Dva uzastopna mjerenja šavova prijavila su nepostojeće razlike prije nego sam im povjerovao — jedno je uhvatilo sekcije koje još drže pomak, drugo jednu usred tranzicije natrag.
+
+Gasi otkrivanja **prije** učitavanja stranice (`evaluateOnNewDocument`, uz `transition: none`), ne poslije. Poslije mjeriš animaciju.
+
 **Layout se provjerava u pregledniku, ne u glavi**
 
 `node scripts/shoot.mjs` (uz posluženi build) snimi stranicu na 1440×900, 1280×720 i 390×844, ispiše je li wordmark unutar prvog ekrana, i **prođe devet širina tražeći vodoravno prelijevanje**.
