@@ -327,8 +327,7 @@ export function Lightbox({
           the gesture to the page behind — on iOS that is the back-swipe. */}
       <div
         ref={trackRef}
-        className="rail absolute inset-0 flex snap-x snap-mandatory overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        style={{ marginInline: 0, paddingInline: 0 }}
+        className="rail absolute inset-0 flex snap-x snap-mandatory overscroll-x-contain"
       >
         {photos.map((slide, i) => {
           const ratio = aspectOf(slide)

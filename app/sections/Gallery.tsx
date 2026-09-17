@@ -40,7 +40,7 @@ export function Gallery() {
             squeezing them into unreadable slivers. */}
         <nav
           aria-label="Kategorije"
-          className="rail -mb-1 flex w-full gap-xs pb-1 lg:m-0 lg:w-auto lg:flex-wrap lg:overflow-visible lg:p-0 lg:pb-2"
+          className="rail rail-bleed -mb-1 flex gap-xs pb-1 lg:m-0 lg:w-auto lg:flex-wrap lg:overflow-visible lg:p-0 lg:pb-2"
         >
           {CATEGORIES.map((c) => {
             const isActive = c.id === category

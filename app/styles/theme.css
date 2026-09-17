@@ -347,9 +347,21 @@
     overflow-y: hidden;
     scrollbar-width: none;
     scroll-snap-type: x proximity;
-    /* Bleed to both edges so the strip reads as continuing off-screen
-       rather than being clipped by the gutter, then pad the content back
-       in so the first and last pill still line up with everything else. */
+  }
+
+  /**
+   * A rail that runs to both edges of the screen.
+   *
+   * The width is the whole point and not decoration. A negative margin
+   * moves a box; it does not widen one — and inside a `items-start` flex
+   * parent the rail was sizing to the parent's content box, 350px on a
+   * 390px screen, so it ended 40px short and guillotined the last pill
+   * against a black edge. Growing it by both gutters puts its right edge
+   * back on the viewport's, and the padding keeps the first and last pill
+   * lined up with everything else on the page.
+   */
+  .rail-bleed {
+    width: calc(100% + 2 * var(--spacing-gutter));
     margin-inline: calc(-1 * var(--spacing-gutter));
     padding-inline: var(--spacing-gutter);
   }
