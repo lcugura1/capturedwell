@@ -1,6 +1,7 @@
 import { Photo } from '~/components/Photo'
 import { SectionLabel, StretchedHeading } from '~/components/Layout'
 import { MailLink } from '~/components/MailLink'
+import { scrollToSection } from '~/lib/scroll-to-section'
 import { Mail } from '~/components/icons'
 import { gallery } from '~/lib/gallery'
 import { aspect } from '~/lib/gallery-types'
@@ -59,6 +60,10 @@ export function Hero() {
           <div className="flex flex-wrap gap-3">
             <a
               href="#galerija"
+              onClick={(event) => {
+                event.preventDefault()
+                scrollToSection('galerija')
+              }}
               className="inline-flex h-12 items-center gap-xs rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover"
             >
               pogledaj galeriju

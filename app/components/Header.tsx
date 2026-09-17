@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Logo } from './Logo'
 import { Dot } from './Dot'
+import { scrollToSection } from '~/lib/scroll-to-section'
 
 export const SECTIONS = [
   { id: 'galerija', label: 'galerija' },
@@ -81,7 +82,11 @@ export function Header({ active }: { active: string | null }) {
       <div className="flex h-header items-center justify-between px-gutter">
         <a
           href="#vrh"
-          onClick={() => setOpen(false)}
+          onClick={(event) => {
+            event.preventDefault()
+            setOpen(false)
+            scrollToSection('vrh')
+          }}
           className="h-3.5 text-ink sm:h-[1.125rem]"
           aria-label="capturedwell — na vrh"
         >
@@ -132,7 +137,11 @@ export function Header({ active }: { active: string | null }) {
             <a
               key={id}
               href={`#${id}`}
-              onClick={() => setOpen(false)}
+              onClick={(event) => {
+                event.preventDefault()
+                setOpen(false)
+                scrollToSection(id)
+              }}
               aria-current={active === id ? 'true' : undefined}
               // Full ink, not the muted tone the desktop nav uses: this
               // text sits on glass over a photograph, and the muted tone
@@ -155,6 +164,10 @@ function NavLink({ id, label, active }: { id: string; label: string; active: boo
   return (
     <a
       href={`#${id}`}
+      onClick={(event) => {
+        event.preventDefault()
+        scrollToSection(id)
+      }}
       aria-current={active ? 'true' : undefined}
       className={`flex items-center gap-xs transition-colors duration-150 ease-out-soft ${
         active ? 'text-ink' : 'text-ink-muted hover:text-ink'
