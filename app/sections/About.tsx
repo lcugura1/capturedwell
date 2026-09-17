@@ -16,11 +16,18 @@ export function About() {
       id="o-meni"
       className="grid scroll-mt-header grid-cols-1 gap-photo-gap lg:grid-cols-2"
     >
-      {/* Shorter on a phone. At 70vh the portrait filled the screen and
-          pushed everything Damir actually says below the fold, so the
-          section read as a photograph with a caption somewhere underneath
-          it. */}
-      <div className="relative h-[min(56svh,53.75rem)] bg-surface lg:h-[min(70vh,53.75rem)]">
+      {/* Phone: shorter than the screen on purpose. At 70vh the portrait
+          filled it and pushed everything Damir actually says below the
+          fold, so the section read as a photograph with a caption
+          somewhere underneath.
+
+          Desktop: no height of its own. Tying it to the viewport while the
+          text beside it is sized by its content meant the gap between them
+          grew with the screen — 200px of emptiness above the title at
+          900px tall, 326px at 1080. The grid stretches this cell to
+          whatever the text needs, and the floor keeps the photograph from
+          collapsing into a letterbox if that text ever gets short. */}
+      <div className="relative h-[min(56svh,53.75rem)] bg-surface lg:h-auto lg:min-h-[34rem]">
         {portrait ? (
           <Photo
             photo={portrait}
@@ -36,7 +43,7 @@ export function About() {
         )}
       </div>
       <div
-        className="flex flex-col justify-end gap-md px-gutter pb-xs pt-lg lg:gap-lg lg:pl-xl lg:pt-0"
+        className="flex flex-col justify-center gap-md px-gutter pb-xs pt-lg lg:gap-lg lg:py-2xl lg:pl-xl"
         data-reveal
       >
         <SectionTitle>o meni</SectionTitle>
