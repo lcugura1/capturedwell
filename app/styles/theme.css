@@ -304,6 +304,20 @@
     outline-offset: 3px;
   }
 
+  /* Photos draw their focus ring inside themselves — an outside ring on a
+     6px grid collides with the neighbour — so the shared outline would be
+     a second ring around the first. */
+  [data-photo-id]:focus-visible {
+    outline: none;
+  }
+
+  /* Focus handed back after a dialog closes. It has to land somewhere, but
+     it should not announce itself; see components/Lightbox.tsx. */
+  [data-focus-quiet]:focus-visible,
+  [data-focus-quiet]:focus {
+    outline: none;
+  }
+
   /* Parallax and long transitions are decoration. Honour the setting. */
   @media (prefers-reduced-motion: reduce) {
     /* Reveals must land visible, not just fast: zeroing the duration on an

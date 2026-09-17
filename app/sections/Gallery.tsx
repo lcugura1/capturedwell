@@ -83,14 +83,14 @@ export function Gallery() {
                       data-photo-id={photo.id}
                       onClick={() => setOpenAt(index)}
                       aria-label={`Otvori fotografiju: ${photo.alt}`}
-                      className="group relative block w-full cursor-zoom-in"
+                      className="group relative block w-full cursor-zoom-in focus-visible:outline-none"
                     >
                       <Photo photo={photo} sizes={sizes} />
                       {/* The focus ring sits inside the photo. An outside ring
                           on a 6px grid would collide with the neighbour. */}
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-2 rounded-focus border-2 border-ink opacity-0 group-focus-visible:opacity-100"
+                        className="pointer-events-none absolute inset-2 rounded-focus border-2 border-ink opacity-0 transition-opacity duration-150 group-focus-visible:opacity-100 group-data-[focus-quiet]:opacity-0"
                       />
                     </button>
                   )

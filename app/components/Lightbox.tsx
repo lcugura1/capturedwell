@@ -195,7 +195,21 @@ export function Lightbox({
       // The opener can be gone if the grid re-rendered; guard rather than
       // throwing on an element that is no longer in the document.
       const opener = openerRef.current
-      if (opener instanceof HTMLElement && opener.isConnected) opener.focus()
+      if (!(opener instanceof HTMLElement) || !opener.isConnected) return
+
+      // Focus has to go back — dropping it would strand a keyboard user at
+      // the top of the document — but it should go back quietly. Leaving a
+      // ring on the photo reads as "this thing is still selected" long
+      // after the viewer has moved on.
+      //
+      // The mark is cleared by the first keypress, so the moment anyone
+      // navigates by keyboard the rings behave normally again and the photo
+      // they are standing on is visible.
+      opener.setAttribute('data-focus-quiet', '')
+      const clear = () => opener.removeAttribute('data-focus-quiet')
+      opener.addEventListener('keydown', clear, { once: true })
+      opener.addEventListener('blur', clear, { once: true })
+      opener.focus({ preventScroll: true })
     }
   }, [])
 
