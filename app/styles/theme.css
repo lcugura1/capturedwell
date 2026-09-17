@@ -197,6 +197,13 @@
   /* Photos sit 6px apart. Deliberately below the spacing scale: the
      grid should read as one surface, not as separate cards. */
   --spacing-photo-gap: 0.375rem;
+  /* Breathing room around a photo in the lightbox, and asymmetric on
+     purpose. The vertical value has to clear the close button; the
+     horizontal one does not, and every pixel it gives up is width the
+     photograph takes. Uniform header-sized padding left a 390px screen
+     showing 246px of photo — this shows 358. */
+  --slide-pad-y: 4.5rem;
+  --slide-pad-x: 1rem;
 
   /* ── radii ────────────────────────────────────────────────────────── */
   /* Pills and dots. Photos are never rounded. */
@@ -465,6 +472,14 @@
   [data-focus-quiet]:focus-visible,
   [data-focus-quiet]:focus {
     outline: none;
+  }
+
+  /* Desktop has room for the arrows and the wider frame the canvas drew. */
+  @media (width >= 40rem) {
+    :root {
+      --slide-pad-y: var(--spacing-header);
+      --slide-pad-x: var(--spacing-header);
+    }
   }
 
   /* Parallax and long transitions are decoration. Honour the setting. */

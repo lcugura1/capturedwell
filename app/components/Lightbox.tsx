@@ -28,10 +28,12 @@ function prefersReducedMotion() {
 /**
  * Full-screen photo view that grows out of the thumbnail it was opened from.
  *
- * The animation is FLIP: the photo is laid out at its final size first, then
- * transformed back onto the rect of the thumbnail that was clicked and
- * released. Only `transform` and `opacity` move, so it runs on the
- * compositor and never reflows a full-bleed photograph mid-flight.
+ * Photos live on a horizontal scroll-snap track, so moving between them is
+ * the platform's own scrolling: real momentum, a photo that follows the
+ * finger rather than waiting for the gesture to finish, and rubber-band at
+ * both ends. Everything — the arrows, the keyboard — drives that same
+ * scroller, so there is one notion of where you are rather than two that
+ * can disagree.
  *
  * The genie is two animations on the same element. The transform carries the
  * travel, with horizontal distance closing faster than vertical so the photo
@@ -64,12 +66,31 @@ export function Lightbox({
   onIndexChange: (index: number) => void
 }) {
   const dialogRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
   const figureRef = useRef<HTMLDivElement>(null)
   const backdropRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const openerRef = useRef<Element | null>(null)
   const [closing, setClosing] = useState(false)
   const photo = photos[index]
+
+  // The index the scroller itself last reported. Without it, reacting to
+  // `index` would scroll the track back under the finger that just moved it:
+  // scroll → index changes → effect scrolls → fights the gesture.
+  const settledRef = useRef(index)
+  // The index the photo opened at, so the genie animates the right slide and
+  // swiping away afterwards does not replay it. State rather than a ref
+  // because the render reads it, and a ref read during render is exactly
+  // the thing that goes stale without telling you. The initialiser runs
+  // once, so it stays put while `index` moves.
+  const [openedAt] = useState(index)
+
+  const scrollTo = useCallback((next: number, behavior: ScrollBehavior) => {
+    const track = trackRef.current
+    if (!track) return
+    settledRef.current = next
+    track.scrollTo({ left: next * track.clientWidth, behavior })
+  }, [])
 
   /**
    * Transform that puts the full-size figure back onto its thumbnail.
@@ -82,8 +103,9 @@ export function Lightbox({
    */
   const collapsed = useCallback(() => {
     const figure = figureRef.current
-    if (!figure || !photo) return null
-    const thumb = document.querySelector(`[data-photo-id="${CSS.escape(photo.id)}"]`)
+    const current = photos[index]
+    if (!figure || !current) return null
+    const thumb = document.querySelector(`[data-photo-id="${CSS.escape(current.id)}"]`)
     if (!thumb) return null
     const from = thumb.getBoundingClientRect()
     const to = figure.getBoundingClientRect()
@@ -103,9 +125,14 @@ export function Lightbox({
       sy: from.height / to.height,
       neck,
     }
-  }, [photo])
+  }, [photos, index])
 
   useLayoutEffect(() => {
+    // Land on the photo that was clicked before anything paints. Instant,
+    // not smooth: a visible scroll here would race the genie.
+    const track = trackRef.current
+    if (track) track.scrollLeft = openedAt * track.clientWidth
+
     const figure = figureRef.current
     const backdrop = backdropRef.current
     const from = collapsed()
@@ -136,8 +163,8 @@ export function Lightbox({
       easing: 'linear',
       fill: 'both',
     })
-    // Only on mount: re-running this on every arrow press would replay the
-    // whole open animation instead of just swapping the photograph.
+    // Only on mount: re-running this on every swipe would replay the whole
+    // open animation instead of just moving to the next photograph.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -180,10 +207,44 @@ export function Lightbox({
   const go = useCallback(
     (delta: number) => {
       if (photos.length === 0) return
-      onIndexChange((index + delta + photos.length) % photos.length)
+      scrollTo((index + delta + photos.length) % photos.length, 'smooth')
     },
-    [index, photos.length, onIndexChange],
+    [index, photos.length, scrollTo],
   )
+
+  // Follow the scroller. `scrollend` fires once the gesture and its momentum
+  // have finished, which is exactly when the index should change; where it
+  // is missing, a short idle timer says the same thing a little later.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    const settle = () => {
+      const width = track.clientWidth
+      if (width === 0) return
+      const landed = Math.max(0, Math.min(photos.length - 1, Math.round(track.scrollLeft / width)))
+      if (landed === settledRef.current) return
+      settledRef.current = landed
+      onIndexChange(landed)
+    }
+
+    // Feature-detect on window, not on the element: `'onscrollend' in track`
+    // narrows the element to `never` in the negative branch.
+    if (typeof window !== 'undefined' && 'onscrollend' in window) {
+      track.addEventListener('scrollend', settle)
+      return () => track.removeEventListener('scrollend', settle)
+    }
+    let idle: ReturnType<typeof setTimeout>
+    const onScroll = () => {
+      clearTimeout(idle)
+      idle = setTimeout(settle, 120)
+    }
+    track.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      clearTimeout(idle)
+      track.removeEventListener('scroll', onScroll)
+    }
+  }, [photos.length, onIndexChange])
 
   useEffect(() => {
     openerRef.current = document.activeElement
@@ -248,7 +309,6 @@ export function Lightbox({
   }, [closing, dismiss, go])
 
   if (!photo) return null
-  const ratio = aspectOf(photo)
 
   return (
     <div
@@ -263,35 +323,59 @@ export function Lightbox({
     >
       <div ref={backdropRef} className="absolute inset-0 bg-bg-deep" />
 
-      <div className="absolute inset-0 flex items-center justify-center p-header">
-        <div
-          ref={figureRef}
-          style={{
-            aspectRatio: ratio,
-            // Fit the photo to the space and let it grow into it. max-width
-            // and max-height alone only ever shrink, so a 640px original sat
-            // at 640px in the middle of a 1440px screen. Taking the smaller
-            // of "all the width there is" and "the width this photo would
-            // need to use all the height" gives the largest box that still
-            // fits, and aspect-ratio supplies the height.
-            width: `min(100% , calc((100svh - 2 * var(--spacing-header)) * ${ratio}))`,
-          }}
-          className="will-change-transform"
-        >
-          <picture>
-            <source type="image/avif" srcSet={srcSet(photo, 'avif')} sizes="90vw" />
-            <source type="image/webp" srcSet={srcSet(photo, 'webp')} sizes="90vw" />
-            <img
-              src={fallbackSrc(photo)}
-              srcSet={srcSet(photo, 'jpg')}
-              sizes="90vw"
-              alt={photo.alt}
-              width={photo.width}
-              height={photo.height}
-              className="size-full object-contain"
-            />
-          </picture>
-        </div>
+      {/* `overscroll-contain` keeps a swipe past the last photo from handing
+          the gesture to the page behind — on iOS that is the back-swipe. */}
+      <div
+        ref={trackRef}
+        className="rail absolute inset-0 flex snap-x snap-mandatory overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ marginInline: 0, paddingInline: 0 }}
+      >
+        {photos.map((slide, i) => {
+          const ratio = aspectOf(slide)
+          return (
+            <div
+              key={slide.id}
+              // `snap-always`: a fast flick would otherwise carry past
+              // several photographs at once, and in a gallery each one is
+              // the thing you came for, not a step on the way somewhere.
+              className="flex w-full shrink-0 snap-center snap-always items-center justify-center p-[var(--slide-pad-y)_var(--slide-pad-x)]"
+            >
+              <div
+                // Only the photo that was opened carries the genie; the rest
+                // are just slides.
+                ref={i === openedAt ? figureRef : undefined}
+                style={{
+                  aspectRatio: ratio,
+                  // Fit the photo to the space and let it grow into it.
+                  // max-width and max-height alone only ever shrink, so a
+                  // 640px original sat at 640px in the middle of a 1440px
+                  // screen. Taking the smaller of "all the width there is"
+                  // and "the width this photo would need to use all the
+                  // height" gives the largest box that still fits.
+                  width: `min(100%, calc((100svh - 2 * var(--slide-pad-y)) * ${ratio}))`,
+                }}
+                className="will-change-transform"
+              >
+                <picture>
+                  <source type="image/avif" srcSet={srcSet(slide, 'avif')} sizes="100vw" />
+                  <source type="image/webp" srcSet={srcSet(slide, 'webp')} sizes="100vw" />
+                  <img
+                    src={fallbackSrc(slide)}
+                    srcSet={srcSet(slide, 'jpg')}
+                    sizes="100vw"
+                    alt={slide.alt}
+                    width={slide.width}
+                    height={slide.height}
+                    // The neighbours are one swipe away and should already
+                    // be there; the rest of the set can wait.
+                    loading={Math.abs(i - openedAt) <= 1 ? 'eager' : 'lazy'}
+                    className="size-full object-contain"
+                  />
+                </picture>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       <GlyphButton
@@ -299,23 +383,19 @@ export function Lightbox({
         label="Zatvori"
         onClick={dismiss}
         className={`left-gutter top-lg ${CONTROLS.close}`}
-      >
-        ×
-      </GlyphButton>
+      />
+      {/* Hidden on a phone: swiping is the gesture there, and an arrow over
+          each edge of the photograph costs width the photo can use. */}
       <GlyphButton
         label="Prethodna fotografija"
         onClick={() => go(-1)}
-        className={`left-gutter top-1/2 -translate-y-1/2 ${CONTROLS.prev}`}
-      >
-        ‹
-      </GlyphButton>
+        className={`left-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.prev}`}
+      />
       <GlyphButton
         label="Sljedeća fotografija"
         onClick={() => go(1)}
-        className={`right-gutter top-1/2 -translate-y-1/2 ${CONTROLS.next}`}
-      >
-        ›
-      </GlyphButton>
+        className={`right-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.next}`}
+      />
     </div>
   )
 }
@@ -328,16 +408,20 @@ export function Lightbox({
  * lettering as the section titles. Cheaper and more consistent than drawing
  * three SVGs that only approximate the face.
  */
+const GLYPHS: Record<string, string> = {
+  Zatvori: '×',
+  'Prethodna fotografija': '‹',
+  'Sljedeća fotografija': '›',
+}
+
 function GlyphButton({
   ref,
   label,
-  children,
   className = '',
   onClick,
 }: {
   ref?: React.Ref<HTMLButtonElement>
   label: string
-  children: string
   className?: string
   onClick: () => void
 }) {
@@ -347,9 +431,9 @@ function GlyphButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`absolute font-display text-[clamp(3rem,8vw,6rem)] leading-none transition-[transform,opacity] duration-200 ease-out-soft hover:scale-110 active:scale-95 ${className}`}
+      className={`absolute z-10 font-display text-[clamp(3rem,8vw,6rem)] leading-none transition-[transform,opacity] duration-200 ease-out-soft hover:scale-110 active:scale-95 ${className}`}
     >
-      <span aria-hidden="true">{children}</span>
+      <span aria-hidden="true">{GLYPHS[label]}</span>
     </button>
   )
 }
