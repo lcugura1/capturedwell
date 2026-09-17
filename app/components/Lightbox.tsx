@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type { Photo as PhotoType } from '~/lib/gallery-types'
 import { aspectOf, fallbackSrc, srcSet } from '~/lib/images'
 import { genieKeyframes, type Neck } from '~/lib/genie'
+import { useScrollLock } from '~/hooks/useScrollLock'
 
 /** Matches the retro palette used by section titles. */
 const CONTROLS = {
@@ -246,13 +247,12 @@ export function Lightbox({
     }
   }, [photos.length, onIndexChange])
 
+  useScrollLock()
+
   useEffect(() => {
     openerRef.current = document.activeElement
     closeRef.current?.focus()
-    const { overflow } = document.body.style
-    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = overflow
       // The opener can be gone if the grid re-rendered; guard rather than
       // throwing on an element that is no longer in the document.
       const opener = openerRef.current

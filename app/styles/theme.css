@@ -340,6 +340,11 @@
    */
   .rail {
     overflow-x: auto;
+    /* Explicit, and load-bearing. Setting one axis to anything but
+       `visible` forces the other to `auto` — so a strip that only meant to
+       scroll sideways quietly became a vertical scroller too, complete with
+       its own scrollbar. */
+    overflow-y: hidden;
     scrollbar-width: none;
     scroll-snap-type: x proximity;
     /* Bleed to both edges so the strip reads as continuing off-screen
