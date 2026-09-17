@@ -34,6 +34,16 @@ export const SITE = {
   shoots: CATEGORIES.map((c) => c.name),
 } as const
 
+/**
+ * The wordmark as text, underscore and all.
+ *
+ * One constant because the mark appears in three places that have already
+ * drifted apart once — the header carries it as the traced SVG, the hero
+ * sets it at display size, and the footer as type. The suffix is part of
+ * the name, not punctuation someone remembers to add.
+ */
+export const WORDMARK = `${SITE.name}_`
+
 export const EMAIL_TEXT = `${SITE.email.user}@${SITE.email.domain}`
 
 /**

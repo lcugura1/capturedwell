@@ -6,7 +6,7 @@ import { scrollToSection } from '~/lib/scroll-to-section'
 import { Mail } from '~/components/icons'
 import { gallery } from '~/lib/gallery'
 import { aspect } from '~/lib/gallery-types'
-import { SITE } from '~/lib/site'
+import { SITE, WORDMARK } from '~/lib/site'
 
 /** One retro tone per line, cycled. */
 const SHOOT_COLOURS = [
@@ -51,7 +51,7 @@ export function Hero() {
             hangs past it. With the hero on `flex-1`, the extra clearance
             costs the photograph a few pixels and nothing else. */}
         <section className="shrink-0 px-gutter pb-xl pt-lg">
-          <StretchedHeading words={['capturedwell_']} />
+          <StretchedHeading words={[WORDMARK]} />
         </section>
       </div>
 

@@ -1,4 +1,4 @@
-import { SITE } from '~/lib/site'
+import { SITE, WORDMARK } from '~/lib/site'
 import { MailLink } from './MailLink'
 
 /**
@@ -16,7 +16,7 @@ export function Footer() {
   return (
     <footer className="flex flex-col items-start justify-between gap-lg border-t border-line px-gutter pb-lg pt-xl sm:flex-row sm:items-center">
       <div className="flex items-baseline gap-sm">
-        <span className="text-mark">{SITE.name}.</span>
+        <span className="text-mark">{WORDMARK}</span>
         <span className="text-label text-ink-subtle">
           {SITE.owner} · {SITE.role}
         </span>
