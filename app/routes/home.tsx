@@ -46,6 +46,7 @@ export default function Home() {
       <Header active={active} />
       <main className="flex-1">
         <Hero />
+        <SectionBreak />
         <Gallery />
         <SectionBreak />
         <About />

@@ -29,7 +29,8 @@ export function Gallery() {
   const photos = photosInCategory(gallery, category)
 
   return (
-    <section id="galerija" className="scroll-mt-header pt-2xl">
+    // No top padding: the section break above owns that gap.
+    <section id="galerija" className="scroll-mt-header">
       <div
         className="flex flex-col items-start justify-between gap-md px-gutter pb-lg lg:flex-row lg:items-end lg:gap-lg lg:pb-xl"
         data-reveal

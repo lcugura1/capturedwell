@@ -55,7 +55,9 @@ export function Hero() {
         </section>
       </div>
 
-      <section className="grid grid-cols-1 gap-md px-gutter pb-2xl pt-xl lg:grid-cols-12" data-reveal>
+      {/* No bottom padding: the section break below owns that gap. See
+          components/SectionBreak.tsx. */}
+      <section className="grid grid-cols-1 gap-md px-gutter pt-xl lg:grid-cols-12" data-reveal>
         {/* What Damir shoots, stacked, in the display face.
             The first thing a visitor needs is whether this photographer is
             for them, and the fastest answer is the list of occasions. It
