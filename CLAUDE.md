@@ -221,7 +221,11 @@ clamp(MIN, MIN + (MAX − MIN) × (100vw − 390px) / 1050, MAX)
 
 **Layout se provjerava u pregledniku, ne u glavi**
 
-`node scripts/shoot.mjs` (uz posluženi build) snimi stranicu na 1440×900, 1280×720 i 390×844 i ispiše je li wordmark unutar prvog ekrana.
+`node scripts/shoot.mjs` (uz posluženi build) snimi stranicu na 1440×900, 1280×720 i 390×844, ispiše je li wordmark unutar prvog ekrana, i **prođe devet širina tražeći vodoravno prelijevanje**.
+
+Stranica se ne smije pomicati bočno. `overflow-x: clip` na `html` je brava (`clip`, ne `hidden` — `hidden` bi napravio scroll kontejner i razbio sidrenu navigaciju), ali je brava zadnja linija: svako prelijevanje je i dalje bug.
+
+Mjeri se po elementima, ne po `scrollWidth`. `fixed` zaglavlje ne širi dokument, pa je `scrollWidth` prijavljivao 390 dok je navigacija stvarno bježala 60 px preko ruba na 280 px.
 
 Postoji jer su dva layout buga prošla upravo zato što su i markup i CSS izgledali ispravno odvojeno: hero je prelazio pregib, a `<picture>` je tiho ignorirao `height: 100%` — inline element nema definiranu visinu pa se postotak ne razriješi i `aspect-ratio` preuzme. Nijedno se ne vidi iz terminala.
 

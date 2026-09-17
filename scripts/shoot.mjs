@@ -74,5 +74,41 @@ for (const vp of VIEWPORTS) {
   await page.close()
 }
 
+// Sideways scrolling is a bug on this site, so sweep for it rather than
+// waiting to notice. `scrollWidth` alone misses it: a fixed header does not
+// widen the document, which is exactly where the nav was running off the
+// edge at 320px. Measure elements against the viewport instead.
+const WIDTHS = [280, 320, 360, 390, 430, 640, 768, 1024, 1440]
+const page = await browser.newPage()
+await page.goto(URL, { waitUntil: 'networkidle0' })
+let overflow = 0
+for (const width of WIDTHS) {
+  await page.setViewport({ width, height: 800 })
+  await page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))),
+  )
+  const worst = await page.evaluate((vw) => {
+    const out = []
+    for (const el of document.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect()
+      if (r.width === 0) continue
+      if (r.right > vw + 1)
+        out.push({
+          over: Math.round(r.right - vw),
+          tag: el.tagName.toLowerCase(),
+          cls: (el.className?.baseVal ?? el.className ?? '').toString().slice(0, 44),
+        })
+    }
+    return out.sort((a, b) => b.over - a.over).slice(0, 2)
+  }, width)
+  if (worst.length > 0) {
+    overflow += 1
+    console.log(`${String(width).padStart(5)}px  OVERFLOWS`)
+    for (const w of worst) console.log(`         +${w.over}px  ${w.tag} ${w.cls}`)
+  }
+}
+console.log(overflow === 0 ? `\nno horizontal overflow, ${WIDTHS.length} widths` : '')
+await page.close()
+
 await browser.close()
-console.log(`\n-> ${OUT}`)
+console.log(`-> ${OUT}`)

@@ -215,6 +215,13 @@
        navigation, not decoration. The reduced-motion block below turns it
        back to an instant jump for anyone who asked for that. */
     scroll-behavior: smooth;
+
+    /* Nothing on this page is meant to pan sideways. `clip` rather than
+       `hidden`: `hidden` turns the element into a scroll container, which
+       breaks scroll anchoring and would make the anchor navigation jump.
+       This is a backstop, not the fix — anything that overflows is still a
+       bug, and scripts/shoot.mjs sweeps for it. */
+    overflow-x: clip;
   }
 
   body {
