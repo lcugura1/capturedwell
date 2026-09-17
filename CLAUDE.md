@@ -316,6 +316,7 @@ Nisu instalirani, ali razmisliti kasnije: `chrome-devtools-mcp` (stvarni perform
 - **Faza 2 — skeleton.** ✅ Vite + RR + TS + Tailwind, rute, prerender.
 - **Faza 3 — javna galerija.** ✅ Single page, manifest, justified grid s filterom, lightbox, responsive slike. Ostaje: deploy na Cloudflare, stvarne fotke, pravi alt tekstovi.
 - **Faza 4 — admin.** Cloudflare Access, Worker API, drag & drop upload, image pipeline, reorder, brisanje.
+  - `thinking-orbs` (instaliran, MIT, 7.7 KB gzip, bez ovisnosti) čeka ovdje. Na javnoj stranici nema posla: sve je prerenderirano, a u lightboxu se nikad ne pokaže jer mreža fotografija već preuzme **istu** varijantu koju lightbox traži — `img.complete` je `true` prije prvog kadra, čak i na 20 kB/s. U adminu ima pravi posao: resize 20 MB originala u browseru traje sekunde.
 - **Faza 5 — sadržaj i polish.** O meni, kontakt (`mailto:`), SEO (`hr` meta, Open Graph, JSON-LD `LocalBusiness`), sitemap.
 - **Faza 6 — lansiranje.** `capturedwell.hr`, analitika bez kolačića (Cloudflare Web Analytics), backup strategija za `originals/`.
 
