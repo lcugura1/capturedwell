@@ -49,7 +49,7 @@ function prefersReducedMotion() {
  *
  * Keyboard is a first-class path, not an afterthought — a gallery you cannot
  * arrow through is broken for anyone not using a mouse:
- *   ← →   previous / next, wrapping at both ends
+ *   ← →   previous / next, stopping at both ends
  *   Esc   close
  *   Tab   cycles inside the dialog only
  */
@@ -86,12 +86,21 @@ export function Lightbox({
   // once, so it stays put while `index` moves.
   const [openedAt] = useState(index)
 
-  const scrollTo = useCallback((next: number, behavior: ScrollBehavior) => {
-    const track = trackRef.current
-    if (!track) return
-    settledRef.current = next
-    track.scrollTo({ left: next * track.clientWidth, behavior })
-  }, [])
+  const scrollTo = useCallback(
+    (next: number, behavior: ScrollBehavior) => {
+      const track = trackRef.current
+      if (!track) return
+      // Claim the destination up front so the scroll listener does not
+      // report it back as news — and tell the parent here, because that
+      // listener now has nothing to say. Skip this and `index` never moves
+      // for arrow and keyboard navigation, which leaves `go` computing
+      // every jump from the same stale number.
+      settledRef.current = next
+      onIndexChange(next)
+      track.scrollTo({ left: next * track.clientWidth, behavior })
+    },
+    [onIndexChange],
+  )
 
   /**
    * Transform that puts the full-size figure back onto its thumbnail.
@@ -205,10 +214,19 @@ export function Lightbox({
     shrink.oncancel = onClose
   }, [collapsed, onClose])
 
+  // Stops at both ends rather than wrapping. The track cannot wrap — a
+  // swipe past the last photo just rubber-bands — so an arrow that jumped
+  // back to the first would be the one control on the page disagreeing with
+  // the gesture beside it.
+  const atStart = index === 0
+  const atEnd = index === photos.length - 1
+
   const go = useCallback(
     (delta: number) => {
       if (photos.length === 0) return
-      scrollTo((index + delta + photos.length) % photos.length, 'smooth')
+      const next = index + delta
+      if (next < 0 || next > photos.length - 1) return
+      scrollTo(next, 'smooth')
     },
     [index, photos.length, scrollTo],
   )
@@ -384,17 +402,24 @@ export function Lightbox({
         className={`left-gutter top-lg ${CONTROLS.close}`}
       />
       {/* Hidden on a phone: swiping is the gesture there, and an arrow over
-          each edge of the photograph costs width the photo can use. */}
-      <GlyphButton
-        label="Prethodna fotografija"
-        onClick={() => go(-1)}
-        className={`left-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.prev}`}
-      />
-      <GlyphButton
-        label="Sljedeća fotografija"
-        onClick={() => go(1)}
-        className={`right-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.next}`}
-      />
+          each edge of the photograph costs width the photo can use. Gone
+          entirely at the ends rather than dimmed — there is nowhere to go,
+          and a control that cannot act should not be in the way of one that
+          can. */}
+      {!atStart && (
+        <GlyphButton
+          label="Prethodna fotografija"
+          onClick={() => go(-1)}
+          className={`left-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.prev}`}
+        />
+      )}
+      {!atEnd && (
+        <GlyphButton
+          label="Sljedeća fotografija"
+          onClick={() => go(1)}
+          className={`right-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.next}`}
+        />
+      )}
     </div>
   )
 }
