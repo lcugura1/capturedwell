@@ -343,17 +343,20 @@ export function Reviews() {
           // Focusable so a keyboard can scroll it with the arrow keys; the
           // label is what a screen reader announces on arrival.
           //
-          // Both ends of the strip fade out across its own padding — a
-          // gutter's width — so text dissolves instead of being sliced off:
-          // on the left against the photograph (or the screen edge on a
-          // phone), on the right against the edge of the screen. `black` is
-          // mask alpha here, not a colour.
+          // Neither end may slice text off. The left fades across the
+          // gutter, so a review scrolled past the start dissolves before it
+          // reaches the photograph. The right fades across a much wider band,
+          // so the next review shows as a ghost — enough to say there is
+          // more — and from `lg` the strip stops at the gutter like the rest
+          // of the page instead of running off the screen. The right padding
+          // is as wide as that fade, so at the end of the strip the last
+          // review sits clear of it. `black` is mask alpha, not a colour.
           <ul
             ref={listRef}
             onScroll={measure}
             tabIndex={0}
             aria-label="Recenzije klijenata"
-            className="m-0 flex min-w-0 list-none snap-x snap-mandatory scroll-px-gutter gap-lg overflow-x-auto px-gutter pb-2xs [scrollbar-width:none] lg:flex-1 [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-gutter),black_calc(100%-var(--spacing-gutter)),transparent)] [&::-webkit-scrollbar]:hidden"
+            className="m-0 flex min-w-0 list-none snap-x snap-mandatory scroll-pl-gutter gap-lg overflow-x-auto pb-2xs pl-gutter pr-3xl [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-gutter),black_calc(100%-var(--spacing-3xl)),transparent)] [scrollbar-width:none] lg:mr-gutter lg:flex-1 [&::-webkit-scrollbar]:hidden"
             data-reveal
           >
             {reviews.map((review) => (
