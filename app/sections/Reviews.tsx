@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { SectionTitle } from '~/components/SectionTitle'
 import { Photo } from '~/components/Photo'
 import { Dot } from '~/components/Dot'
-import { IconButton } from '~/components/Button'
-import { ChevronLeft, ChevronRight } from '~/components/icons'
 import { gallery } from '~/lib/gallery'
 import { reviewsNewestFirst, type Review } from '~/lib/gallery-types'
+import { aspectOf } from '~/lib/images'
 
 const reviews = reviewsNewestFirst(gallery)
 
@@ -130,6 +129,42 @@ function ReviewItem({ review }: { review: Review }) {
 }
 
 /**
+ * The lightbox's arrows, brought out of the dialog: a guillemet from the
+ * slab face, mustard back and rust forward. On this site that shape and those
+ * colours already mean "previous" and "next", so the strip uses them rather
+ * than a second kind of arrow.
+ *
+ * Hidden at the end of the strip rather than dimmed, as in the lightbox —
+ * but hidden with `invisible`, which keeps its space, so the other arrow does
+ * not jump sideways when one goes.
+ */
+function GlyphButton({
+  label,
+  glyph,
+  colour,
+  onClick,
+  disabled,
+}: {
+  label: string
+  glyph: string
+  colour: string
+  onClick: () => void
+  disabled: boolean
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={`font-display text-h1 leading-none transition-transform duration-200 ease-out-soft hover:scale-110 active:scale-95 disabled:invisible ${colour}`}
+    >
+      <span aria-hidden="true">{glyph}</span>
+    </button>
+  )
+}
+
+/**
  * What clients said: one photograph, then their words along a strip.
  *
  * A strip rather than a grid because the texts run from forty characters to
@@ -179,47 +214,58 @@ export function Reviews() {
       <div className="flex items-end justify-between gap-md px-gutter" data-reveal>
         <SectionTitle>rekli su</SectionTitle>
         {reviews.length > 1 && (
-          <div className="hidden shrink-0 gap-xs md:flex">
-            <IconButton
+          <div className="hidden shrink-0 gap-md md:flex">
+            <GlyphButton
               label="Prethodna recenzija"
+              glyph="‹"
+              colour="text-retro-mustard"
               onClick={() => step(-1)}
               disabled={edges.start}
-            >
-              <ChevronLeft className="size-5" />
-            </IconButton>
-            <IconButton
+            />
+            <GlyphButton
               label="Sljedeća recenzija"
+              glyph="›"
+              colour="text-retro-rust"
               onClick={() => step(1)}
               disabled={edges.end}
-            >
-              <ChevronRight className="size-5" />
-            </IconButton>
+            />
           </div>
         )}
       </div>
 
-      {/* Edge to edge, like the About portrait. 4:3 on a phone, where a
-          wide band would be a sliver; 5:2 above that. It was once as short
-          as the screen allowed, to fit the whole section in one view, and
-          at 6:1 it showed a slice across the middle of whatever was in it —
-          the photograph Damir chose for it lost both a head and half the
-          lettering on a shirt. 5:2 keeps a subject whole; the cap keeps it
-          from taking over a short screen. The buttons sit beside the title,
-          so a taller band never pushes them out of reach. The breakpoint is
-          where `Photo` swaps to the phone twin. */}
+      {/* The photograph at its own proportions, never cropped. The frame
+          used to be a fixed band, and cropping a picture into a shape it
+          was not composed for is what made it look zoomed in: 5:2 took a
+          fifth off a 2:1 photograph, 6:1 took most of it. Now the frame is
+          the photograph's shape, so `fill` fills it exactly.
+
+          Full width on a phone. Above that a fixed, modest height with the
+          width following from the ratio, left-aligned under the title —
+          short enough that the reviews start on the same screen.
+
+          The ratio goes in as custom properties, one per twin, because the
+          phone twin may be a different shape and a media query picks which
+          applies; inline styles cannot ask one. */}
       {cover && (
-        <div className="relative aspect-[4/3] bg-surface md:aspect-[5/2] md:max-h-[65svh]">
-          <Photo
-            photo={cover}
-            mobile={coverPhone}
-            kind="page"
-            fill
-            alt={cover.alt}
-            sizes="100vw"
-            // A band crops top and bottom. People are framed with their heads
-            // in the upper part of a picture, so the crop leans that way.
-            objectPosition="50% 25%"
-          />
+        <div className="px-gutter">
+          <div
+            className="relative aspect-(--ratio-phone) w-full bg-surface md:aspect-(--ratio) md:h-[min(40svh,22rem)] md:w-auto md:max-w-full"
+            style={
+              {
+                '--ratio': aspectOf(cover),
+                '--ratio-phone': aspectOf(coverPhone ?? cover),
+              } as React.CSSProperties
+            }
+          >
+            <Photo
+              photo={cover}
+              mobile={coverPhone}
+              kind="page"
+              fill
+              alt={cover.alt}
+              sizes="(min-width: 48rem) 44rem, 100vw"
+            />
+          </div>
         </div>
       )}
 
