@@ -52,6 +52,8 @@ export const PAGE_FOLDERS = {
   'naslovna-mobitel': 'heroMobile',
   'o-meni': 'about',
   'o-meni-mobitel': 'aboutMobile',
+  recenzije: 'reviews',
+  'recenzije-mobitel': 'reviewsMobile',
 }
 
 /**
@@ -66,6 +68,8 @@ export const PAGE_ALT = {
   heroMobile: 'Fotografija Damira Sukopa',
   about: 'Damir Sukop, portret',
   aboutMobile: 'Damir Sukop, portret',
+  reviews: 'Fotografija Damira Sukopa',
+  reviewsMobile: 'Fotografija Damira Sukopa',
 }
 
 export const EXPECTED_FOLDERS = [
