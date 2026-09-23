@@ -5,6 +5,7 @@ import { SectionBreak } from '~/components/SectionBreak'
 import { Hero } from '~/sections/Hero'
 import { Gallery } from '~/sections/Gallery'
 import { About } from '~/sections/About'
+import { Reviews } from '~/sections/Reviews'
 import { Contact } from '~/sections/Contact'
 import { useScrollSpy } from '~/hooks/useScrollSpy'
 import { useReveal } from '~/hooks/useReveal'
@@ -33,7 +34,7 @@ const SHOOTS = `${SITE.shoots.join(', ').replace(/^./, (c) => c.toUpperCase())}.
 /**
  * The whole site.
  *
- * One page, four sections, anchors in the menu. Categories are a filter
+ * One page, five sections, anchors in the menu. Categories are a filter
  * inside the gallery section rather than destinations of their own — see
  * sections/Gallery.tsx.
  */
@@ -50,6 +51,8 @@ export default function Home() {
         <Gallery />
         <SectionBreak />
         <About />
+        <SectionBreak />
+        <Reviews />
         <SectionBreak />
         <Contact />
       </main>

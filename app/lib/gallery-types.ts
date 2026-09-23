@@ -76,6 +76,29 @@ export type PageImage = {
   lqip: string
 }
 
+/**
+ * A client's review, as approved by Damir.
+ *
+ * Written by the client through the form, published only after Damir
+ * approves it from the mail it sends him — so everything here has been read
+ * by a person before it reaches the page. See docs/plan-recenzije.md.
+ */
+export type Review = {
+  id: string
+  name: string
+  /** Where the reviewer is found: Instagram, LinkedIn, a website. */
+  link?: { href: string; label: string }
+  /** Plain text. Paragraphs are separated by a blank line. */
+  text: string
+  /** Newest first, like everything else Damir adds. */
+  addedAt: string
+  /**
+   * A photograph from the shoot the review is about. Optional: a review
+   * without one is still a review. Renditions live under `review/{id}/`.
+   */
+  photo?: PageImage
+}
+
 export type Gallery = {
   /** Bumped on every write so clients can tell versions apart. */
   version: number
@@ -83,6 +106,11 @@ export type Gallery = {
   photos: Photo[]
   /** Empty until the matching Drive folder has something in it. */
   pages: Partial<Record<PageSlot, PageImage>>
+  /**
+   * Optional because every manifest written before reviews existed lacks
+   * it, and the build has to accept whatever the bucket currently holds.
+   */
+  reviews?: Review[]
 }
 
 export const EMPTY_GALLERY: Gallery = {
@@ -122,6 +150,13 @@ export function photosInCategory(gallery: Gallery, category: CategoryId): Photo[
       if (b.rank !== undefined) return 1
       return byRecency(a, b)
     })
+}
+
+/** Newest first; ties on id, for the same reason as `photosInCategory`. */
+export function reviewsNewestFirst(gallery: Gallery): Review[] {
+  return [...(gallery.reviews ?? [])].sort(
+    (a, b) => b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id),
+  )
 }
 
 /** Aspect ratio, guarding against a malformed manifest entry. */

@@ -6,6 +6,7 @@ import { scrollToSection } from '~/lib/scroll-to-section'
 export const SECTIONS = [
   { id: 'galerija', label: 'galerija' },
   { id: 'o-meni', label: 'o meni' },
+  { id: 'recenzije', label: 'recenzije' },
   { id: 'kontakt', label: 'kontakt' },
 ] as const
 
@@ -18,8 +19,8 @@ export const SECTIONS = [
  * past the hero it takes a background, otherwise white nav text lands on
  * whatever photograph happens to be underneath.
  *
- * Below `sm` the three links collapse into a button. Not for fashion: the
- * wordmark is 6.7:1, so at a phone's width the mark and three labels ran
+ * Below `sm` the links collapse into a button. Not for fashion: the
+ * wordmark is 6.7:1, so at a phone's width the mark and the labels ran
  * sixty pixels off the edge.
  *
  * `active` comes from the scroll spy rather than from the URL — the hash
@@ -116,7 +117,7 @@ export function Header({ active }: { active: string | null }) {
 
       {/* A floating card, not a full-width drawer. The old panel spanned
           the header and swallowed half the hero photograph; this is sized
-          to its three labels and tucked under the button that opened it.
+          to its labels and tucked under the button that opened it.
 
           Kept mounted and hidden with `inert` rather than `hidden`:
           `hidden` is `display: none`, which cancels the transition, so the
