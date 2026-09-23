@@ -71,7 +71,7 @@ function ReviewItem({ review }: { review: Review }) {
   }, [])
 
   return (
-    <li className="w-[min(80vw,25rem)] shrink-0 snap-start lg:w-[32rem]">
+    <li className="w-[min(80vw,25rem)] shrink-0 snap-start lg:w-[min(26rem,85%)]">
       <figure className="m-0 flex flex-col gap-md">
         <blockquote className="m-0 flex flex-col gap-sm text-body text-ink-body">
           {/* The Croatian opening quote in the slab the section titles use.
@@ -246,47 +246,57 @@ export function Reviews() {
           The ratio goes in as custom properties, one per twin, because the
           phone twin may be a different shape and a media query picks which
           applies; inline styles cannot ask one. */}
-      {cover && (
-        <div className="px-gutter">
-          <div
-            className="relative aspect-(--ratio-phone) w-full bg-surface md:aspect-(--ratio) md:h-[min(40svh,22rem)] md:w-auto md:max-w-full"
-            style={
-              {
-                '--ratio': aspectOf(cover),
-                '--ratio-phone': aspectOf(coverPhone ?? cover),
-              } as React.CSSProperties
-            }
-          >
-            <Photo
-              photo={cover}
-              mobile={coverPhone}
-              kind="page"
-              fill
-              alt={cover.alt}
-              sizes="(min-width: 48rem) 44rem, 100vw"
-            />
+      {/* Photograph and reviews side by side from `lg`, stacked below it.
+          Side by side the section is only as tall as the photograph, so
+          reading to the end of a review never scrolls the arrows away —
+          stacked, the strip sat under the photo and pushed them off the
+          top of the screen. Below `lg` there is no room for two columns
+          and no arrows to lose: the strip is swiped. */}
+      <div className="flex flex-col gap-lg lg:flex-row lg:items-start lg:gap-0">
+        {cover && (
+          <div className="px-gutter lg:shrink-0 lg:pr-0">
+            <div
+              className="relative aspect-(--ratio-phone) w-full bg-surface md:aspect-(--ratio) md:h-[min(40svh,22rem)] md:w-auto md:max-w-full"
+              style={
+                {
+                  '--ratio': aspectOf(cover),
+                  '--ratio-phone': aspectOf(coverPhone ?? cover),
+                } as React.CSSProperties
+              }
+            >
+              <Photo
+                photo={cover}
+                mobile={coverPhone}
+                kind="page"
+                fill
+                alt={cover.alt}
+                sizes="(min-width: 48rem) 44rem, 100vw"
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {reviews.length === 0 ? (
-        <p className="m-0 px-gutter text-lead text-ink-subtle">Još nema recenzija.</p>
-      ) : (
-        // Focusable so a keyboard can scroll it with the arrow keys; the
-        // label is what a screen reader announces on arrival.
-        <ul
-          ref={listRef}
-          onScroll={measure}
-          tabIndex={0}
-          aria-label="Recenzije klijenata"
-          className="m-0 flex list-none snap-x snap-mandatory scroll-px-gutter gap-lg overflow-x-auto px-gutter pb-2xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          data-reveal
-        >
-          {reviews.map((review) => (
-            <ReviewItem key={review.id} review={review} />
-          ))}
-        </ul>
-      )}
+        {reviews.length === 0 ? (
+          <p className="m-0 px-gutter text-lead text-ink-subtle lg:flex-1">
+            Još nema recenzija.
+          </p>
+        ) : (
+          // Focusable so a keyboard can scroll it with the arrow keys; the
+          // label is what a screen reader announces on arrival.
+          <ul
+            ref={listRef}
+            onScroll={measure}
+            tabIndex={0}
+            aria-label="Recenzije klijenata"
+            className="m-0 flex min-w-0 list-none snap-x snap-mandatory scroll-px-gutter gap-lg overflow-x-auto px-gutter pb-2xs [scrollbar-width:none] lg:flex-1 [&::-webkit-scrollbar]:hidden"
+            data-reveal
+          >
+            {reviews.map((review) => (
+              <ReviewItem key={review.id} review={review} />
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   )
 }
