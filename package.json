@@ -3,15 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
-    "build": "npm run media && react-router build",
+    "dev": "npm run manifest && react-router dev",
+    "build": "npm run manifest && react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "media": "node scripts/build-media.mjs",
-    "dev:phone": "react-router dev --host",
+    "manifest": "node --env-file-if-exists=.env scripts/fetch-manifest.mjs",
+    "sync": "node --env-file-if-exists=.env scripts/sync-drive.mjs",
+    "check:drive": "node --env-file-if-exists=.env scripts/check-drive.mjs",
+    "dev:phone": "npm run manifest && react-router dev --host",
     "preview:phone": "node scripts/serve.mjs"
   },
   "dependencies": {

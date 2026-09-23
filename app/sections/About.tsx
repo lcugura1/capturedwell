@@ -1,10 +1,17 @@
 import { Photo } from '~/components/Photo'
 import { SectionTitle } from '~/components/SectionTitle'
-import pageImages from '~/data/page-images.json'
+import { gallery } from '~/lib/gallery'
 import { SITE } from '~/lib/site'
-import type { Renderable } from '~/lib/images'
 
-const portrait = (pageImages as Record<string, Renderable>)['damir']
+/**
+ * The newest image in the `o-meni` folder on Drive, with `o-meni-mobitel`
+ * standing in for it on phones when that folder has one.
+ *
+ * Absent until the first of them has something in it, which the placeholder
+ * below covers — the About section has to render on a fresh bucket.
+ */
+const portrait = gallery.pages.about
+const portraitPhone = portrait ? gallery.pages.aboutMobile : undefined
 
 export function About() {
   return (
@@ -31,9 +38,10 @@ export function About() {
         {portrait ? (
           <Photo
             photo={portrait}
+            mobile={portraitPhone}
             kind="page"
             fill
-            alt={`${SITE.owner} u studiju, sjedi ispred bež pozadine`}
+            alt={portrait.alt || `${SITE.owner}, portret`}
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         ) : (
@@ -56,7 +64,7 @@ export function About() {
             Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
           </p>
           <p className="m-0 text-pretty">
-            Radim s parovima, obiteljima i brendovima.
+            Radim s parovima, brendovima i organizatorima evenata.
           </p>
         </div>
       </div>

@@ -1,9 +1,14 @@
 /**
- * Public R2 base. Set at build time; falls back to a relative path so the
- * site still renders (with broken images) rather than crashing when the
- * variable is missing in a fresh checkout.
+ * Where the renditions are served from.
+ *
+ * The bucket's own custom domain, so images come from R2 directly and never
+ * through the site's Worker. `VITE_MEDIA_BASE` overrides it for pointing a
+ * local build at a different bucket; the default is the real one, so a fresh
+ * checkout with no environment renders real photographs rather than 404s.
  */
-const BASE = (import.meta.env.VITE_MEDIA_BASE as string | undefined) ?? '/media'
+const BASE =
+  (import.meta.env.VITE_MEDIA_BASE as string | undefined) ??
+  'https://img.capturedwell.com'
 
 /** The widths the upload pipeline generates. Never upscales past the original. */
 export const WIDTHS = [400, 800, 1200, 1600, 2400] as const
@@ -26,7 +31,12 @@ export type Renderable = {
 /** `img/` is gallery content; `page/` is furniture that belongs to a route. */
 export type Kind = 'img' | 'page'
 
-export function src(image: Renderable, width: number, format: Format, kind: Kind = 'img') {
+export function src(
+  image: Renderable,
+  width: number,
+  format: Format,
+  kind: Kind = 'img',
+) {
   return `${BASE}/${kind}/${image.id}/${width}.${format}`
 }
 

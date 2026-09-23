@@ -157,3 +157,8 @@ build
 # of actual design. The .dc.html artboards next to it are the part worth
 # keeping; the file stays on disk for reference but out of the history.
 /design/canvas/capturedwell-web.html
+
+# Gallery manifest, fetched from R2 by scripts/fetch-manifest.mjs before every
+# build. Not committed: R2 is the source, and a checked-in copy would go stale
+# the moment Damir adds a photo.
+app/data/gallery.json

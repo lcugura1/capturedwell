@@ -7,11 +7,24 @@ export type Rendition = {
 }
 
 export type Photo = {
-  /** Stable for the life of the photo; never reused, never rewritten. */
+  /**
+   * Stable for the life of the photo; never reused, never rewritten.
+   *
+   * Derived from the Drive file id and the checksum of its contents, so
+   * replacing a file produces a new id and the year-long cache on the
+   * renditions stays correct without a purge.
+   */
   id: string
   category: CategoryId
-  /** Position within the category. Lower first. */
-  order: number
+  /**
+   * When the photo appeared on Drive, from `createdTime`. Newest first.
+   *
+   * There is no hand-set order any more: ordering a gallery meant an admin
+   * to do it in, and the admin is what the Drive sync replaced. Damir
+   * controls the order by when he adds a photo, which is the one lever a
+   * folder gives him.
+   */
+  addedAt: string
   /** Intrinsic size of the original, for aspect-ratio and srcset sizing. */
   width: number
   height: number
@@ -22,10 +35,45 @@ export type Photo = {
   /** Base64 data URI, ~24px wide. Rendered instantly as a blur placeholder. */
   lqip: string
   /**
-   * Photos that stay on the site permanently. Sorted to the top of their
-   * category, and the admin asks for confirmation before deleting one.
+   * A number Damir put at the front of the file name on Drive, if he did.
+   *
+   * Absent on most photos, and meant to be: it exists for the handful he
+   * wants in a particular place, and everything else keeps sorting itself.
    */
-  pinned?: boolean
+  rank?: number
+}
+
+/**
+ * Where a fixed page image goes. Not a category, and not in the grid.
+ *
+ * `hero` is the cover photograph and `about` the portrait; each comes from
+ * its own Drive folder, so both are Damir's choice rather than something the
+ * code works out for him.
+ *
+ * The `Mobile` twins are optional overrides for phones, from their own
+ * `-mobitel` folders. A landscape image cropped to a phone's narrow band
+ * usually loses its subject, and no amount of `object-position` fixes a
+ * photograph composed for a different shape — only a different photograph
+ * does. Leave the folder empty and the phone shows the same one as everything
+ * else.
+ */
+export type PageSlot = 'hero' | 'heroMobile' | 'about' | 'aboutMobile'
+
+/**
+ * An image that belongs to a section rather than to a category.
+ *
+ * Same renditions and same LQIP as a gallery photo, deliberately not a
+ * `Photo`: it has no category, and nothing about it should ever surface in a
+ * category grid or the lightbox.
+ */
+export type PageImage = {
+  id: string
+  addedAt: string
+  width: number
+  height: number
+  widths: number[]
+  alt: string
+  lqip: string
 }
 
 export type Gallery = {
@@ -33,19 +81,47 @@ export type Gallery = {
   version: number
   updatedAt: string
   photos: Photo[]
+  /** Empty until the matching Drive folder has something in it. */
+  pages: Partial<Record<PageSlot, PageImage>>
 }
 
 export const EMPTY_GALLERY: Gallery = {
   version: 0,
   updatedAt: new Date(0).toISOString(),
   photos: [],
+  pages: {},
 }
 
-/** Photos in one category, pinned first, then by explicit order. */
+/**
+ * Photos in one category: the ones Damir numbered first, then the rest.
+ *
+ * Numbered photos lead, highest number first, because that is how he asked
+ * for it — the same direction as everything else here, where the newest
+ * thing is the thing in front.
+ *
+ * Everything unnumbered falls in behind, newest first. That is the common
+ * case and needs no work from him; numbering is for the few photographs
+ * whose position he actually cares about.
+ *
+ * Ties break on id so the order is total: two photos dropped into a folder
+ * in the same operation share a `createdTime` to the minute — Drive stamps a
+ * whole batch alike — and an unstable sort would shuffle them between builds
+ * for no reason a visitor could see.
+ */
 export function photosInCategory(gallery: Gallery, category: CategoryId): Photo[] {
+  const byRecency = (a: Photo, b: Photo) =>
+    b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id)
+
   return gallery.photos
     .filter((p) => p.category === category)
-    .sort((a, b) => Number(b.pinned ?? false) - Number(a.pinned ?? false) || a.order - b.order)
+    .sort((a, b) => {
+      if (a.rank !== undefined && b.rank !== undefined) {
+        return b.rank - a.rank || byRecency(a, b)
+      }
+      if (a.rank !== undefined) return -1
+      if (b.rank !== undefined) return 1
+      return byRecency(a, b)
+    })
 }
 
 /** Aspect ratio, guarding against a malformed manifest entry. */
