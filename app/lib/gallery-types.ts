@@ -58,12 +58,7 @@ export type Photo = {
  * else.
  */
 export type PageSlot =
-  | 'hero'
-  | 'heroMobile'
-  | 'about'
-  | 'aboutMobile'
-  | 'reviews'
-  | 'reviewsMobile'
+  'hero' | 'heroMobile' | 'about' | 'aboutMobile' | 'reviews' | 'reviewsMobile'
 
 /**
  * An image that belongs to a section rather than to a category.
@@ -153,9 +148,18 @@ export function photosInCategory(gallery: Gallery, category: CategoryId): Photo[
     })
 }
 
-/** Newest first; ties on id, for the same reason as `photosInCategory`. */
-export function reviewsNewestFirst(gallery: Gallery): Review[] {
-  return [...(gallery.reviews ?? [])].sort(
+/**
+ * Every review, newest first, once each.
+ *
+ * Takes several lists because reviews arrive from two places — the ones
+ * carried over from Wfolio live in the repository, and the ones approved
+ * since arrive in the manifest — and a review in both counts once. Ties on
+ * id, for the same reason as `photosInCategory`.
+ */
+export function reviewsNewestFirst(...lists: (Review[] | undefined)[]): Review[] {
+  const byId = new Map<string, Review>()
+  for (const review of lists.flatMap((list) => list ?? [])) byId.set(review.id, review)
+  return [...byId.values()].sort(
     (a, b) => b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id),
   )
 }

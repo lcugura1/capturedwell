@@ -85,8 +85,9 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
       (3 na niskim ekranima) uz „pročitaj cijelu". Izmjereno: cijela sekcija stane na
       1920×1080, 1440×900, 1280×800 i 1024×768; na 1280×720 imena padnu tik ispod pregiba.
       Recenzije se na stranici vide tek s R2; dotad samo uz lokalni fixture.
-- [ ] **R2 — objava kroz sync.** Privatni bucket, `approved/` → renditions + `reviews` u
-      manifestu. Seed skripta prenese 8 Wfolio recenzija kao odobrene.
+- [ ] **R2 — objava kroz sync.** Privatni bucket, `approved/` → `reviews` u manifestu.
+      8 Wfolio recenzija ne ide kroz bucket: žive u `app/data/reviews-wfolio.json` (sadržaj,
+      kao tekst O meni) i spajaju se s onima iz manifesta u `reviewsNewestFirst`.
 - [ ] **R3 — forma i API.** Forma, Turnstile, `POST /api/recenzije`,
       `pending/`. Stranica postaje Worker sa skriptom (`run_worker_first: ["/api/*"]`).
 - [ ] **R4 — moderacija.** Mail s potpisanim linkovima, stranica potvrde, POST odluke,
@@ -105,6 +106,10 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
 - Banner se **ne reže**: okvir preuzima proporcije same fotke. Na mobitelu puna širina, iznad
   toga visina `min(40svh, 22rem)` i širina iz omjera, poravnato s naslovom. Strelice su
   glifovi iz lightboxa (`‹` senf, `›` hrđa). Damirova fotka je u `recenzije/` od 2026-09-23.
+- Od `lg` recenzije stoje u stupcu uz fotku. Traka se sama pomiče svakih 5 s (s kraja na
+  početak) dok posjetitelj ne klikne, tipka ili fokusira bilo što; ne kad je izvan ekrana
+  ni uz `prefers-reduced-motion`. Oba ruba trake se gase maskom na širinu gutter-a, da tekst
+  ne udara u fotku ni u rub ekrana.
 - Alt bannera je generički („Fotografija Damira Sukopa"). Bolji ide u polje *Opis* fotke na Driveu.
 - Mateov link na Wfoliju je `https://@teskiplus` (neispravan) — prenosi se kao
   `instagram.com/teskiplus`. Potvrditi s Damirom.

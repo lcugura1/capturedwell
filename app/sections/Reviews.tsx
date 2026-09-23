@@ -5,8 +5,14 @@ import { Dot } from '~/components/Dot'
 import { gallery } from '~/lib/gallery'
 import { reviewsNewestFirst, type Review } from '~/lib/gallery-types'
 import { aspectOf } from '~/lib/images'
+// The reviews Damir had on Wfolio, carried over as they were written. In the
+// repository rather than the bucket because they will never change and were
+// never approved through the site: they are content, like the About text.
+import importedJson from '~/data/reviews-wfolio.json'
 
-const reviews = reviewsNewestFirst(gallery)
+const imported = importedJson as Review[]
+
+const reviews = reviewsNewestFirst(imported, gallery.reviews)
 
 /**
  * The one photograph above the reviews, from the `recenzije` folder on Drive,
@@ -128,6 +134,21 @@ function ReviewItem({ review }: { review: Review }) {
   )
 }
 
+/** How long each review holds before the strip moves on by itself. */
+const AUTOPLAY_MS = 5000
+
+/** Move the strip by one review, either way. */
+function stepStrip(list: HTMLElement, direction: 1 | -1) {
+  const item = list.querySelector('li')
+  if (!item) return
+  const gap = parseFloat(getComputedStyle(list).columnGap) || 0
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  list.scrollBy({
+    left: direction * (item.getBoundingClientRect().width + gap),
+    behavior: still ? 'auto' : 'smooth',
+  })
+}
+
 /**
  * The lightbox's arrows, brought out of the dialog: a guillemet from the
  * slab face, mustard back and rust forward. On this site that shape and those
@@ -198,16 +219,54 @@ export function Reviews() {
   }, [measure])
 
   const step = (direction: 1 | -1) => {
-    const list = listRef.current
-    const item = list?.querySelector('li')
-    if (!list || !item) return
-    const gap = parseFloat(getComputedStyle(list).columnGap) || 0
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    list.scrollBy({
-      left: direction * (item.getBoundingClientRect().width + gap),
-      behavior: still ? 'auto' : 'smooth',
-    })
+    if (listRef.current) stepStrip(listRef.current, direction)
   }
+
+  // The strip turns on its own until the visitor does anything at all.
+  //
+  // Any press, tap or key anywhere on the page ends it for good, not just a
+  // touch on the strip: someone who has started doing something wants the
+  // page to hold still, and a strip that starts again the moment they stop
+  // is one they have to keep fighting. That also makes it the pause control
+  // WCAG 2.2.2 asks moving content to have.
+  //
+  // Only while at least half of it is on screen, and not at all for anyone
+  // who asked for reduced motion.
+  useEffect(() => {
+    const list = listRef.current
+    if (!list || reviews.length < 2) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let visible = false
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry?.isIntersecting ?? false
+      },
+      { threshold: 0.5 },
+    )
+    observer.observe(list)
+
+    const timer = window.setInterval(() => {
+      if (!visible || document.hidden) return
+      // From the end, back to the first rather than stopping: a strip that
+      // advances and then sits still reads as broken.
+      if (list.scrollLeft + list.clientWidth >= list.scrollWidth - 1) {
+        list.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        stepStrip(list, 1)
+      }
+    }, AUTOPLAY_MS)
+
+    const INTERACTIONS = ['pointerdown', 'keydown', 'focusin'] as const
+    const stop = () => {
+      window.clearInterval(timer)
+      observer.disconnect()
+      for (const type of INTERACTIONS) document.removeEventListener(type, stop, true)
+    }
+    // Capture phase, so nothing on the page can swallow the event first.
+    for (const type of INTERACTIONS) document.addEventListener(type, stop, true)
+    return stop
+  }, [])
 
   return (
     <section id="recenzije" className="flex scroll-mt-header flex-col gap-lg">
@@ -283,12 +342,18 @@ export function Reviews() {
         ) : (
           // Focusable so a keyboard can scroll it with the arrow keys; the
           // label is what a screen reader announces on arrival.
+          //
+          // Both ends of the strip fade out across its own padding — a
+          // gutter's width — so text dissolves instead of being sliced off:
+          // on the left against the photograph (or the screen edge on a
+          // phone), on the right against the edge of the screen. `black` is
+          // mask alpha here, not a colour.
           <ul
             ref={listRef}
             onScroll={measure}
             tabIndex={0}
             aria-label="Recenzije klijenata"
-            className="m-0 flex min-w-0 list-none snap-x snap-mandatory scroll-px-gutter gap-lg overflow-x-auto px-gutter pb-2xs [scrollbar-width:none] lg:flex-1 [&::-webkit-scrollbar]:hidden"
+            className="m-0 flex min-w-0 list-none snap-x snap-mandatory scroll-px-gutter gap-lg overflow-x-auto px-gutter pb-2xs [scrollbar-width:none] lg:flex-1 [mask-image:linear-gradient(to_right,transparent,black_var(--spacing-gutter),black_calc(100%-var(--spacing-gutter)),transparent)] [&::-webkit-scrollbar]:hidden"
             data-reveal
           >
             {reviews.map((review) => (
