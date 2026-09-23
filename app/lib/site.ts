@@ -13,9 +13,15 @@ export const SITE = {
   name: 'capturedwell',
   owner: 'Damir Sukop',
   role: 'fotograf',
-  url: 'https://capturedwell.hr',
-  /** PLACEHOLDER — split so the address is never a literal mailto: in the HTML. */
-  email: { user: 'info', domain: 'capturedwell.hr' },
+  url: 'https://capturedwell.com',
+  /**
+   * Split so the address is never a literal `mailto:` in the served HTML.
+   *
+   * A Gmail address rather than one on the domain, deliberately: the account
+   * that controls the domain's DNS must not depend on mail *at* that domain
+   * to exist. See docs/plan-drive-sync.md, A1.
+   */
+  email: { user: 'capturedwell1', domain: 'gmail.com' },
   /** Set to null to hide the row entirely. */
   phone: '+385 95 711 9680' as string | null,
   instagram: {
@@ -45,6 +51,15 @@ export const SITE = {
 export const WORDMARK = `${SITE.name}_`
 
 export const EMAIL_TEXT = `${SITE.email.user}@${SITE.email.domain}`
+
+/**
+ * The subject line on an enquiry, so Damir can tell where it came from.
+ *
+ * Derived rather than written out. It was a literal in two files, and when
+ * the domain moved from .hr to .com both were left saying the old one — in
+ * the one string a client actually sees, sitting in their sent folder.
+ */
+export const ENQUIRY_SUBJECT = `Upit preko ${new URL(SITE.url).host}`
 
 /**
  * Builds the mailto: only when someone actually reaches for it.

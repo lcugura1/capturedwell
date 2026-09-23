@@ -1,7 +1,7 @@
 import { SectionTitle } from '~/components/SectionTitle'
 import { MailLink } from '~/components/MailLink'
 import { Mail } from '~/components/icons'
-import { SITE, EMAIL_TEXT } from '~/lib/site'
+import { SITE, EMAIL_TEXT, ENQUIRY_SUBJECT } from '~/lib/site'
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -43,7 +43,7 @@ export function Contact() {
             Za termine, upite i cijene najbrže je e-mailom.
           </p>
           <MailLink
-            subject="Upit preko capturedwell.hr"
+            subject={ENQUIRY_SUBJECT}
             className="inline-flex h-12 items-center gap-2.5 rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover"
           >
             <Mail className="size-4" />

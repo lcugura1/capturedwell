@@ -9,7 +9,7 @@
 
 **Klijent:** Damir Sukop, fotograf
 **Brand:** capturedwell (malim slovom, uvijek jedna riječ, bez razmaka)
-**Domena:** `capturedwell.hr`
+**Domena:** `capturedwell.com`
 **Cilj:** profesionalna portfolio stranica — galerija radova, predstavljanje fotografa, kontakt.
 
 **Branding pravila**
@@ -346,7 +346,7 @@ Nisu instalirani, ali razmisliti kasnije: `chrome-devtools-mcp` (stvarni perform
 - **Faza 4 — admin.** Cloudflare Access, Worker API, drag & drop upload, image pipeline, reorder, brisanje.
   - `thinking-orbs` (instaliran, MIT, 7.7 KB gzip, bez ovisnosti) čeka ovdje. Na javnoj stranici nema posla: sve je prerenderirano, a u lightboxu se nikad ne pokaže jer mreža fotografija već preuzme **istu** varijantu koju lightbox traži — `img.complete` je `true` prije prvog kadra, čak i na 20 kB/s. U adminu ima pravi posao: resize 20 MB originala u browseru traje sekunde.
 - **Faza 5 — sadržaj i polish.** O meni, kontakt (`mailto:`), SEO (`hr` meta, Open Graph, JSON-LD `LocalBusiness`), sitemap.
-- **Faza 6 — lansiranje.** `capturedwell.hr`, analitika bez kolačića (Cloudflare Web Analytics), backup strategija za `originals/`.
+- **Faza 6 — lansiranje.** `capturedwell.com`, analitika bez kolačića (Cloudflare Web Analytics), backup strategija za `originals/`.
 
 ---
 

@@ -213,7 +213,7 @@ npx wrangler secret put GITHUB_TOKEN                  # iz A4/10
 
 ### B1. Ažurirati `CLAUDE.md`
 
-- **Domena `capturedwell.hr` → `capturedwell.com`** svugdje: `CLAUDE.md` (§1, §9), `app/lib/site.ts` (`url`, `email.domain`), `subject` u `Hero.tsx` i `Contact.tsx`.
+- ~~**Domena `capturedwell.hr` → `capturedwell.com`** svugdje.~~ ✅ 2026-09-23. Usput: `subject` je bio prepisan u `Hero.tsx` i `Contact.tsx` i oba su ostala na staroj domeni — sada se izvodi iz `SITE.url` kao `ENQUIRY_SUBJECT`. Kontakt adresa je `capturedwell1@gmail.com`, ne na domeni (obrazloženje u A1).
 
 - Sekcija 3: makni `/admin/*`, `/api/admin/*`, Access i „mini admin gumb". Umjesto toga: Drive → Worker cron → Action → R2.
 - Sekcija 4: upload iz browsera → sync s Drivea; R2 struktura bez `originals/`; novi oblik manifesta; `gallery.json` se više ne importa iz repozitorija nego ga build povuče.

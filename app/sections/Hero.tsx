@@ -6,7 +6,7 @@ import { scrollToSection } from '~/lib/scroll-to-section'
 import { Mail } from '~/components/icons'
 import { gallery } from '~/lib/gallery'
 import { aspect } from '~/lib/gallery-types'
-import { SITE, WORDMARK } from '~/lib/site'
+import { ENQUIRY_SUBJECT, SITE, WORDMARK } from '~/lib/site'
 
 /** One retro tone per line, cycled. */
 const SHOOT_COLOURS = [
@@ -140,7 +140,7 @@ export function Hero() {
               pogledaj galeriju
             </a>
             <MailLink
-              subject="Upit preko capturedwell.hr"
+              subject={ENQUIRY_SUBJECT}
               className="inline-flex h-12 items-center gap-xs rounded-pill border border-line-strong px-md text-label text-ink transition-colors duration-150 ease-out-soft hover:border-ink"
             >
               <Mail className="size-4" />
