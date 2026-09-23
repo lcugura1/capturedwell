@@ -559,6 +559,32 @@ export function Lightbox({
           className={`right-gutter top-1/2 hidden -translate-y-1/2 sm:block ${CONTROLS.next}`}
         />
       )}
+
+      {/* Where you are in the set.
+          Sits at the foot of the padding band the photo is centred in,
+          mirroring the × at the head of it, and stays put while the track
+          scrolls underneath — it describes the set, not the photograph.
+
+          Quicksand, not the display slab the controls use: this is a
+          reading, not a control, and slab numerals at that weight would
+          shout louder than the arrows. The current number is at full
+          strength and the total is not, so the pair reads as "here, of
+          this many" without a word of label. `tabular-nums` keeps it from
+          twitching as the digits change width.
+
+          Hidden from screen readers: the dialog's own label already says
+          "3 od 16", and this would be the same sentence twice. And absent
+          for a single photograph, where 1/1 is noise. */}
+      {photos.length > 1 && (
+        <p
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-lg m-0 text-center text-label tabular-nums text-ink-subtle"
+        >
+          <span className="text-ink">{index + 1}</span>
+          <span className="px-1.5">/</span>
+          {photos.length}
+        </p>
+      )}
     </div>
   )
 }
