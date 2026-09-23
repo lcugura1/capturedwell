@@ -4,7 +4,7 @@
  * Four sizes, each with a fixed job, so the motif stays a signature rather
  * than turning into decoration:
  *   xs (4px)  separator between meta values
- *   sm (5px)  active nav item, caption prefix, the admin dot
+ *   sm (5px)  active nav item, caption prefix, what Damir shoots
  *   md (6px)  section label prefix, category card title
  *   lg (8px)  end of a section
  */

@@ -1,9 +1,11 @@
-import { type RouteConfig, index, route } from '@react-router/dev/routes'
+import { type RouteConfig, index } from '@react-router/dev/routes'
 
 export default [
-  // The site is one page; the menu scrolls to anchors inside it.
+  // The whole site is one page; the menu scrolls to anchors inside it.
+  //
+  // There is no second route. There used to be `/admin`, for a dashboard
+  // behind Cloudflare Access — that plan was replaced by the Drive sync,
+  // which needs no page of its own because Damir does the work in a folder.
+  // See docs/plan-drive-sync.md.
   index('routes/home.tsx'),
-  // Admin is the one real route, a separate chunk behind Cloudflare Access.
-  // It is never imported from public code, so visitors do not download it.
-  route('admin/*', 'routes/admin.tsx'),
 ] satisfies RouteConfig

@@ -69,9 +69,11 @@ Free tier: 1 GB storage, **5 GB egress/mj**, i **projekt se auto-pauzira nakon 7
   #galerija      → sve četiri kategorije, filter umjesto navigacije
   #o-meni        → portret + biografija
   #kontakt       → mailto, telefon, instagram
-/admin/*         → jedina prava ruta; Cloudflare Access štiti na edgeu
-/api/admin/*     → Worker; provjerava Access JWT; jedini put do R2 writea
 ```
+
+**Nema druge rute.** `/admin` je postojao za dashboard iza Cloudflare Accessa; taj
+plan je zamijenjen sinkronizacijom s Google Drivea, koja ne treba vlastitu stranicu
+jer Damir radi u folderu. Detalji u [docs/plan-drive-sync.md](docs/plan-drive-sync.md).
 
 **Kategorije su stanje, ne rute.** Klik na `vjenčanja` mijenja `useState`, ne URL.
 
@@ -81,16 +83,11 @@ Sve četiri mreže se renderiraju, neaktivne nose `hidden`. Dva razloga, oba nos
 
 **Cijena koju smo platili:** izgubili smo `/galerija/vjencanja` kao zasebnu stranicu. Za „fotograf vjenčanja Zagreb" sad se natječe jedna stranica umjesto četiri ciljane. Ako organski promet postane bitan, rješenje nije vraćanje rutanja nego nekoliko prerenderiranih landing stranica koje vode na `#galerija`.
 
-**Kako radi „mini admin gumb"**
-1. Diskretan gumb/ikonica (footer ili `Ctrl+Shift+A`) vodi na `/admin`.
-2. Cloudflare Access presreće zahtjev **prije nego dođe do naše aplikacije** i traži prijavu. Neautorizirani ne prolaze — nikakva logika u frontendu nije sigurnosna granica.
-3. Nakon prijave postoji `CF_Authorization` cookie. Frontend zove `GET /api/me`; Worker verificira Access JWT i vraća identitet → tek tada se prikazuju admin kontrole.
-
 **Nepregovorljiva sigurnosna pravila**
-- R2 credentials i Access secret žive **isključivo** kao Worker secrets (`wrangler secret put`). Nikad u `VITE_*` varijablama — sve što ima `VITE_` prefiks završi u bundleu koji vidi svatko.
-- Worker verificira Access JWT (`Cf-Access-Jwt-Assertion`) na **svakoj** `/api/admin/*` ruti, protiv JWKS-a tima. Provjera samo cookiea nije dovoljna.
-- Public R2 bucket služi samo za čitanje slika. Upload ide isključivo kroz Worker.
-- Admin kod se učitava dinamičkim importom. Običan posjetitelj ga ne smije skinuti.
+- Tajne (R2 ključevi, service account JSON, GitHub token) žive **isključivo** kao GitHub secrets i Worker secrets (`wrangler secret put`), te lokalno u gitignoranom `.env`. Nikad u `VITE_*` varijablama — sve što ima `VITE_` prefiks završi u bundleu koji vidi svatko.
+- Public R2 bucket služi samo za čitanje slika. Pisati u njega smije samo GitHub Action, svojim tokenom ograničenim na taj jedan bucket.
+- Workflow se okida samo na `schedule` i `workflow_dispatch`, nikad na `pull_request_target`.
+- Logovi ispisuju brojeve i Drive id-eve, nikad imena fajlova: repozitorij je javan, a imena fajlova su imena klijenata.
 
 ---
 
@@ -270,13 +267,12 @@ Pozadina stakla je **78 % neprozirna, namjerno.** Efekt je efekt, ali tekst na n
 
 ```
 src/
-  routes/          # home.tsx (cijela stranica) + admin.tsx
+  routes/          # home.tsx — jedina ruta
   sections/        # Hero, Gallery, About, Contact — sekcije jedne stranice
   hooks/           # useScrollSpy — aktivna točka u izborniku
   components/      # dijeljene prezentacijske komponente
   features/
     gallery/       # javna galerija: grid, lightbox, data loading
-    admin/         # cijeli admin — lazy-loaded, nikad importan iz javnog koda
   lib/
     categories.ts  # jedini izvor istine za id ↔ slug ↔ hrvatski naziv
     gallery-types.ts
@@ -288,8 +284,8 @@ scripts/
   build-media.mjs  # originali -> varijante + manifest
   shoot.mjs        # snimi stranicu na tri veličine ekrana, izmjeri layout
   rasterize.mjs    # SVG -> PNG preko instaliranog Chromea
-media-src/         # originali za seed (Damirovi idu ovdje)
-worker/            # Cloudflare Worker: /api/admin/*, /api/me
+media-src/         # originali za seed — briše se kad odu na Drive
+worker/            # Cloudflare Worker: cron okidač za sync (Faza B4)
 content/           # statički hrvatski tekstovi (o-meni, kontakt) — uređuju se u kodu
 design/            # brand assetovi, inspiracija, PNG arhiva canvasa — ne build input
 ```
@@ -299,7 +295,11 @@ design/            # brand assetovi, inspiracija, PNG arhiva canvasa — ne buil
 - Hookovi: `useNešto.ts`. Utilityji: `camelCase.ts`.
 - Tipovi manifesta definirani **jednom** u `src/lib/gallery-types.ts`; Worker i frontend dijele isti tip.
 - Bez `any`. Bez `@ts-ignore` bez komentara koji objašnjava zašto.
-- Bez barrel `index.ts` fajlova koji re-exportaju sve — razbijaju tree-shaking i lazy loading admina.
+- Bez barrel `index.ts` fajlova koji re-exportaju sve — razbijaju tree-shaking.
+
+> **Napomena (2026-09-23):** sekcije 4, 8 i 9 još opisuju admin iz Faze 4 i seed iz
+> `media-src/`. Prepisuju se u koraku B1 plana; do tada je izvor istine za sve što
+> se tiče fotografija [docs/plan-drive-sync.md](docs/plan-drive-sync.md).
 
 ---
 

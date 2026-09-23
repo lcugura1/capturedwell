@@ -54,9 +54,6 @@
      Watch the inactive filter pills: there the outline is most of what
      separates a button from a word. */
   --color-line-strong: #3a3a3a;
-  /* Same value as line-strong today, different job: the admin dot in the
-     footer. Kept apart so one can move without dragging the other. */
-  --color-faint: #3a3a3a;
 
   /* ── ink (measured contrast against --color-bg) ───────────────────── */
   --color-ink: #ededed; /* 16.7:1 — headings, primary text */
@@ -133,7 +130,11 @@
      set as large as the wordmark stops being a heading and becomes a wall
      — but the phone end was timid: at 34px the one piece of personality on
      a phone screen was the same size as a paragraph. */
-  --text-section: clamp(2.875rem, calc(2.875rem + 4.375 * (100vw - 24.375rem) / 65.625), 7.25rem);
+  --text-section: clamp(
+    2.875rem,
+    calc(2.875rem + 4.375 * (100vw - 24.375rem) / 65.625),
+    7.25rem
+  );
   --text-section--line-height: 0.95;
   --text-section--letter-spacing: -0.01em;
   --text-section--font-weight: 400;
@@ -143,16 +144,28 @@
   --text-h1--letter-spacing: -0.015em;
   --text-h1--font-weight: 700;
 
-  --text-h2: clamp(1.625rem, calc(1.625rem + 0.875 * (100vw - 24.375rem) / 65.625), 2.5rem);
+  --text-h2: clamp(
+    1.625rem,
+    calc(1.625rem + 0.875 * (100vw - 24.375rem) / 65.625),
+    2.5rem
+  );
   --text-h2--line-height: 1.1;
   --text-h2--letter-spacing: -0.01em;
   --text-h2--font-weight: 600;
 
-  --text-lead: clamp(1.25rem, calc(1.25rem + 0.5 * (100vw - 24.375rem) / 65.625), 1.75rem); /* canvas 26px */
+  --text-lead: clamp(
+    1.25rem,
+    calc(1.25rem + 0.5 * (100vw - 24.375rem) / 65.625),
+    1.75rem
+  ); /* canvas 26px */
   --text-lead--line-height: 1.45;
   --text-lead--font-weight: 400;
 
-  --text-body: clamp(1.125rem, calc(1.125rem + 0.1875 * (100vw - 24.375rem) / 65.625), 1.3125rem); /* canvas 19px */
+  --text-body: clamp(
+    1.125rem,
+    calc(1.125rem + 0.1875 * (100vw - 24.375rem) / 65.625),
+    1.3125rem
+  ); /* canvas 19px */
   --text-body--line-height: 1.6;
   --text-body--font-weight: 400;
 
@@ -176,7 +189,11 @@
   /* The wordmark set as text, in the footer. The header uses the real
      logo (the SVG in components/Logo.tsx); the footer sets it as type,
      which is why this token exists. */
-  --text-mark: clamp(1.25rem, calc(1.25rem + 0.375 * (100vw - 24.375rem) / 65.625), 1.625rem);
+  --text-mark: clamp(
+    1.25rem,
+    calc(1.25rem + 0.375 * (100vw - 24.375rem) / 65.625),
+    1.625rem
+  );
   --text-mark--line-height: 1;
   --text-mark--letter-spacing: -0.01em;
   --text-mark--font-weight: 700;
@@ -192,8 +209,16 @@
   --spacing-3xl: clamp(3.5rem, calc(3.5rem + 3.5 * (100vw - 24.375rem) / 65.625), 7rem);
   /* Page gutter and header height are fixed by the design, not free
      choices — they line the wordmark up with the photo edges. */
-  --spacing-gutter: clamp(1.25rem, calc(1.25rem + 1.25 * (100vw - 24.375rem) / 65.625), 2.5rem);
-  --spacing-header: clamp(4.5rem, calc(4.5rem + 1.5 * (100vw - 24.375rem) / 65.625), 6rem);
+  --spacing-gutter: clamp(
+    1.25rem,
+    calc(1.25rem + 1.25 * (100vw - 24.375rem) / 65.625),
+    2.5rem
+  );
+  --spacing-header: clamp(
+    4.5rem,
+    calc(4.5rem + 1.5 * (100vw - 24.375rem) / 65.625),
+    6rem
+  );
   /* Photos sit 6px apart. Deliberately below the spacing scale: the
      grid should read as one surface, not as separate cards. */
   --spacing-photo-gap: 0.375rem;
@@ -341,6 +366,55 @@
    * phone pattern, and it is contained — the page itself still cannot pan,
    * which is the rule this does not break.
    */
+  /**
+   * The blur that stands in for a photograph until it decodes.
+   *
+   * Lives here rather than in an inline style because an art-directed photo
+   * has two of them, and which one belongs on screen is a media query's
+   * question. The breakpoint matches `PHONE` in components/Photo.tsx, and
+   * the two have to move together.
+   */
+  .lqip {
+    background-image: var(--lqip);
+    background-size: cover;
+    background-position: center;
+  }
+
+  @media (width < 48rem) {
+    .lqip {
+      background-image: var(--lqip-phone, var(--lqip));
+    }
+  }
+
+  /**
+   * The lightbox's photo track, and the same track once a photo is zoomed.
+   *
+   * `pan-x` is a division of labour: the browser keeps every sideways swipe,
+   * with its own momentum and snapping, and everything else — vertical drags,
+   * second fingers — reaches hooks/usePhotoGestures.ts untouched, with no
+   * `preventDefault` and no guessing at an axis the browser has already
+   * decided.
+   *
+   * Pinch is deliberately not left to the browser here. The browser's pinch
+   * zooms the page, which is a different thing from zooming the photograph:
+   * it magnifies the × and the arrows along with it, and no script can read
+   * or set it. Letting it through meant a photo zoomed by double tap could
+   * not then be adjusted by pinch, because the two gestures were driving two
+   * unrelated zooms. One zoom, every gesture.
+   *
+   * Zoomed, even the sideways split stops making sense — panning a magnified
+   * photograph goes in every direction, and the scroller underneath would
+   * answer the horizontal half of it by swiping to the next photo.
+   */
+  .photo-track {
+    touch-action: pan-x;
+  }
+
+  .photo-track-zoomed {
+    touch-action: none;
+    overflow: hidden;
+  }
+
   .rail {
     overflow-x: auto;
     /* Explicit, and load-bearing. Setting one axis to anything but
@@ -416,7 +490,7 @@
       /* Longer than the fade and on the overshooting curve: the panel is
          still settling after it has finished appearing, which is what
          makes it feel thrown rather than switched on. */
-      transform 420ms var(--ease-bounce),
+        transform 420ms var(--ease-bounce),
       visibility 0s linear;
   }
 
@@ -471,7 +545,7 @@
       opacity 0.5s var(--ease-out-soft),
       /* Slower than the fade, so the movement outlasts it and is the part
          you actually see. */
-      transform 0.85s var(--ease-out-soft);
+        transform 0.85s var(--ease-out-soft);
     /* Staggered by the hook, in seconds. */
     transition-delay: var(--reveal-delay, 0s);
   }

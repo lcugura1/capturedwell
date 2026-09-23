@@ -1,9 +1,9 @@
 /**
  * The only place category identity is defined.
  *
- * Categories are fixed: Damir cannot add or remove them from the admin.
- * Adding one is a code change, which is deliberate — the gallery section
- * and its filter both assume this set.
+ * Categories are fixed. Adding one is a code change, which is deliberate:
+ * the gallery section and its filter both assume this set, and the folder
+ * names on Drive are derived from it.
  *
  * `slug` no longer routes anywhere: the site is one page and categories are
  * a filter inside it. It stays because it is the stable, diacritic-free

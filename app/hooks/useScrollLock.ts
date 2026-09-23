@@ -29,8 +29,14 @@ export function useScrollLock(active = true) {
     body.style.top = `-${y}px`
     body.style.width = '100%'
     // Keeps the scrollbar's width reserved, so the page does not jump
-    // sideways as it disappears.
-    body.style.overflowY = 'scroll'
+    // sideways as it disappears — but only where a scrollbar takes width at
+    // all. Phones draw theirs as an overlay over the content, so there is no
+    // width to reserve, and forcing `scroll` on a pinned body instead painted
+    // a permanent mustard bar down the right edge of the photo viewer. The
+    // fix for a desktop jump had become a decoration on every phone.
+    if (window.innerWidth > document.documentElement.clientWidth) {
+      body.style.overflowY = 'scroll'
+    }
 
     return () => {
       body.style.position = previous.position

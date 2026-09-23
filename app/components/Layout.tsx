@@ -3,31 +3,25 @@ import { Footer } from './Footer'
 import { Logo } from './Logo'
 
 /**
- * Minimal chrome for /admin — the one page outside the single-page site.
+ * The frame every page sits in: logo, content, footer.
  *
- * It deliberately has no section nav: the anchors belong to the public page
- * and would scroll to nothing here.
+ * No section nav of its own — the anchors live in the sticky Header, which
+ * belongs to the one page that has sections.
  */
 export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex h-header items-center px-gutter">
-        <a href="/" className="h-[1.125rem] text-ink" aria-label="capturedwell — naslovnica">
+        <a
+          href="/"
+          className="h-[1.125rem] text-ink"
+          aria-label="capturedwell — naslovnica"
+        >
           <Logo className="block h-full" />
         </a>
       </header>
       <main className="flex-1">{children}</main>
       <Footer />
-    </div>
-  )
-}
-
-/** The small dotted label that opens most sections. */
-export function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex items-center gap-2.5 text-label text-ink-subtle">
-      <span aria-hidden="true" className="size-[0.375rem] rounded-pill bg-ink-subtle" />
-      <span>{children}</span>
     </div>
   )
 }

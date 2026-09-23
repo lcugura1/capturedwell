@@ -2,15 +2,12 @@ import { SITE, WORDMARK } from '~/lib/site'
 import { MailLink } from './MailLink'
 
 /**
- * The admin entry point is the grey dot on the right.
+ * Wordmark and credit on the left, the ways to reach Damir on the right.
  *
- * It is deliberately almost invisible, but that is presentation, not
- * security: /admin sits behind Cloudflare Access, which stops unauthorised
- * requests at the edge before they reach the app. Anyone who finds the dot
- * gets a login screen, which is the correct outcome.
- *
- * A plain <a>, not a <Link>: /admin is the one route outside the single
- * page, and it should be a real navigation rather than a client-side one.
+ * There was a fourth item here: a near-invisible grey dot linking to
+ * `/admin`. Both are gone — the dashboard it led to was replaced by the
+ * Drive sync, and a hidden link to a route that no longer exists is worse
+ * than no link at all.
  */
 export function Footer() {
   return (
@@ -34,9 +31,6 @@ export function Footer() {
           e-mail
         </MailLink>
         <span className="text-ink-subtle">© {new Date().getFullYear()}</span>
-        <a href="/admin" aria-label="Administracija" className="flex size-6 items-center justify-center">
-          <span aria-hidden="true" className="size-[0.3125rem] rounded-pill bg-faint" />
-        </a>
       </div>
     </footer>
   )

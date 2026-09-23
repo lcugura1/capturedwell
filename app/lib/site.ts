@@ -3,9 +3,9 @@ import { CATEGORIES } from './categories'
 /**
  * Everything about the business that is not a photo.
  *
- * Damir does not edit text through the admin — that was a deliberate call, so
- * copy lives in code and changes through a commit. This file is where a
- * non-developer should be pointed first.
+ * Damir edits photographs on Drive and nothing else: copy lives in code and
+ * changes through a commit. That was a deliberate call, and it is why there
+ * is no admin. This file is where a non-developer should be pointed first.
  *
  * TODO(Damir): every value marked PLACEHOLDER needs the real thing before launch.
  */
