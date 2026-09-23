@@ -72,6 +72,16 @@ export function Contact() {
               {SITE.instagram.handle}
             </a>
           </Row>
+          <Row label="youtube">
+            <a
+              href={SITE.youtube.url}
+              target="_blank"
+              rel="me noreferrer"
+              className="text-ink hover:text-ink-muted"
+            >
+              {SITE.youtube.label}
+            </a>
+          </Row>
           <div className="border-t border-line" />
         </div>
       </div>

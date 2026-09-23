@@ -50,6 +50,14 @@ export function Footer() {
           >
             instagram
           </a>
+          <a
+            href={SITE.youtube.url}
+            rel="me noreferrer"
+            target="_blank"
+            className="text-ink-muted transition-colors duration-150 ease-out-soft hover:text-ink"
+          >
+            youtube
+          </a>
           <MailLink className="text-ink-muted transition-colors duration-150 ease-out-soft hover:text-ink">
             e-mail
           </MailLink>

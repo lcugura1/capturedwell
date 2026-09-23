@@ -28,6 +28,15 @@ export const SITE = {
     handle: '@capturedwell_',
     url: 'https://instagram.com/capturedwell_',
   },
+  youtube: {
+    /**
+     * The channel's name rather than its handle: YouTube appended digits to
+     * `@damirsukop` when it was taken, and a row reading `@damirsukop8466`
+     * looks like a typo.
+     */
+    label: 'Damir Sukop',
+    url: 'https://www.youtube.com/@damirsukop8466',
+  },
   /** PLACEHOLDER — used in the About page and the JSON-LD area served. */
   city: 'Zagreb',
   /**
