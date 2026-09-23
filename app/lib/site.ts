@@ -79,12 +79,13 @@ export function mailtoHref(subject?: string): string {
  * Turnstile's site key for the review form. Public by design — it is in the
  * HTML of every page that shows a widget — so it lives here, not in a secret.
  *
- * Cloudflare's always-pass test key until the real widget exists, and in
- * development always: the real key refuses `localhost`. The Worker's secret
- * has to be the matching test secret for as long as this is the test key.
+ * Widget `capturedwell-recenzije`, for capturedwell.com and every
+ * *.capturedwell1.workers.dev preview. In development Cloudflare's
+ * always-pass test key instead: the real one refuses `localhost`, and
+ * `.dev.vars` carries the matching test secret.
  */
 const TURNSTILE_TEST_KEY = '1x00000000000000000000AA'
-const TURNSTILE_KEY: string | null = null
+const TURNSTILE_KEY: string | null = '0x4AAAAAAFBcdRxnmOYX2FWr'
 
 export const TURNSTILE_SITE_KEY =
   import.meta.env.DEV || !TURNSTILE_KEY ? TURNSTILE_TEST_KEY : TURNSTILE_KEY
