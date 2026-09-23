@@ -1,13 +1,42 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // The public site: the prerendered build, served as static assets. No
-  // Worker script — there is nothing to compute per request.
+  // The public site: the prerendered build, served as static assets. The
+  // script runs only for `/api/*` — the review form and Damir's decisions,
+  // docs/plan-recenzije.md. Every other request is a file, and never
+  // reaches it.
   "name": "capturedwell",
+  "main": "worker/site/index.js",
   "compatibility_date": "2026-09-01",
-  "assets": { "directory": "./build/client" },
+  "assets": {
+    "directory": "./build/client",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+  },
 
   // Served from capturedwell.<account>.workers.dev until Damir approves it.
   // The domain still points at Wfolio; moving it is plan section C, and is a
   // route added here, not a change to how the site is built.
   "workers_dev": true,
+  // A URL per uploaded version, for trying a change before it is live:
+  // `npx wrangler versions upload`.
+  "preview_urls": true,
+
+  // Private: reviews wait here until Damir decides. Never the media bucket,
+  // which is public in its entirety.
+  "r2_buckets": [{ "binding": "REVIEWS", "bucket_name": "capturedwell-reviews" }],
+
+  // Email Routing can send only to verified destination addresses, which is
+  // exactly who this mails: Damir.
+  "send_email": [{ "name": "EMAIL" }],
+
+  "vars": {
+    "REVIEW_MAIL_FROM": "recenzije@capturedwell.com",
+    "GITHUB_REPO": "lcugura1/capturedwell",
+    "GITHUB_WORKFLOW": "sync.yml",
+    "GITHUB_REF": "main",
+  },
+  // Secrets, set with `npx wrangler secret put <NAME>` from the repository root:
+  //   TURNSTILE_SECRET_KEY  REVIEW_SIGNING_KEY  REVIEW_NOTIFY_TO  GITHUB_TOKEN
+
+  "observability": { "enabled": true },
 }

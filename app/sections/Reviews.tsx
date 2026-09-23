@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { SectionTitle } from '~/components/SectionTitle'
 import { Photo } from '~/components/Photo'
 import { Dot } from '~/components/Dot'
+import { ReviewForm } from '~/components/ReviewForm'
 import { gallery } from '~/lib/gallery'
 import { reviewsNewestFirst, type Review } from '~/lib/gallery-types'
 import { aspectOf } from '~/lib/images'
@@ -365,6 +366,8 @@ export function Reviews() {
           </ul>
         )}
       </div>
+
+      <ReviewForm />
     </section>
   )
 }

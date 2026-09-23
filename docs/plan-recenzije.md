@@ -85,12 +85,14 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
       (3 na niskim ekranima) uz „pročitaj cijelu". Izmjereno: cijela sekcija stane na
       1920×1080, 1440×900, 1280×800 i 1024×768; na 1280×720 imena padnu tik ispod pregiba.
       Recenzije se na stranici vide tek s R2; dotad samo uz lokalni fixture.
-- [ ] **R2 — objava kroz sync.** Privatni bucket, `approved/` → `reviews` u manifestu.
+- [x] **R2 — objava kroz sync.** ✅ kod 2026-09-23 (`approvedReviews()` u sync-drive.mjs). Privatni bucket, `approved/` → `reviews` u manifestu.
       8 Wfolio recenzija ne ide kroz bucket: žive u `app/data/reviews-wfolio.json` (sadržaj,
       kao tekst O meni) i spajaju se s onima iz manifesta u `reviewsNewestFirst`.
-- [ ] **R3 — forma i API.** Forma, Turnstile, `POST /api/recenzije`,
+- [x] **R3 — forma i API.** ✅ kod 2026-09-23 (`worker/site/`, `ReviewForm.tsx`). Polja:
+      ime i prezime, recenzija, neobavezni link — samo Instagram, Facebook ili LinkedIn. Forma, Turnstile, `POST /api/recenzije`,
       `pending/`. Stranica postaje Worker sa skriptom (`run_worker_first: ["/api/*"]`).
-- [ ] **R4 — moderacija.** Mail s potpisanim linkovima, stranica potvrde, POST odluke,
+- [x] **R4 — moderacija.** ✅ kod 2026-09-23; `pending/` se sam briše nakon 30 dana
+      (R2 lifecycle `pending-expiry`). Čeka: stvarni test maila, `/security-review`. Mail s potpisanim linkovima, stranica potvrde, POST odluke,
       dispatch workflowa. `/security-review` obavezno.
 - [ ] CLAUDE.md §10 i §3 prepisani.
 

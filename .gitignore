@@ -162,3 +162,5 @@ build
 # build. Not committed: R2 is the source, and a checked-in copy would go stale
 # the moment Damir adds a photo.
 app/data/gallery.json
+.dev.vars
+.dev.vars.*

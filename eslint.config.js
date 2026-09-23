@@ -46,6 +46,13 @@ export default tseslint.config(
     },
   },
   {
+    // The site's Worker answers HTTP, so it also has the fetch API's classes.
+    files: ['worker/site/**/*.js'],
+    languageOptions: {
+      globals: { Response: 'readonly', FormData: 'readonly' },
+    },
+  },
+  {
     // The callbacks passed to page.evaluate() are serialised and run inside
     // the browser, not in Node, so browser globals are correct there.
     files: ['scripts/shoot*.mjs'],

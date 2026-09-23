@@ -32,6 +32,35 @@ const RENDITION_CACHE = 'public, max-age=31536000, immutable'
 /** Short, because this is the one file whose contents change under its name. */
 const MANIFEST_CACHE = 'public, max-age=60'
 
+/**
+ * Reviews Damir approved, from the private reviews bucket.
+ *
+ * `null` when the bucket is not configured — a local run without the
+ * variable — and then the published reviews are carried over untouched
+ * rather than read as "there are none", which would unpublish them all.
+ *
+ * Only the manifest's fields are copied: the objects were written by the
+ * site's Worker after it validated them, but what reaches the page should be
+ * decided here, not by whatever else a file in the bucket might hold.
+ */
+async function approvedReviews() {
+  const bucket = process.env.R2_REVIEWS_BUCKET
+  if (!bucket) return null
+  const store = r2FromEnv({ ...process.env, R2_BUCKET: bucket })
+  const keys = (await store.list('approved/')).filter((key) => key.endsWith('.json'))
+  const approved = await Promise.all(keys.map((key) => store.getJson(key)))
+  return approved
+    .filter(Boolean)
+    .map(({ id, name, link, text, addedAt }) => ({
+      id,
+      name,
+      ...(link ? { link: { href: link.href, label: link.label } } : {}),
+      text,
+      addedAt,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id))
+}
+
 const args = process.argv.slice(2)
 const DRY_RUN = args.includes('--dry-run')
 
@@ -86,25 +115,30 @@ async function main() {
     r2.getJson(MANIFEST_KEY),
   ])
   const plan = pendingChanges(sources, state, published)
+  const reviews = (await approvedReviews()) ?? published?.reviews ?? []
+  const reviewsChanged =
+    JSON.stringify(reviews) !== JSON.stringify(published?.reviews ?? [])
+  const changed = plan.changed || reviewsChanged
   const stuck = new Set(state?.unreadable ?? [])
   const unreadableOnDrive = sources.filter((s) => stuck.has(s.id))
   for (const source of unreadableOnDrive)
     console.warn(`! ${label(source)}: ranije nečitljiva — zamijeni fajl na Driveu`)
 
   console.log(
-    `Drive: ${sources.length} fotki · za obradu: ${plan.toBuild.length} · za brisanje: ${plan.toRemove.length}`,
+    `Drive: ${sources.length} fotki · za obradu: ${plan.toBuild.length} · za brisanje: ${plan.toRemove.length}` +
+      ` · recenzija: ${reviews.length}${reviewsChanged ? ' (promijenjeno)' : ''}`,
   )
 
   if (DRY_RUN) {
     for (const source of plan.toBuild)
       console.log(`  + ${source.category ?? source.page} ${label(source)}`)
     for (const { id, kind } of plan.toRemove) console.log(`  - ${kind}/${id}/`)
-    console.log(plan.changed ? '  ~ gallery.json' : 'Nema promjena.')
+    console.log(changed ? '  ~ gallery.json' : 'Nema promjena.')
     console.log('\n--dry-run: ništa nije zapisano.')
     return
   }
 
-  if (!plan.changed) {
+  if (!changed) {
     console.log('Nema promjena.')
     await report(skipped.length + unreadableOnDrive.length, false)
     return
@@ -151,9 +185,10 @@ async function main() {
   )
   const all = { ...known, ...built }
 
-  const manifest = buildManifest(sources, all, {
-    version: (state?.manifestVersion ?? 0) + 1,
-  })
+  const manifest = {
+    ...buildManifest(sources, all, { version: (state?.manifestVersion ?? 0) + 1 }),
+    reviews,
+  }
 
   await r2.put(MANIFEST_KEY, json(manifest), {
     contentType: 'application/json',
@@ -177,7 +212,7 @@ async function main() {
 
   console.log(
     `\ngallery.json v${manifest.version}: ${manifest.photos.length} fotki, ` +
-      `${Object.keys(manifest.pages).length} slika stranice`,
+      `${Object.keys(manifest.pages).length} slika stranice, ${reviews.length} recenzija`,
   )
 
   await report(skipped.length + (next.unreadable?.length ?? 0), true)

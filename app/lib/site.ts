@@ -74,3 +74,20 @@ export function mailtoHref(subject?: string): string {
   const base = `mailto:${SITE.email.user}@${SITE.email.domain}`
   return subject ? `${base}?subject=${encodeURIComponent(subject)}` : base
 }
+
+/**
+ * Turnstile's site key for the review form. Public by design — it is in the
+ * HTML of every page that shows a widget — so it lives here, not in a secret.
+ *
+ * Cloudflare's always-pass test key until the real widget exists, and in
+ * development always: the real key refuses `localhost`. The Worker's secret
+ * has to be the matching test secret for as long as this is the test key.
+ */
+const TURNSTILE_TEST_KEY = '1x00000000000000000000AA'
+const TURNSTILE_KEY: string | null = null
+
+export const TURNSTILE_SITE_KEY =
+  import.meta.env.DEV || !TURNSTILE_KEY ? TURNSTILE_TEST_KEY : TURNSTILE_KEY
+
+/** Mirrors LIMITS in worker/site/review-input.js, which is the check that counts. */
+export const REVIEW_LIMITS = { name: 80, text: 2000, link: 300 } as const
