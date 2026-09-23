@@ -2,10 +2,14 @@ import { useState } from 'react'
 import { Photo } from '~/components/Photo'
 import { JustifiedRows } from '~/components/JustifiedRows'
 import { Lightbox } from '~/components/Lightbox'
+import { MorePhotos } from '~/components/MorePhotos'
 import { SectionTitle } from '~/components/SectionTitle'
 import { CATEGORIES, type CategoryId } from '~/lib/categories'
 import { gallery } from '~/lib/gallery'
 import { photosInCategory } from '~/lib/gallery-types'
+
+/** Photos per category in the grid. The rest live behind the viewer. */
+const SHOWN = 10
 
 /**
  * The whole gallery, on the page.
@@ -14,6 +18,13 @@ import { photosInCategory } from '~/lib/gallery-types'
  * destinations: on a single-page site a category link that navigated away
  * would be exactly the thing we removed. Switching is state, not routing,
  * so it is instant and the visitor keeps their place on the page.
+ *
+ * Each grid stops at `SHOWN`. A category Damir has been adding to for a
+ * season would otherwise push About and Contact somewhere below a hundred
+ * photographs, and a visitor who wants the rest is better served by the
+ * viewer — full-bleed, one photo at a time — than by more scrolling. The
+ * control under the grid opens that viewer on the last photo shown, so the
+ * next swipe continues the set rather than restarting it.
  *
  * All four grids are rendered and the inactive ones are `hidden`, rather
  * than only mounting the active one. Two reasons, both load-bearing:
@@ -71,6 +82,8 @@ export function Gallery() {
 
       {CATEGORIES.map((c) => {
         const inCategory = photosInCategory(gallery, c.id)
+        const shown = inCategory.slice(0, SHOWN)
+        const rest = inCategory.length - shown.length
         return (
           <div key={c.id} hidden={c.id !== category}>
             {inCategory.length === 0 ? (
@@ -79,9 +92,12 @@ export function Gallery() {
               </p>
             ) : (
               <JustifiedRows
-                photos={inCategory}
+                photos={shown}
                 renderItem={(photo, sizes) => {
-                  const index = inCategory.indexOf(photo)
+                  // `shown` is a prefix of the category, so its indices are
+                  // the category's indices — which is what the lightbox,
+                  // holding the full set, expects to be handed.
+                  const index = shown.indexOf(photo)
                   return (
                     <button
                       type="button"
@@ -104,6 +120,7 @@ export function Gallery() {
                 }}
               />
             )}
+            {rest > 0 && <MorePhotos count={rest} onClick={() => setOpenAt(SHOWN - 1)} />}
           </div>
         )
       })}

@@ -2,6 +2,21 @@ import { useState } from 'react'
 import { aspectOf, fallbackSrc, srcSet, type Kind, type Renderable } from '~/lib/images'
 
 /**
+ * Below this width, an art-directed photo swaps to its phone crop.
+ *
+ * Tailwind's `md`. Both places that use art direction want the same answer:
+ * their boxes are full-width and roughly a screen-height tall below it, which
+ * is upright on a phone and wide on anything larger — the crossover for
+ * ordinary device shapes lands around 500-600px, and `md` is the nearest
+ * breakpoint above it.
+ *
+ * Written out rather than read from a custom property because a media query
+ * cannot read one. Its twin is the `.lqip` rule in theme.css, and the two
+ * have to move together.
+ */
+const PHONE = '(width < 48rem)'
+
+/**
  * One photograph, at the right size for the viewport.
  *
  * Three things here are load-bearing for how fast the site feels:
@@ -20,6 +35,8 @@ import { aspectOf, fallbackSrc, srcSet, type Kind, type Renderable } from '~/lib
  */
 export function Photo({
   photo,
+  mobile,
+  objectPosition,
   alt,
   sizes,
   kind = 'img',
@@ -28,6 +45,25 @@ export function Photo({
   className = '',
 }: {
   photo: Renderable & { alt?: string }
+  /**
+   * A different photograph to show on phones — art direction, not a size.
+   *
+   * `srcset` already picks the right *resolution*; this is for when the
+   * right *picture* differs, which on a full-bleed cover it usually does.
+   * The browser evaluates the media-scoped sources first and downloads
+   * exactly one image, so the unused cover costs nothing.
+   */
+  mobile?: Renderable
+  /**
+   * Which part of the photograph to keep when the box crops it.
+   *
+   * Only bites under `fill`, and in practice only on a phone: a wide cover in
+   * a wide frame is trimmed top and bottom, where the horizontal position has
+   * nothing to say. Turned sideways into a phone's tall band it is trimmed
+   * hard at the sides instead, and `center` is only right if the subject
+   * happens to sit in the middle of the frame. Rarely does.
+   */
+  objectPosition?: string
   /** Overrides the manifest's alt — page images carry no alt of their own. */
   alt?: string
   sizes: string
@@ -56,6 +92,26 @@ export function Photo({
 
   return (
     <picture className={fill ? 'absolute inset-0 block size-full' : undefined}>
+      {/* First match wins, so the phone crop has to come first — and it
+          needs the JPEG line too, or a browser without AVIF or WebP falls
+          past all three and lands on the desktop <img>. */}
+      {mobile && (
+        <>
+          <source
+            media={PHONE}
+            type="image/avif"
+            srcSet={srcSet(mobile, 'avif', kind)}
+            sizes={sizes}
+          />
+          <source
+            media={PHONE}
+            type="image/webp"
+            srcSet={srcSet(mobile, 'webp', kind)}
+            sizes={sizes}
+          />
+          <source media={PHONE} srcSet={srcSet(mobile, 'jpg', kind)} sizes={sizes} />
+        </>
+      )}
       <source type="image/avif" srcSet={srcSet(photo, 'avif', kind)} sizes={sizes} />
       <source type="image/webp" srcSet={srcSet(photo, 'webp', kind)} sizes={sizes} />
       <img
@@ -69,16 +125,21 @@ export function Photo({
         decoding={priority ? 'sync' : 'async'}
         fetchPriority={priority ? 'high' : 'auto'}
         onLoad={() => setLoaded(true)}
-        className={`size-full object-cover ${className}`}
-        style={{
-          // Reserves the right box before the photo arrives, which is what
-          // keeps layout shift at zero. Skipped under `fill`, where the
-          // parent owns the box and this would fight it.
-          aspectRatio: fill ? undefined : aspectOf(photo),
-          backgroundImage: loaded ? undefined : `url("${photo.lqip}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        className={`size-full object-cover ${loaded ? '' : 'lqip'} ${className}`}
+        style={
+          {
+            // Reserves the right box before the photo arrives, which is what
+            // keeps layout shift at zero. Skipped under `fill`, where the
+            // parent owns the box and this would fight it.
+            aspectRatio: fill ? undefined : aspectOf(photo),
+            objectPosition,
+            // Handed to CSS rather than set here, because which blur belongs
+            // on screen is a media query's business and inline styles cannot
+            // ask. See `.lqip` in theme.css.
+            '--lqip': `url("${photo.lqip}")`,
+            ...(mobile ? { '--lqip-phone': `url("${mobile.lqip}")` } : {}),
+          } as React.CSSProperties
+        }
       />
     </picture>
   )

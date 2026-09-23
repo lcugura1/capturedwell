@@ -17,10 +17,43 @@ const SHOOT_COLOURS = [
 ] as const
 
 /**
- * The hero photograph is the widest one in the gallery: a portrait crammed
- * into a full-bleed band gets cropped to almost nothing.
+ * The cover photograph: whatever is newest in the `naslovna` folder on Drive.
+ *
+ * Falls back to the widest photo in the gallery while that folder is empty —
+ * a portrait crammed into a full-bleed band gets cropped to almost nothing,
+ * so width is the least bad guess. It is only a guess, though, which is why
+ * the folder exists: the first image on the page is an editorial decision,
+ * and an aspect ratio is not one.
  */
-const hero = [...gallery.photos].sort((a, b) => aspect(b) - aspect(a))[0]
+const chosen = gallery.pages.hero
+const widest = [...gallery.photos].sort((a, b) => aspect(b) - aspect(a))[0]
+const hero = chosen ?? widest
+
+/**
+ * An optional second cover, for phones.
+ *
+ * Only used alongside a chosen one: pairing it with the widest-photo
+ * fallback would mean a phone showing one photograph and a laptop a
+ * different one, neither of them picked by anybody.
+ */
+const heroPhone = chosen ? gallery.pages.heroMobile : undefined
+
+/**
+ * Where the subject sits across the current cover, so a phone crops around
+ * them rather than around the middle of the frame.
+ *
+ * The couple sit right of centre in the photograph and a phone sees under a
+ * third of its width — less than the pair spans, so something is always cut.
+ * At `center` that was the groom, against a column of hedge on the other
+ * side; past 60% it becomes the bride. This is the point where they fill the
+ * frame edge to edge and neither loses an arm.
+ *
+ * Tied to this photograph, and the honest weakness of it: change the cover
+ * and this number is a guess again. A folder cannot express a focal point,
+ * so the alternative is Damir cropping the file before he uploads it. Worth
+ * revisiting if covers start changing often.
+ */
+const HERO_FOCUS = '55% 50%'
 
 export function Hero() {
   return (
@@ -37,7 +70,19 @@ export function Hero() {
           user scrolled — which is the thing we are fixing. */}
       <div id="vrh" className="flex min-h-svh flex-col">
         <section className="relative min-h-[50svh] flex-1 overflow-hidden">
-          {hero && <Photo photo={hero} sizes="100vw" fill priority />}
+          {hero && (
+            // A chosen cover lives under `page/` in R2; a fallen-back one is
+            // an ordinary gallery photo under `img/`.
+            <Photo
+              photo={hero}
+              mobile={heroPhone}
+              objectPosition={HERO_FOCUS}
+              kind={chosen ? 'page' : 'img'}
+              sizes="100vw"
+              fill
+              priority
+            />
+          )}
           {/* Scrim under the header only: the nav has to stay legible over a
               bright photo without dimming the photograph as a whole. */}
           <div
@@ -57,7 +102,10 @@ export function Hero() {
 
       {/* No bottom padding: the section break below owns that gap. See
           components/SectionBreak.tsx. */}
-      <section className="grid grid-cols-1 gap-md px-gutter pt-xl lg:grid-cols-12" data-reveal>
+      <section
+        className="grid grid-cols-1 gap-md px-gutter pt-xl lg:grid-cols-12"
+        data-reveal
+      >
         {/* What Damir shoots, stacked, in the display face.
             The first thing a visitor needs is whether this photographer is
             for them, and the fastest answer is the list of occasions. It
