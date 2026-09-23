@@ -198,17 +198,17 @@ export function Reviews() {
         )}
       </div>
 
-      {/* Edge to edge, like the About portrait, and deliberately short:
-          title, photograph and reviews should share one screen. 4:3 on a
-          phone, where a wide band would be a sliver. Wider than that, a band
-          that takes what the screen has left once the title and reviews
-          have theirs (36rem, measured at 1440 × 900), floored at 10rem —
-          below that it cuts every subject off at the neck. On a 720px
-          laptop the names then sit just under the fold; the buttons, beside
-          the title, do not. The breakpoint is where `Photo` swaps to the
-          phone twin. */}
+      {/* Edge to edge, like the About portrait. 4:3 on a phone, where a
+          wide band would be a sliver; 5:2 above that. It was once as short
+          as the screen allowed, to fit the whole section in one view, and
+          at 6:1 it showed a slice across the middle of whatever was in it —
+          the photograph Damir chose for it lost both a head and half the
+          lettering on a shirt. 5:2 keeps a subject whole; the cap keeps it
+          from taking over a short screen. The buttons sit beside the title,
+          so a taller band never pushes them out of reach. The breakpoint is
+          where `Photo` swaps to the phone twin. */}
       {cover && (
-        <div className="relative aspect-[4/3] bg-surface md:aspect-auto md:h-[clamp(10rem,calc(100svh-var(--spacing-header)-36rem),22rem)]">
+        <div className="relative aspect-[4/3] bg-surface md:aspect-[5/2] md:max-h-[65svh]">
           <Photo
             photo={cover}
             mobile={coverPhone}
@@ -216,6 +216,9 @@ export function Reviews() {
             fill
             alt={cover.alt}
             sizes="100vw"
+            // A band crops top and bottom. People are framed with their heads
+            // in the upper part of a picture, so the crop leans that way.
+            objectPosition="50% 25%"
           />
         </div>
       )}

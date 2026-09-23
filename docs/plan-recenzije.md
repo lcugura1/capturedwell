@@ -102,7 +102,8 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
 
 ### Otvoreno
 
-- Fotka sekcije se na desktopu prikazuje kao **široka traka** (oko 6:1). Damir za `recenzije/`
-  treba birati kadar kojem to odgovara, ili onaj s motivom u sredini visine.
+- Banner je 5:2 na desktopu (najviše 65 % visine ekrana), 4:3 na mobitelu, kadar pomaknut
+  prema gore (`50% 25%`). Damirova fotka (3000 × 1707) je u `recenzije/` od 2026-09-23.
+- Alt bannera je generički („Fotografija Damira Sukopa"). Bolji ide u polje *Opis* fotke na Driveu.
 - Mateov link na Wfoliju je `https://@teskiplus` (neispravan) — prenosi se kao
   `instagram.com/teskiplus`. Potvrditi s Damirom.
