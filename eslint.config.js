@@ -26,7 +26,23 @@ export default tseslint.config(
   },
   {
     files: ['scripts/**/*.mjs'],
-    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        // Web-platform globals, present in both Node and Workers. The sync
+        // modules use only these so one copy of the Drive client and the JWT
+        // signing serves the GitHub Action and the cron Worker alike.
+        fetch: 'readonly',
+        crypto: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        btoa: 'readonly',
+        atob: 'readonly',
+      },
+    },
   },
   {
     // The callbacks passed to page.evaluate() are serialised and run inside
