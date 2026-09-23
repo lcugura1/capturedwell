@@ -10,6 +10,17 @@ import { reviewsNewestFirst, type Review } from '~/lib/gallery-types'
 const reviews = reviewsNewestFirst(gallery)
 
 /**
+ * The one photograph above the reviews, from the `recenzije` folder on Drive,
+ * with `recenzije-mobitel` standing in on phones when it has something.
+ *
+ * One image for the section rather than one per review: Damir decided the
+ * reviews should be words only. Absent until the folder is filled, and then
+ * the section is simply title and text — no placeholder box on a live page.
+ */
+const cover = gallery.pages.reviews
+const coverPhone = cover ? gallery.pages.reviewsMobile : undefined
+
+/**
  * A reviewer's link, only if it is an ordinary web address.
  *
  * The href was typed by a stranger into a form. Damir reads every review
@@ -26,26 +37,43 @@ function safeHref(href: string): string | null {
   }
 }
 
+/**
+ * How many lines a review shows before it folds.
+ *
+ * The strip is as tall as its longest review, and the section has to fit one
+ * screen — title, photograph and words together. Most reviews are two or
+ * three lines and never fold; the few that run to a dozen would otherwise
+ * set the height of the whole section.
+ */
+const FOLD_LINES = 'line-clamp-4'
+/** Three on a short screen — a 720px laptop has no room for a fourth. */
+const FOLD = `${FOLD_LINES} [@media(max-height:50rem)]:line-clamp-3`
+
 function ReviewItem({ review }: { review: Review }) {
   const href = review.link ? safeHref(review.link.href) : null
-  const paragraphs = review.text.split(/\n\s*\n/).filter(Boolean)
+  const textRef = useRef<HTMLParagraphElement>(null)
+  const [open, setOpen] = useState(false)
+  // Whether the text is actually cut off — only the browser knows, once the
+  // column width and the font are real. Until then no button: a review that
+  // fits is not given a control that does nothing.
+  const [folds, setFolds] = useState(false)
+
+  useEffect(() => {
+    const text = textRef.current
+    if (!text) return
+    const check = () => {
+      if (!text.classList.contains(FOLD_LINES)) return
+      setFolds(text.scrollHeight > text.clientHeight + 1)
+    }
+    check()
+    const observer = new ResizeObserver(check)
+    observer.observe(text)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <li className="w-[min(80vw,25rem)] shrink-0 snap-start">
+    <li className="w-[min(80vw,25rem)] shrink-0 snap-start lg:w-[32rem]">
       <figure className="m-0 flex flex-col gap-md">
-        {/* 4:5, the same frame as the About portrait. Not rounded: the
-            circles on Wfolio were its template, and photographs on this
-            site keep their corners. */}
-        {review.photo && (
-          <div className="relative aspect-[4/5] bg-surface">
-            <Photo
-              photo={review.photo}
-              kind="review"
-              fill
-              sizes="(min-width: 48rem) 25rem, 80vw"
-            />
-          </div>
-        )}
         <blockquote className="m-0 flex flex-col gap-sm text-body text-ink-body">
           {/* The Croatian opening quote in the slab the section titles use.
               The one ornament in the section, and it carries meaning: what
@@ -58,11 +86,25 @@ function ReviewItem({ review }: { review: Review }) {
           >
             „
           </span>
-          {paragraphs.map((paragraph, i) => (
-            <p key={i} className="m-0 text-pretty">
-              {paragraph}
-            </p>
-          ))}
+          {/* One element with its line breaks kept, rather than a <p> per
+              paragraph: line clamping counts lines within one box, and
+              across several it cuts in unpredictable places. */}
+          <p
+            ref={textRef}
+            className={`m-0 whitespace-pre-line text-pretty ${open ? '' : FOLD}`}
+          >
+            {review.text}
+          </p>
+          {folds && (
+            <button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              aria-expanded={open}
+              className="self-start text-label text-ink-muted transition-colors duration-150 ease-out-soft hover:text-ink"
+            >
+              {open ? 'skrati' : 'pročitaj cijelu'}
+            </button>
+          )}
         </blockquote>
         <figcaption className="flex flex-wrap items-center gap-x-xs gap-y-2xs">
           <span className="text-field text-ink">{review.name}</span>
@@ -88,14 +130,16 @@ function ReviewItem({ review }: { review: Review }) {
 }
 
 /**
- * What clients said, one after another along a strip.
+ * What clients said: one photograph, then their words along a strip.
  *
  * A strip rather than a grid because the texts run from forty characters to
  * five hundred: three columns of that is a row of ragged bottoms. Along a
  * strip each review takes the height it needs and nothing lines up against
  * it. On a phone the edge of the next one shows, which is the whole
  * affordance; on a wider screen, where a mouse has no sideways wheel, two
- * buttons step through it.
+ * buttons beside the title step through it. Not below the strip: it is as
+ * tall as its longest review, so down there they hung under a gap as tall as
+ * whatever review happened to be off screen, and had to be scrolled to.
  */
 export function Reviews() {
   const listRef = useRef<HTMLUListElement>(null)
@@ -131,20 +175,50 @@ export function Reviews() {
   }
 
   return (
-    <section id="recenzije" className="flex scroll-mt-header flex-col gap-xl">
+    <section id="recenzije" className="flex scroll-mt-header flex-col gap-lg">
       <div className="flex items-end justify-between gap-md px-gutter" data-reveal>
         <SectionTitle>rekli su</SectionTitle>
         {reviews.length > 1 && (
           <div className="hidden shrink-0 gap-xs md:flex">
-            <IconButton label="Prethodna recenzija" onClick={() => step(-1)} disabled={edges.start}>
+            <IconButton
+              label="Prethodna recenzija"
+              onClick={() => step(-1)}
+              disabled={edges.start}
+            >
               <ChevronLeft className="size-5" />
             </IconButton>
-            <IconButton label="Sljedeća recenzija" onClick={() => step(1)} disabled={edges.end}>
+            <IconButton
+              label="Sljedeća recenzija"
+              onClick={() => step(1)}
+              disabled={edges.end}
+            >
               <ChevronRight className="size-5" />
             </IconButton>
           </div>
         )}
       </div>
+
+      {/* Edge to edge, like the About portrait, and deliberately short:
+          title, photograph and reviews should share one screen. 4:3 on a
+          phone, where a wide band would be a sliver. Wider than that, a band
+          that takes what the screen has left once the title and reviews
+          have theirs (36rem, measured at 1440 × 900), floored at 10rem —
+          below that it cuts every subject off at the neck. On a 720px
+          laptop the names then sit just under the fold; the buttons, beside
+          the title, do not. The breakpoint is where `Photo` swaps to the
+          phone twin. */}
+      {cover && (
+        <div className="relative aspect-[4/3] bg-surface md:aspect-auto md:h-[clamp(10rem,calc(100svh-var(--spacing-header)-36rem),22rem)]">
+          <Photo
+            photo={cover}
+            mobile={coverPhone}
+            kind="page"
+            fill
+            alt={cover.alt}
+            sizes="100vw"
+          />
+        </div>
+      )}
 
       {reviews.length === 0 ? (
         <p className="m-0 px-gutter text-lead text-ink-subtle">Još nema recenzija.</p>

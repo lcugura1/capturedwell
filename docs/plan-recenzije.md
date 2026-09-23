@@ -12,8 +12,8 @@
 |---|---|
 | Tko piše recenziju | Klijent sam, kroz formu na stranici. |
 | Moderacija | **Mail Damiru s gumbima Objavi / Odbij.** Bez admin stranice i bez prijave. |
-| Fotka | **Fotka sa snimanja**, neobavezna, jedna po recenziji. Ne avatar. |
-| Postojeće | Svih 8 recenzija s Wfolija (`/comments`) se prenosi: ime, link, tekst, fotka. |
+| Fotka | ~~Fotka sa snimanja uz svaku recenziju.~~ **Promijenjeno 2026-09-23:** Damir ne želi fotke uz recenzije. Sekcija ima **jednu** fotku ispod naslova, iz Drive foldera `recenzije/` (+ neobavezni `recenzije-mobitel/`), kao naslovna i portret. Recenzije su samo tekst. |
+| Postojeće | Svih 8 recenzija s Wfolija (`/comments`) se prenosi: ime, link, tekst. |
 | Ocjena | **Bez zvjezdica.** Na portfoliju je svaka ocjena 5/5 i ne govori ništa. |
 
 **Zašto mail, a ne admin:** admin je upravo ono što je Drive sync zamijenio — stranica,
@@ -25,21 +25,20 @@ već otvoren na mobitelu.
 ## Arhitektura
 
 ```
-posjetitelj ── forma (#recenzije) ── fotka smanjena u browseru (1600 px, JPEG; EXIF/GPS nestaju)
+posjetitelj ── forma (#recenzije): ime, tekst, neobavezni link
         │ POST /api/recenzije  (+ Turnstile token)
         ▼
 Worker stranice (isti Worker koji servira assete; kod samo za /api/*)
-  1. provjeri Turnstile, duljine, tip i veličinu fotke
-  2. spremi u PRIVATNI bucket capturedwell-reviews:  pending/{id}.json (+ pending/{id}.jpg)
-  3. mail Damiru (Email Routing, send_email): tekst, fotka, linkovi Objavi / Odbij
+  1. provjeri Turnstile, duljine, link (samo http/https)
+  2. spremi u PRIVATNI bucket capturedwell-reviews:  pending/{id}.json
+  3. mail Damiru (Email Routing, send_email): tekst, linkovi Objavi / Odbij
         │ Damir klikne
         ▼
 GET /api/recenzije/odluka?t=…   → stranica s potvrdom (NE mijenja ništa)
 POST isto                        → pending/ → approved/ (ili obriše), pa workflow_dispatch
         ▼
 GitHub Action "sync" (postojeći)
-  pročita approved/ iz privatnog bucketa → sharp → review/{id}/… u javni bucket
-  → gallery.json dobiva `reviews` → build → deploy
+  pročita approved/ iz privatnog bucketa → gallery.json dobiva `reviews` → build → deploy
 ```
 
 ### Zašto ovako
@@ -54,9 +53,8 @@ GitHub Action "sync" (postojeći)
   u javni bucket piše samo GitHub Action.
 - **Objavljena recenzija je u statičnom HTML-u**, kao i galerija — tražilice je vide,
   posjetitelj ne čeka fetch. Cijena je isti rebuild od minutu.
-- **Fotka ide kroz isti sharp pipeline** kao galerija (širine, AVIF/WebP/JPEG, LQIP), da se
-  na stranici ne razlikuje. Browser je samo smanji prije uploada — da upload s mobitela bude
-  ~500 KB, a ne 12 MB, i da EXIF s GPS-om nikad ne napusti klijentov uređaj.
+- **Bez uploada fotki.** Otpada najveći dio posla i rizika forme: nema obrade slika na
+  Workeru, nema EXIF/GPS pitanja, nema ograničenja veličine uploada.
 
 ### Oblik u manifestu
 
@@ -67,7 +65,6 @@ type Review = {
   link?: { href: string; label: string }   // Instagram, LinkedIn, web
   text: string                              // odlomci razdvojeni praznim retkom
   addedAt: string
-  photo?: Renderable & { alt: string }      // renditions pod review/{id}/
 }
 Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga nemaju
 ```
@@ -75,7 +72,7 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
 ### Zaštita forme
 
 - **Turnstile** (besplatan, bez kolačića, obično nevidljiv) — provjera na Workeru, ne u browseru.
-- Honeypot polje, ograničenja duljine (ime ≤ 80, tekst ≤ 2000), fotka ≤ 8 MB i samo JPEG/PNG/WebP.
+- Honeypot polje, ograničenja duljine (ime ≤ 80, tekst ≤ 2000, link ≤ 300).
 - Ništa ne ide na stranicu bez Damirova klika, pa spam koji prođe košta samo mail.
 
 ---
@@ -83,11 +80,14 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
 ## Faze
 
 - [x] **R1 — prikaz.** ✅ 2026-09-23. Tip `Review`, sekcija „rekli su" (`#recenzije`), stavka
-      u izborniku. Renditions 8 Wfolio fotki su već u javnom bucketu pod `review/{id}/`, ali ih
-      manifest još ne navodi — na stranicu ulaze s R2. Dotad se vide samo uz lokalni fixture.
+      u izborniku. Naslov i strelice u jednom redu, jedna fotka (visina izvedena iz ekrana, da
+      sekcija stane u jedan ekran), pa traka s tekstom. Duge recenzije skraćene na 4 retka
+      (3 na niskim ekranima) uz „pročitaj cijelu". Izmjereno: cijela sekcija stane na
+      1920×1080, 1440×900, 1280×800 i 1024×768; na 1280×720 imena padnu tik ispod pregiba.
+      Recenzije se na stranici vide tek s R2; dotad samo uz lokalni fixture.
 - [ ] **R2 — objava kroz sync.** Privatni bucket, `approved/` → renditions + `reviews` u
       manifestu. Seed skripta prenese 8 Wfolio recenzija kao odobrene.
-- [ ] **R3 — forma i API.** Forma, resize u browseru, Turnstile, `POST /api/recenzije`,
+- [ ] **R3 — forma i API.** Forma, Turnstile, `POST /api/recenzije`,
       `pending/`. Stranica postaje Worker sa skriptom (`run_worker_first: ["/api/*"]`).
 - [ ] **R4 — moderacija.** Mail s potpisanim linkovima, stranica potvrde, POST odluke,
       dispatch workflowa. `/security-review` obavezno.
@@ -102,7 +102,7 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
 
 ### Otvoreno
 
-- Wfolio servira samo **kvadratne izreze** (1280 × 1280) fotki iz recenzija, ne originale.
-  Za prenesene recenzije to je dovoljno; ako Damir ima originale, bolje je njih.
+- Fotka sekcije se na desktopu prikazuje kao **široka traka** (oko 6:1). Damir za `recenzije/`
+  treba birati kadar kojem to odgovara, ili onaj s motivom u sredini visine.
 - Mateov link na Wfoliju je `https://@teskiplus` (neispravan) — prenosi se kao
   `instagram.com/teskiplus`. Potvrditi s Damirom.

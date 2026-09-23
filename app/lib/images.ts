@@ -28,11 +28,8 @@ export type Renderable = {
   lqip: string
 }
 
-/**
- * `img/` is gallery content; `page/` is furniture that belongs to a route;
- * `review/` is a photograph a client attached to their review.
- */
-export type Kind = 'img' | 'page' | 'review'
+/** `img/` is gallery content; `page/` is furniture that belongs to a route. */
+export type Kind = 'img' | 'page'
 
 export function src(
   image: Renderable,

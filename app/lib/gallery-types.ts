@@ -46,9 +46,9 @@ export type Photo = {
 /**
  * Where a fixed page image goes. Not a category, and not in the grid.
  *
- * `hero` is the cover photograph and `about` the portrait; each comes from
- * its own Drive folder, so both are Damir's choice rather than something the
- * code works out for him.
+ * `hero` is the cover photograph, `about` the portrait and `reviews` the one
+ * photograph above the reviews. Each comes from its own Drive folder, so all
+ * three are Damir's choice rather than something the code works out for him.
  *
  * The `Mobile` twins are optional overrides for phones, from their own
  * `-mobitel` folders. A landscape image cropped to a phone's narrow band
@@ -57,7 +57,13 @@ export type Photo = {
  * does. Leave the folder empty and the phone shows the same one as everything
  * else.
  */
-export type PageSlot = 'hero' | 'heroMobile' | 'about' | 'aboutMobile'
+export type PageSlot =
+  | 'hero'
+  | 'heroMobile'
+  | 'about'
+  | 'aboutMobile'
+  | 'reviews'
+  | 'reviewsMobile'
 
 /**
  * An image that belongs to a section rather than to a category.
@@ -92,11 +98,6 @@ export type Review = {
   text: string
   /** Newest first, like everything else Damir adds. */
   addedAt: string
-  /**
-   * A photograph from the shoot the review is about. Optional: a review
-   * without one is still a review. Renditions live under `review/{id}/`.
-   */
-  photo?: PageImage
 }
 
 export type Gallery = {
