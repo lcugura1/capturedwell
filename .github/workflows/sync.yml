@@ -1,0 +1,80 @@
+# Drive -> R2 -> build -> deploy.
+#
+# Started by the capturedwell-sync-trigger Worker when it sees a change on
+# Drive, and once a day on its own in case the Worker does not. Never on a
+# pull request: this job holds the R2 and Cloudflare keys, and the repository
+# is public. See docs/plan-drive-sync.md, B4.
+name: sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Build and deploy even if nothing changed on Drive
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 3 * * *'
+
+# One at a time, and never cancelled halfway: a sync that dies between
+# uploading renditions and writing the manifest is safe, but there is no
+# reason to make it happen. A dispatch while one runs waits its turn.
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Pinned to commits, not tags: a tag can be moved to code that reads
+      # the secrets below.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Drive -> R2
+        id: sync
+        run: node scripts/sync-drive.mjs
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          DRIVE_ROOT_FOLDER_ID: ${{ secrets.DRIVE_ROOT_FOLDER_ID }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: capturedwell-media
+
+      # Deploys when the manifest changed, and on the daily run regardless:
+      # if a deploy ever fails after the sync succeeded, R2 already matches
+      # Drive, the Worker sees nothing to do, and only this brings the site
+      # back in step. The `deploy` input is the same by hand — for a code
+      # change, which does not go through Drive.
+      - name: Build
+        if: steps.sync.outputs.changed == 'true' || github.event_name == 'schedule' || inputs.deploy
+        run: npm run build
+
+      - name: Deploy
+        if: steps.sync.outputs.changed == 'true' || github.event_name == 'schedule' || inputs.deploy
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+
+      - name: Report skipped photos
+        if: steps.sync.outputs.skipped != '0'
+        env:
+          SKIPPED: ${{ steps.sync.outputs.skipped }}
+        run: |
+          echo "::error::$SKIPPED fotk(a/e) nije objavljeno — Drive id-evi su u koraku 'Drive -> R2'. Najčešće HEIC ili RAW: izvesti u JPEG."
+          exit 1

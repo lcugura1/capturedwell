@@ -282,6 +282,28 @@ Koraci: checkout → setup Node → `npm ci` → `sync-drive.mjs` → ako se `ga
 
 **Gotovo kad:** fotka ubačena na Drive pojavi se na `capturedwell.com` unutar ~10 minuta, bez ičijeg klika.
 
+**Provedeno (2026-09-23)** — odstupanja od skice gore i zašto:
+
+- **Worker i sync odlučuju istom funkcijom**, `pendingChanges()` u `lib/sync-plan.mjs`, nad istim listingom (`lib/drive-sources.mjs`). Worker zato nikad ne pokrene run koji ne nađe posla, niti prešuti promjenu (preimenovanje, opis) koju bi sync objavio.
+- **Worker prije dispatcha pita je li run već u tijeku** (`lib/github.mjs`). Sync traje par minuta, cron okida svakih 5; bez toga veliki upload stvara otkazane runove koji u Actions kartici izgledaju kao greške.
+- **Nečitljive fotke se pamte** u `sync.json` (`unreadable`). Inače bi fotka koju sharp ne otvori ostala zauvijek „nova" i Worker bi svakih 5 minuta pokretao workflow koji na njoj opet pada. Zamjena fajla daje novi id, pa se pokuša ponovno.
+- **Preskočene fotke ne ruše deploy.** U Actionsu sync ih prijavi kao output, workflow izgradi i objavi ostale, pa tek zadnji korak padne — to je ono što GitHubu šalje mail.
+- **Deploy:** kad se manifest promijenio, na dnevnom rasporedu uvijek (samoizlječenje ako je deploy nekad pao nakon uspješnog synca), i ručno kvačicom `deploy` (za promjenu koda, koja ne ide kroz Drive).
+- **`fetch-manifest.mjs` dodaje `?t=` upit.** Edge ignorira `no-cache` iz zahtjeva i drži `gallery.json` 60 s — build sekundama nakon synca bi objavio staru galeriju.
+- **Stranica ima `wrangler.jsonc` u korijenu** (samo static assets, bez skripte) i zasad ide na `capturedwell.<račun>.workers.dev`. Domena i dalje pokazuje na Wfolio; prebacivanje je sekcija C.
+- Akcije su pinane na commit SHA, ne na tag; `wrangler` je devDependency jer ga trebaju i CI i Worker.
+
+**Postavljanje (ti, jednom)** — redoslijed je bitan:
+
+1. A4/7 Cloudflare API token → GitHub secret `CLOUDFLARE_API_TOKEN`. Account ID workflow uzima iz postojećeg `R2_ACCOUNT_ID`.
+2. Merge `feat/drive-sync` u `main`. **Dispatch radi samo za workflow koji postoji na grani `GITHUB_REF`** (`main`); prije toga Worker dobiva 404.
+3. Actions → sync → Run workflow, kvačica `deploy`. Prvi deploy napravi Worker `capturedwell` na `workers.dev`.
+4. A4/9 GitHub PAT, pa iz `worker/sync-trigger/`: `npx wrangler login`, `npx wrangler deploy`, zatim `npx wrangler secret put` za `GOOGLE_SERVICE_ACCOUNT_JSON`, `DRIVE_ROOT_FOLDER_ID`, `GITHUB_TOKEN`.
+5. Dashboard → Workers → `capturedwell-sync-trigger` → Logs: u roku 5 min redak `… · bez promjena`.
+6. Test: preimenuj jednu fotku na Driveu → run se pojavi u Actionsu unutar 5 min.
+
+Lokalna provjera Worker logike bez deploya: njegov `scheduled()` pokrenut u Nodeu nad stvarnim Driveom i R2 (GitHub zamijenjen stubom) javlja „bez promjena" za trenutno stanje, a s uklonjenim `sync.json` pita za aktivne runove i šalje `{"ref":"main"}`. ~3 s zidnog vremena, gotovo sve mreža.
+
 ### B5. Čišćenje i provjera
 
 - Deinstalirati `thinking-orbs`; obrisati prazan `worker/` admin plan.
@@ -367,7 +389,7 @@ Wfolio stranica ima i stvari koje nova stranica nema:
 - [ ] B3 seed: `media-src/` još nije na Driveu. Samo `vjencanja` ima fotke (6, Damirove);
       `lifestyle`, `proizvodi`, `eventi` i `o-meni` su prazni, pa stranica ondje pokazuje
       prazno stanje i placeholder portreta. `media-src/` zato ostaje dok se ne prenese.
-- [ ] B4 workflow + Worker okidač, Worker secrets
+- [ ] B4 workflow + Worker okidač — kod ✅ 2026-09-23; ostaje postavljanje (koraci 1–6 u B4): API token, merge u `main`, prvi deploy, Worker deploy i secrets
 - [ ] B5 čišćenje, shoot, Lighthouse, test s Damirom, security review
 - [ ] C odluka o isporuci klijentima, /services, /comments
 - [ ] C custom domain na Worker, 301 preusmjerenja, Search Console

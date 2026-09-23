@@ -25,7 +25,8 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs'],
+    // The cron Worker bundles the same modules, so it gets the same globals.
+    files: ['scripts/**/*.mjs', 'worker/**/*.js'],
     languageOptions: {
       globals: {
         process: 'readonly',

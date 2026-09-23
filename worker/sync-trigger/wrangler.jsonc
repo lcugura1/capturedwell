@@ -1,0 +1,28 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "capturedwell-sync-trigger",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+
+  // Every five minutes. An unchanged Drive costs eight list calls and two R2
+  // reads, and starts nothing.
+  "triggers": { "crons": ["*/5 * * * *"] },
+
+  // No URL at all: the Worker only runs on its schedule.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // Read-only in practice — the code never writes. The workflow, with its own
+  // bucket-scoped token, is the only thing that does.
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "capturedwell-media" }],
+
+  "vars": {
+    "GITHUB_REPO": "lcugura1/capturedwell",
+    "GITHUB_WORKFLOW": "sync.yml",
+    "GITHUB_REF": "main",
+  },
+  // Secrets, set with `npx wrangler secret put <NAME>` from this folder:
+  //   GOOGLE_SERVICE_ACCOUNT_JSON  DRIVE_ROOT_FOLDER_ID  GITHUB_TOKEN
+
+  "observability": { "enabled": true },
+}

@@ -4,6 +4,7 @@ import {
   buildState,
   fallbackAlt,
   isUsable,
+  pendingChanges,
   photoId,
   planSync,
   rankOf,
@@ -326,5 +327,87 @@ describe('sameManifest', () => {
 
   it('treats a missing manifest as different, so the first run writes one', async () => {
     expect(sameManifest(await build('foto.jpg'), null)).toBe(false)
+  })
+})
+
+describe('unreadable photos', () => {
+  it('are not rebuilt on every run once recorded', async () => {
+    const { sources } = await sourcesFrom({ lifestyle: [file()] })
+    const state = buildState(sources, {}, { unreadable: [sources[0].id] })
+    expect(planSync(sources, state).toBuild).toEqual([])
+  })
+
+  it('are tried again when the file is replaced', async () => {
+    const before = await sourcesFrom({ lifestyle: [file({ md5Checksum: 'broken' })] })
+    const state = buildState(before.sources, {}, { unreadable: [before.sources[0].id] })
+
+    const after = await sourcesFrom({ lifestyle: [file({ md5Checksum: 'fixed' })] })
+    expect(planSync(after.sources, state).toBuild).toHaveLength(1)
+  })
+
+  it('are forgotten once gone from Drive', async () => {
+    const { sources } = await sourcesFrom({ lifestyle: [file()] })
+    const state = buildState([], {}, { unreadable: [sources[0].id] })
+    expect(state.unreadable).toBeUndefined()
+  })
+})
+
+describe('pendingChanges', () => {
+  const published = async (byFolder) => {
+    const { sources } = await sourcesFrom(byFolder)
+    const renditions = Object.fromEntries(sources.map((s) => [s.id, rendition()]))
+    return {
+      state: buildState(sources, renditions),
+      manifest: buildManifest(sources, renditions),
+    }
+  }
+
+  it('reports nothing when Drive matches what is published', async () => {
+    const { state, manifest } = await published({ lifestyle: [file()] })
+    const { sources } = await sourcesFrom({ lifestyle: [file()] })
+    expect(pendingChanges(sources, state, manifest).changed).toBe(false)
+  })
+
+  it('reports a new photo', async () => {
+    const { state, manifest } = await published({ lifestyle: [file()] })
+    const { sources } = await sourcesFrom({
+      lifestyle: [file(), file({ id: 'drive-2', md5Checksum: 'other' })],
+    })
+    expect(pendingChanges(sources, state, manifest).changed).toBe(true)
+  })
+
+  it('reports a deleted photo', async () => {
+    const { state, manifest } = await published({ lifestyle: [file()] })
+    expect(pendingChanges([], state, manifest).changed).toBe(true)
+  })
+
+  it('reports an edited description, which rebuilds no pixels', async () => {
+    const { state, manifest } = await published({ lifestyle: [file()] })
+    const { sources } = await sourcesFrom({
+      lifestyle: [file({ description: 'Prvi ples' })],
+    })
+    const pending = pendingChanges(sources, state, manifest)
+    expect(pending.toBuild).toEqual([])
+    expect(pending.changed).toBe(true)
+  })
+
+  it('reports a rename that reorders the category', async () => {
+    const { state, manifest } = await published({ lifestyle: [file()] })
+    const { sources } = await sourcesFrom({ lifestyle: [file({ name: '05 - foto.jpg' })] })
+    expect(pendingChanges(sources, state, manifest).changed).toBe(true)
+  })
+
+  it('reports everything on a first run', async () => {
+    const { sources } = await sourcesFrom({ lifestyle: [file()] })
+    expect(pendingChanges(sources, null, null).changed).toBe(true)
+  })
+
+  it('stays quiet about a photo recorded as unreadable', async () => {
+    // Otherwise the cron Worker starts a workflow every five minutes to fail
+    // on the same file.
+    const { sources } = await sourcesFrom({ lifestyle: [file()] })
+    const state = buildState(sources, {}, { unreadable: [sources[0].id] })
+    const manifest = buildManifest(sources, {})
+    expect(pendingChanges(sources, state, manifest).changed).toBe(false)
   })
 })

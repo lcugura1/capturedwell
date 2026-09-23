@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // The public site: the prerendered build, served as static assets. No
+  // Worker script — there is nothing to compute per request.
+  "name": "capturedwell",
+  "compatibility_date": "2026-09-01",
+  "assets": { "directory": "./build/client" },
+
+  // Served from capturedwell.<account>.workers.dev until Damir approves it.
+  // The domain still points at Wfolio; moving it is plan section C, and is a
+  // route added here, not a change to how the site is built.
+  "workers_dev": true,
+}

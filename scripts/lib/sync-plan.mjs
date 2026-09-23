@@ -128,11 +128,15 @@ export async function sourcesFrom(byFolder) {
  */
 export function planSync(sources, state) {
   const known = state?.photos ?? {}
+  const unreadable = new Set(state?.unreadable ?? [])
   const wanted = new Map(sources.map((s) => [s.id, s.kind]))
   const kindOf = (entry) => entry.kind ?? 'img'
 
   return {
-    toBuild: sources.filter((s) => !known[s.id] || kindOf(known[s.id]) !== s.kind),
+    toBuild: sources.filter(
+      (s) =>
+        !unreadable.has(s.id) && (!known[s.id] || kindOf(known[s.id]) !== s.kind),
+    ),
     toRemove: Object.entries(known)
       .filter(([id, entry]) => wanted.get(id) !== kindOf(entry))
       .map(([id, entry]) => ({ id, kind: kindOf(entry) })),
@@ -206,8 +210,20 @@ export function buildManifest(
   return { version, updatedAt: now.toISOString(), photos, pages }
 }
 
-/** State for the next run: enough to rebuild the manifest without pixels. */
-export function buildState(sources, renditions, { now = new Date() } = {}) {
+/**
+ * State for the next run: enough to rebuild the manifest without pixels.
+ *
+ * `unreadable` lists ids sharp could not decode. Without it such a photo
+ * stays in `toBuild` forever, and the cron Worker — which asks exactly that
+ * question every five minutes — would start a workflow every five minutes
+ * to fail on it again. The id carries the checksum, so a replaced file gets
+ * a new id and is tried afresh.
+ */
+export function buildState(
+  sources,
+  renditions,
+  { now = new Date(), unreadable = [] } = {},
+) {
   const photos = {}
   for (const source of sources) {
     const rendition = renditions[source.id]
@@ -222,7 +238,15 @@ export function buildState(sources, renditions, { now = new Date() } = {}) {
       lqip: rendition.lqip,
     }
   }
-  return { version: 1, updatedAt: now.toISOString(), photos }
+  // Only ids still on Drive, so the list cannot outgrow what is there.
+  const present = new Set(sources.map((s) => s.id))
+  const stuck = [...new Set(unreadable)].filter((id) => present.has(id))
+  return {
+    version: 1,
+    updatedAt: now.toISOString(),
+    photos,
+    ...(stuck.length > 0 ? { unreadable: stuck } : {}),
+  }
 }
 
 /**
@@ -238,4 +262,28 @@ export function sameManifest(a, b) {
   if (!a || !b) return false
   const content = (m) => JSON.stringify({ photos: m.photos, pages: m.pages })
   return content(a) === content(b)
+}
+
+/**
+ * Whether Drive says something the published site does not.
+ *
+ * The one question the cron Worker asks every five minutes, and the question
+ * `sync-drive.mjs` answers before it writes anything. Both call this, so the
+ * Worker can never start a workflow that then finds nothing to do, nor sit
+ * quietly on a change the workflow would have published.
+ *
+ * Pixels are one half of it; the other is a manifest that reads differently
+ * with nothing to rebuild — a rename that reorders a category, an edited
+ * description. Projected from the renditions `state` already records, which
+ * is all the manifest is ever made of when nothing is new.
+ */
+export function pendingChanges(sources, state, published) {
+  const plan = planSync(sources, state)
+  const pixels = plan.toBuild.length > 0 || plan.toRemove.length > 0
+  const manifest = buildManifest(sources, state?.photos ?? {})
+
+  return {
+    ...plan,
+    changed: pixels || !sameManifest(manifest, published),
+  }
 }

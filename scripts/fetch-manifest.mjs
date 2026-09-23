@@ -32,7 +32,13 @@ async function main() {
   let manifest
 
   try {
-    const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } })
+    // A query string of its own, because the edge ignores a request's
+    // `no-cache` and serves what it holds for up to MANIFEST_CACHE. In the
+    // sync workflow the build runs seconds after the manifest is written, and
+    // would otherwise deploy the site as it was before Damir's change.
+    const res = await fetch(`${url}?t=${Date.now()}`, {
+      headers: { 'cache-control': 'no-cache' },
+    })
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     manifest = await res.json()
     console.log(

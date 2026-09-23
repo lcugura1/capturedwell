@@ -15,18 +15,13 @@
  * at any point leaves photos with no manifest entry (invisible, harmless)
  * rather than manifest entries with no photos (broken images on the page).
  */
+import { appendFile } from 'node:fs/promises'
 import { accessToken } from './lib/google-auth.mjs'
-import { DRIVE_SCOPE, FOLDER_TYPE, download, listFolder } from './lib/drive.mjs'
-import { EXPECTED_FOLDERS } from './lib/gallery-source.mjs'
+import { DRIVE_SCOPE, download } from './lib/drive.mjs'
+import { readDrive } from './lib/drive-sources.mjs'
 import { renditions } from './lib/image-pipeline.mjs'
 import { r2FromEnv } from './lib/r2.mjs'
-import {
-  buildManifest,
-  buildState,
-  planSync,
-  sameManifest,
-  sourcesFrom,
-} from './lib/sync-plan.mjs'
+import { buildManifest, buildState, pendingChanges } from './lib/sync-plan.mjs'
 import { required, serviceAccount } from './lib/env.mjs'
 
 const MANIFEST_KEY = 'gallery.json'
@@ -55,6 +50,17 @@ function json(value) {
   return new TextEncoder().encode(`${JSON.stringify(value, null, 2)}\n`)
 }
 
+/**
+ * Step outputs for the workflow: whether to build and deploy, and how many
+ * files were skipped. A no-op outside GitHub Actions.
+ */
+async function output(values) {
+  const path = process.env.GITHUB_OUTPUT
+  if (!path) return
+  const lines = Object.entries(values).map(([key, value]) => `${key}=${value}\n`)
+  await appendFile(path, lines.join(''))
+}
+
 async function main() {
   const credentials = await serviceAccount()
   const rootId = required('DRIVE_ROOT_FOLDER_ID')
@@ -63,39 +69,27 @@ async function main() {
   const { token } = await accessToken(credentials, DRIVE_SCOPE)
 
   // 1. What is on Drive.
-  const children = await listFolder(token, rootId)
-  const folders = new Map(
-    children.filter((f) => f.mimeType === FOLDER_TYPE).map((f) => [f.name, f]),
-  )
-
-  const byFolder = {}
-  for (const name of EXPECTED_FOLDERS) {
-    const folder = folders.get(name)
-    if (!folder) {
-      console.warn(`! folder "${name}" ne postoji na Driveu — preskačem`)
-      continue
-    }
-    byFolder[name] = (await listFolder(token, folder.id)).filter(
-      (f) => f.mimeType !== FOLDER_TYPE,
-    )
-  }
-
-  const { sources, skipped } = await sourcesFrom(byFolder)
+  const { sources, skipped, missing } = await readDrive(token, rootId)
+  for (const name of missing)
+    console.warn(`! folder "${name}" ne postoji na Driveu — preskačem`)
   for (const { folder, file } of skipped) {
     console.warn(
       `! ${folder}: ${NAMES ? file.name : file.id} (${file.mimeType}) se ne može obraditi`,
     )
   }
 
-  // 2. What R2 already has. The manifest as well as the state: renaming a
-  //    file or editing its description changes neither its contents nor its
-  //    id, so the plan below has nothing to do — and the manifest still has
-  //    to be rewritten, because what the site displays did change.
+  // 2. What R2 already has, and whether Drive says anything different. The
+  //    cron Worker asks the same question with the same function, so a run it
+  //    starts always finds the work it saw.
   const [state, published] = await Promise.all([
     r2.getJson(STATE_KEY),
     r2.getJson(MANIFEST_KEY),
   ])
-  const plan = planSync(sources, state)
+  const plan = pendingChanges(sources, state, published)
+  const stuck = new Set(state?.unreadable ?? [])
+  const unreadableOnDrive = sources.filter((s) => stuck.has(s.id))
+  for (const source of unreadableOnDrive)
+    console.warn(`! ${label(source)}: ranije nečitljiva — zamijeni fajl na Driveu`)
 
   console.log(
     `Drive: ${sources.length} fotki · za obradu: ${plan.toBuild.length} · za brisanje: ${plan.toRemove.length}`,
@@ -105,20 +99,29 @@ async function main() {
     for (const source of plan.toBuild)
       console.log(`  + ${source.category ?? source.page} ${label(source)}`)
     for (const { id, kind } of plan.toRemove) console.log(`  - ${kind}/${id}/`)
+    console.log(plan.changed ? '  ~ gallery.json' : 'Nema promjena.')
     console.log('\n--dry-run: ništa nije zapisano.')
     return
   }
 
-  // 3. Build and upload the new renditions. A no-op when there is nothing
-  //    new; the manifest below is what decides whether this run does work. Sequential on purpose: a 24MP
+  if (!plan.changed) {
+    console.log('Nema promjena.')
+    await report(skipped.length + unreadableOnDrive.length, false)
+    return
+  }
+
+  // 3. Build and upload the new renditions. A no-op when only the manifest
+  //    changed (a rename, a description). Sequential on purpose: a 24MP
   //    original expands to well over a gigabyte across five widths and three
   //    formats, and a CI runner has 7 GB for everything.
   const built = {}
+  const unreadable = [...stuck]
   for (const [i, source] of plan.toBuild.entries()) {
     const bytes = await download(token, source.driveId)
     const result = await renditions(bytes)
     if (!result) {
       console.warn(`! ${label(source)}: sharp ne može pročitati dimenzije — preskačem`)
+      unreadable.push(source.id)
       continue
     }
 
@@ -152,21 +155,13 @@ async function main() {
     version: (state?.manifestVersion ?? 0) + 1,
   })
 
-  if (
-    plan.toBuild.length === 0 &&
-    plan.toRemove.length === 0 &&
-    sameManifest(manifest, published)
-  ) {
-    console.log('Nema promjena.')
-    return
-  }
   await r2.put(MANIFEST_KEY, json(manifest), {
     contentType: 'application/json',
     cacheControl: MANIFEST_CACHE,
   })
 
   // 5. State, so the next run knows what not to redo.
-  const next = buildState(sources, all)
+  const next = buildState(sources, all, { unreadable })
   next.manifestVersion = manifest.version
   await r2.put(STATE_KEY, json(next), { contentType: 'application/json' })
 
@@ -185,13 +180,24 @@ async function main() {
       `${Object.keys(manifest.pages).length} slika stranice`,
   )
 
-  // A skipped file is not a failure — the rest of the sync is sound — but it
-  // must not pass unnoticed either, or a photo Damir added is simply missing.
-  // A non-zero exit makes GitHub mail the run as failed.
-  if (skipped.length > 0) {
-    console.warn(`\n${skipped.length} fotk(a/e) preskočeno — vidi upozorenja gore.`)
-    process.exitCode = 1
-  }
+  await report(skipped.length + (next.unreadable?.length ?? 0), true)
+}
+
+/**
+ * A skipped file is not a failure — the rest of the sync is sound — but it
+ * must not pass unnoticed either, or a photo Damir added is simply missing.
+ * Counted on every run, not only the first, so it keeps being reported until
+ * the file is replaced.
+ *
+ * Locally that is a non-zero exit. In Actions it is an output instead: the
+ * workflow still has to build and deploy the photos that did work, and fails
+ * its last step afterwards, which is what makes GitHub mail the run.
+ */
+async function report(failed, changed) {
+  await output({ changed, skipped: failed })
+  if (failed === 0) return
+  console.warn(`\n${failed} fotk(a/e) preskočeno — Drive id-evi u upozorenjima iznad.`)
+  if (!process.env.GITHUB_OUTPUT) process.exitCode = 1
 }
 
 await main()
