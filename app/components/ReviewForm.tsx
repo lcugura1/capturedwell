@@ -187,12 +187,12 @@ export function ReviewForm() {
   if (!open) {
     return (
       <div className="flex flex-wrap items-center gap-x-md gap-y-sm px-gutter">
-        <p className="m-0 text-body text-ink-muted">Snimali smo zajedno?</p>
+        <p className="m-0 text-body text-ink-muted">Radili smo zajedno?</p>
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-expanded={false}
-          className="inline-flex h-12 items-center rounded-pill border border-line-strong px-md text-label text-ink transition-colors duration-150 ease-out-soft hover:border-ink active:bg-surface"
+          className="inline-flex h-12 items-center gap-xs rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover"
         >
           napiši recenziju
         </button>
