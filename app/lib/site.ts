@@ -28,6 +28,15 @@ export const SITE = {
     handle: '@capturedwell_',
     url: 'https://instagram.com/capturedwell_',
   },
+  youtube: {
+    /**
+     * The channel's name rather than its handle: YouTube appended digits to
+     * `@damirsukop` when it was taken, and a row reading `@damirsukop8466`
+     * looks like a typo.
+     */
+    label: 'Damir Sukop',
+    url: 'https://www.youtube.com/@damirsukop8466',
+  },
   /** PLACEHOLDER — used in the About page and the JSON-LD area served. */
   city: 'Zagreb',
   /**
@@ -74,3 +83,21 @@ export function mailtoHref(subject?: string): string {
   const base = `mailto:${SITE.email.user}@${SITE.email.domain}`
   return subject ? `${base}?subject=${encodeURIComponent(subject)}` : base
 }
+
+/**
+ * Turnstile's site key for the review form. Public by design — it is in the
+ * HTML of every page that shows a widget — so it lives here, not in a secret.
+ *
+ * Widget `capturedwell-recenzije`, for capturedwell.com and every
+ * *.capturedwell1.workers.dev preview. In development Cloudflare's
+ * always-pass test key instead: the real one refuses `localhost`, and
+ * `.dev.vars` carries the matching test secret.
+ */
+const TURNSTILE_TEST_KEY = '1x00000000000000000000AA'
+const TURNSTILE_KEY: string | null = '0x4AAAAAAFBcdRxnmOYX2FWr'
+
+export const TURNSTILE_SITE_KEY =
+  import.meta.env.DEV || !TURNSTILE_KEY ? TURNSTILE_TEST_KEY : TURNSTILE_KEY
+
+/** Mirrors LIMITS in worker/site/review-input.js, which is the check that counts. */
+export const REVIEW_LIMITS = { name: 80, text: 2000, link: 300 } as const

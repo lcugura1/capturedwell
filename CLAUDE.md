@@ -352,9 +352,12 @@ Nisu instalirani, ali razmisliti kasnije: `chrome-devtools-mcp` (stvarni perform
 
 ## 10. Kontakt
 
-Bez forme. `mailto:` link, plus telefon i Instagram ako Damir želi.
+Kontakt je bez forme: `mailto:` link, plus telefon i Instagram.
 
-- Nema Workera za slanje maila, nema spam zaštite, nema Resenda. Manje koda, manje stvari koje pucaju.
+- **Jedina forma na stranici je za recenzije** (docs/plan-recenzije.md). Worker stranice
+  (`worker/site/`) radi samo za `/api/*`; sve ostalo su statični fajlovi. Mail ide kroz
+  Email Routing (`send_email`) samo na verificiranu adresu, spam zaštita je Turnstile.
+  Upite i dalje ne primamo formom — mail klijent to radi bolje.
 - Adresu ne pišemo kao plain tekst u HTML-u — sastavlja se u JS-u pri kliku, da je scraperi ne pokupe direktno. Nije savršeno, ali filtrira najgore.
 - Fallback: adresa mora biti vidljiva i čitljiva i ako JS ne radi.
 

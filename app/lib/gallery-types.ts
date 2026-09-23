@@ -46,9 +46,9 @@ export type Photo = {
 /**
  * Where a fixed page image goes. Not a category, and not in the grid.
  *
- * `hero` is the cover photograph and `about` the portrait; each comes from
- * its own Drive folder, so both are Damir's choice rather than something the
- * code works out for him.
+ * `hero` is the cover photograph, `about` the portrait and `reviews` the one
+ * photograph above the reviews. Each comes from its own Drive folder, so all
+ * three are Damir's choice rather than something the code works out for him.
  *
  * The `Mobile` twins are optional overrides for phones, from their own
  * `-mobitel` folders. A landscape image cropped to a phone's narrow band
@@ -57,7 +57,8 @@ export type Photo = {
  * does. Leave the folder empty and the phone shows the same one as everything
  * else.
  */
-export type PageSlot = 'hero' | 'heroMobile' | 'about' | 'aboutMobile'
+export type PageSlot =
+  'hero' | 'heroMobile' | 'about' | 'aboutMobile' | 'reviews' | 'reviewsMobile'
 
 /**
  * An image that belongs to a section rather than to a category.
@@ -76,6 +77,24 @@ export type PageImage = {
   lqip: string
 }
 
+/**
+ * A client's review, as approved by Damir.
+ *
+ * Written by the client through the form, published only after Damir
+ * approves it from the mail it sends him — so everything here has been read
+ * by a person before it reaches the page. See docs/plan-recenzije.md.
+ */
+export type Review = {
+  id: string
+  name: string
+  /** Where the reviewer is found: Instagram, LinkedIn, a website. */
+  link?: { href: string; label: string }
+  /** Plain text. Paragraphs are separated by a blank line. */
+  text: string
+  /** Newest first, like everything else Damir adds. */
+  addedAt: string
+}
+
 export type Gallery = {
   /** Bumped on every write so clients can tell versions apart. */
   version: number
@@ -83,6 +102,11 @@ export type Gallery = {
   photos: Photo[]
   /** Empty until the matching Drive folder has something in it. */
   pages: Partial<Record<PageSlot, PageImage>>
+  /**
+   * Optional because every manifest written before reviews existed lacks
+   * it, and the build has to accept whatever the bucket currently holds.
+   */
+  reviews?: Review[]
 }
 
 export const EMPTY_GALLERY: Gallery = {
@@ -122,6 +146,22 @@ export function photosInCategory(gallery: Gallery, category: CategoryId): Photo[
       if (b.rank !== undefined) return 1
       return byRecency(a, b)
     })
+}
+
+/**
+ * Every review, newest first, once each.
+ *
+ * Takes several lists because reviews arrive from two places — the ones
+ * carried over from Wfolio live in the repository, and the ones approved
+ * since arrive in the manifest — and a review in both counts once. Ties on
+ * id, for the same reason as `photosInCategory`.
+ */
+export function reviewsNewestFirst(...lists: (Review[] | undefined)[]): Review[] {
+  const byId = new Map<string, Review>()
+  for (const review of lists.flatMap((list) => list ?? [])) byId.set(review.id, review)
+  return [...byId.values()].sort(
+    (a, b) => b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id),
+  )
 }
 
 /** Aspect ratio, guarding against a malformed manifest entry. */
