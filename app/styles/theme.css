@@ -186,17 +186,16 @@
   --text-caption--line-height: 1.2;
   --text-caption--font-weight: 600;
 
-  /* The wordmark set as text, in the footer. The header uses the real
-     logo (the SVG in components/Logo.tsx); the footer sets it as type,
-     which is why this token exists. */
-  --text-mark: clamp(
-    1.25rem,
-    calc(1.25rem + 0.375 * (100vw - 24.375rem) / 65.625),
-    1.625rem
-  );
-  --text-mark--line-height: 1;
-  --text-mark--letter-spacing: -0.01em;
-  --text-mark--font-weight: 700;
+  /* The wordmark set as type, closing the page.
+     The header uses the real logo (the SVG in components/Logo.tsx); the
+     footer sets it as text, which is why this token exists.
+     Sized to be the last thing seen rather than a caption, and kept well
+     under the hero's display scale — the page opens on the mark at full
+     width and closes on it at a quarter of that. A bookend, not a reprise. */
+  --text-colophon: clamp(2rem, calc(2rem + 1.5 * (100vw - 24.375rem) / 65.625), 3.5rem);
+  --text-colophon--line-height: 1;
+  --text-colophon--letter-spacing: -0.02em;
+  --text-colophon--font-weight: 700;
 
   /* ── spacing ──────────────────────────────────────────────────────── */
   --spacing-2xs: 0.25rem;
