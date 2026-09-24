@@ -104,6 +104,10 @@ export function ReviewForm() {
   const widgetRef = useRef<HTMLDivElement>(null)
   const widgetId = useRef<string | null>(null)
   const firstField = useRef<HTMLInputElement>(null)
+  const opener = useRef<HTMLButtonElement>(null)
+  // Set by `cancel`, so focus goes back to the button only when the visitor
+  // closed the form themselves — never on the first render of the page.
+  const closedByVisitor = useRef(false)
   const ids = useId()
 
   // Render the invisible check once the form is on screen. It usually
@@ -140,7 +144,23 @@ export function ReviewForm() {
 
   useEffect(() => {
     if (open) firstField.current?.focus()
+    else if (closedByVisitor.current) opener.current?.focus()
   }, [open])
+
+  /**
+   * Fold the form away and forget what was typed.
+   *
+   * Refused while sending: the request is already on its way, and a form
+   * that closes as if nothing happened would hide a review that arrives.
+   */
+  function cancel() {
+    if (status.kind === 'sending') return
+    closedByVisitor.current = true
+    setText('')
+    setToken(null)
+    setStatus({ kind: 'idle' })
+    setOpen(false)
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -189,6 +209,7 @@ export function ReviewForm() {
       <div className="flex flex-wrap items-center gap-x-md gap-y-sm px-gutter">
         <p className="m-0 text-body text-ink-muted">Radili smo zajedno?</p>
         <button
+          ref={opener}
           type="button"
           onClick={() => setOpen(true)}
           aria-expanded={false}
@@ -217,6 +238,9 @@ export function ReviewForm() {
   return (
     <form
       onSubmit={submit}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') cancel()
+      }}
       aria-label="Napiši recenziju"
       className="flex max-w-[36rem] flex-col gap-md px-gutter"
     >
@@ -293,13 +317,23 @@ export function ReviewForm() {
       <div ref={widgetRef} className="empty:hidden" />
 
       <div className="flex flex-col items-start gap-sm border-t border-line pt-md">
-        <button
-          type="submit"
-          disabled={sending}
-          className="inline-flex h-12 items-center rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover active:bg-solid-active disabled:opacity-40"
-        >
-          {sending ? 'šaljem…' : 'pošalji recenziju'}
-        </button>
+        <div className="flex flex-wrap gap-sm">
+          <button
+            type="submit"
+            disabled={sending}
+            className="inline-flex h-12 items-center rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover active:bg-solid-active disabled:opacity-40"
+          >
+            {sending ? 'šaljem…' : 'pošalji recenziju'}
+          </button>
+          <button
+            type="button"
+            onClick={cancel}
+            disabled={sending}
+            className="inline-flex h-12 items-center rounded-pill border border-line-strong px-md text-label text-ink transition-colors duration-150 ease-out-soft hover:border-ink active:bg-surface disabled:opacity-40"
+          >
+            odustani
+          </button>
+        </div>
         <p className="m-0 text-caption text-ink-subtle">
           Recenzija se objavljuje tek kad je Damir pročita.
         </p>
