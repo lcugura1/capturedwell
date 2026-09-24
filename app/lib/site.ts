@@ -100,4 +100,4 @@ export const TURNSTILE_SITE_KEY =
   import.meta.env.DEV || !TURNSTILE_KEY ? TURNSTILE_TEST_KEY : TURNSTILE_KEY
 
 /** Mirrors LIMITS in worker/site/review-input.js, which is the check that counts. */
-export const REVIEW_LIMITS = { name: 80, text: 2000, link: 300 } as const
+export const REVIEW_LIMITS = { name: 80, text: 2000 } as const

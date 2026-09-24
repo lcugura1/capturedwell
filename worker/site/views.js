@@ -63,11 +63,8 @@ export function page(title, body, status = 200) {
 }
 
 function quote(review) {
-  const link = review.link
-    ? `<p class="muted">${escape(review.link.label)}: ${escape(review.link.href)}</p>`
-    : ''
   return `<blockquote>${escape(review.text)}</blockquote>
-<p class="who">${escape(review.name)}</p>${link}`
+<p class="who">${escape(review.name)}</p>`
 }
 
 /**
@@ -121,7 +118,6 @@ export function reviewMail(review, { publishUrl, rejectUrl }) {
     '',
     review.text,
     '',
-    ...(review.link ? [`${review.link.label}: ${review.link.href}`, ''] : []),
     `Objavi: ${publishUrl}`,
     `Odbij: ${rejectUrl}`,
     '',
@@ -139,7 +135,6 @@ export function reviewMail(review, { publishUrl, rejectUrl }) {
   const html = `<div style="font-family:system-ui,sans-serif;font-size:16px;line-height:1.6;color:#0c0c0c;max-width:560px">
 <p><strong>${escape(review.name)}</strong> je ostavio/la recenziju na capturedwell:</p>
 <blockquote style="margin:0;padding:16px;background:#f2f2f2;border-radius:12px;white-space:pre-line">${escape(review.text)}</blockquote>
-${review.link ? `<p>${escape(review.link.label)}: ${escape(review.link.href)}</p>` : ''}
 <p>${button(publishUrl, 'objavi', true)} &nbsp; ${button(rejectUrl, 'odbij', false)}</p>
 <p style="color:#666;font-size:14px">Linkovi vrijede 14 dana. Dok ne klikneš, recenzija se ne vidi na stranici.</p>
 </div>`

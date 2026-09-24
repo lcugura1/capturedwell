@@ -89,7 +89,7 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
       8 Wfolio recenzija ne ide kroz bucket: žive u `app/data/reviews-wfolio.json` (sadržaj,
       kao tekst O meni) i spajaju se s onima iz manifesta u `reviewsNewestFirst`.
 - [x] **R3 — forma i API.** ✅ kod 2026-09-23 (`worker/site/`, `ReviewForm.tsx`). Polja:
-      ime i prezime, recenzija, neobavezni link — samo Instagram, Facebook ili LinkedIn. Forma, Turnstile, `POST /api/recenzije`,
+      ime i prezime, recenzija. Link na profil izbačen 2026-09-24 (Damir); Worker ga ignorira. Forma, Turnstile, `POST /api/recenzije`,
       `pending/`. Stranica postaje Worker sa skriptom (`run_worker_first: ["/api/*"]`).
 - [x] **R4 — moderacija.** ✅ kod 2026-09-23; `pending/` se sam briše nakon 30 dana
       (R2 lifecycle `pending-expiry`). Čeka: stvarni test maila, `/security-review`. Mail s potpisanim linkovima, stranica potvrde, POST odluke,

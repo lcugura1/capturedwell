@@ -98,9 +98,9 @@ type Status =
  * The form a client fills in to leave a review.
  *
  * Folded behind one button, because the section is for reading what others
- * said; writing is the rare case. Name, the review, and optionally a link
- * to their profile — Damir decided against photos, and against star ratings,
- * which on a portfolio are always five.
+ * said; writing is the rare case. A name and the review, nothing else —
+ * Damir decided against photos, profile links and star ratings, which on
+ * a portfolio are always five.
  *
  * Nothing sent here appears on the page until Damir approves it from the
  * mail it sends him, and the form says so: a visitor who sends a review and
@@ -236,7 +236,6 @@ export function ReviewForm() {
         body: JSON.stringify({
           name: data.get('name'),
           text: data.get('text'),
-          link: data.get('link'),
           website: data.get('website'),
           turnstile: token,
         }),
@@ -343,27 +342,6 @@ export function ReviewForm() {
             className={`${INPUT} min-h-[5lh] resize-y [field-sizing:content]`}
           />
         </div>
-      </Field>
-
-      <Field
-        id={`${ids}-link`}
-        label="link na profil"
-        hint="neobavezno: Instagram, Facebook ili LinkedIn"
-      >
-        {/* Text, not `type="url"`: people type `instagram.com/ime` without
-            the scheme, and the browser would refuse it. The Worker accepts
-            both. */}
-        <input
-          id={`${ids}-link`}
-          name="link"
-          inputMode="url"
-          autoComplete="url"
-          autoCapitalize="none"
-          spellCheck={false}
-          maxLength={REVIEW_LIMITS.link}
-          placeholder="instagram.com/tvojprofil"
-          className={INPUT}
-        />
       </Field>
 
       {/* The honeypot. Hidden from people and from screen readers; a bot

@@ -51,13 +51,7 @@ async function approvedReviews() {
   const approved = await Promise.all(keys.map((key) => store.getJson(key)))
   return approved
     .filter(Boolean)
-    .map(({ id, name, link, text, addedAt }) => ({
-      id,
-      name,
-      ...(link ? { link: { href: link.href, label: link.label } } : {}),
-      text,
-      addedAt,
-    }))
+    .map(({ id, name, text, addedAt }) => ({ id, name, text, addedAt }))
     .sort((a, b) => a.id.localeCompare(b.id))
 }
 

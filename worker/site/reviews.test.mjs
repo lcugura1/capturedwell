@@ -1,45 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { parseLink, parseReview } from './review-input.js'
+import { parseReview } from './review-input.js'
 import { signDecision, verifyDecision, LINK_LIFETIME_S } from './decision-link.js'
 import { escape } from './views.js'
 
 const KEY = 'k'.repeat(48)
-
-describe('parseLink', () => {
-  it.each([
-    ['instagram.com/ana', 'https://instagram.com/ana', 'Instagram'],
-    [
-      'https://www.instagram.com/ana/?igsh=abc',
-      'https://www.instagram.com/ana/',
-      'Instagram',
-    ],
-    ['http://m.facebook.com/ana.anic', 'https://m.facebook.com/ana.anic', 'Facebook'],
-    [
-      'https://www.facebook.com/profile.php?id=100',
-      'https://www.facebook.com/profile.php?id=100',
-      'Facebook',
-    ],
-    ['hr.linkedin.com/in/ana', 'https://hr.linkedin.com/in/ana', 'LinkedIn'],
-  ])('accepts %s', (raw, href, label) => {
-    expect(parseLink(raw)).toEqual({ link: { href, label } })
-  })
-
-  it('treats an empty field as no link', () => {
-    expect(parseLink('   ')).toEqual({ link: undefined })
-  })
-
-  it.each([
-    'javascript:alert(1)//instagram.com/x',
-    'https://example.com/instagram.com',
-    'https://instagram.com.evil.hr/ana',
-    'https://notinstagram.com/ana',
-    'https://user@instagram.com/ana',
-    'https://instagram.com',
-    'ftp://instagram.com/ana',
-  ])('refuses %s', (raw) => {
-    expect(parseLink(raw).error).toBeTruthy()
-  })
-})
 
 describe('parseReview', () => {
   const valid = { name: 'Ana Anić', text: 'Sve je bilo odlično, hvala!' }
@@ -59,10 +23,9 @@ describe('parseReview', () => {
     expect(parseReview({ ...valid, name: 'a'.repeat(81) }).error).toBeTruthy()
   })
 
-  it('passes a link error through', () => {
-    expect(parseReview({ ...valid, link: 'https://example.com/ana' }).error).toMatch(
-      /Instagram/,
-    )
+  it('drops a profile link, which reviews no longer carry', () => {
+    const { review } = parseReview({ ...valid, link: 'https://instagram.com/ana' })
+    expect(review).toEqual(valid)
   })
 
   it('ignores fields it does not know', () => {
