@@ -204,6 +204,7 @@ function GlyphButton({
  */
 export function Reviews() {
   const listRef = useRef<HTMLUListElement>(null)
+  const arrowsRef = useRef<HTMLDivElement>(null)
   const [edges, setEdges] = useState({ start: true, end: false })
 
   const measure = useCallback(() => {
@@ -227,13 +228,15 @@ export function Reviews() {
     if (listRef.current) stepStrip(listRef.current, direction)
   }
 
-  // The strip turns on its own until the visitor does anything at all.
+  // The strip turns on its own until the visitor takes hold of it: swipes
+  // or presses it, scrolls it sideways, clicks an arrow, or moves focus into
+  // it. Then it stops for good — someone reading the reviews one by one
+  // does not want the strip moving under them again the moment they pause.
+  // That is also the pause control WCAG 2.2.2 asks moving content to have.
   //
-  // Any press, tap or key anywhere on the page ends it for good, not just a
-  // touch on the strip: someone who has started doing something wants the
-  // page to hold still, and a strip that starts again the moment they stop
-  // is one they have to keep fighting. That also makes it the pause control
-  // WCAG 2.2.2 asks moving content to have.
+  // Only the strip and its arrows count. Anything else on the page —
+  // arriving here from the menu, most of all — leaves it turning, which is
+  // how carousels behave everywhere else and what a visitor expects.
   //
   // Only while at least half of it is on screen, and not at all for anyone
   // who asked for reduced motion.
@@ -262,14 +265,29 @@ export function Reviews() {
       }
     }, AUTOPLAY_MS)
 
-    const INTERACTIONS = ['pointerdown', 'keydown', 'focusin'] as const
-    const stop = () => {
+    const arrows = arrowsRef.current
+    // A trackpad's two-finger swipe arrives as a wheel event. Only a
+    // sideways one is the visitor moving the strip; a vertical one is them
+    // scrolling the page past it.
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) stop()
+    }
+    const LIST_EVENTS = ['pointerdown', 'keydown', 'focusin'] as const
+    const ARROW_EVENTS = ['pointerdown', 'click'] as const
+
+    function stop() {
       window.clearInterval(timer)
       observer.disconnect()
-      for (const type of INTERACTIONS) document.removeEventListener(type, stop, true)
+      for (const type of LIST_EVENTS) list?.removeEventListener(type, stop)
+      for (const type of ARROW_EVENTS) arrows?.removeEventListener(type, stop)
+      list?.removeEventListener('wheel', onWheel)
     }
-    // Capture phase, so nothing on the page can swallow the event first.
-    for (const type of INTERACTIONS) document.addEventListener(type, stop, true)
+
+    for (const type of LIST_EVENTS) list.addEventListener(type, stop)
+    // `click` as well as `pointerdown`: an arrow pressed with Enter or Space
+    // has no pointer.
+    for (const type of ARROW_EVENTS) arrows?.addEventListener(type, stop)
+    list.addEventListener('wheel', onWheel, { passive: true })
     return stop
   }, [])
 
@@ -278,7 +296,7 @@ export function Reviews() {
       <div className="flex items-end justify-between gap-md px-gutter" data-reveal>
         <SectionTitle>rekli su</SectionTitle>
         {reviews.length > 1 && (
-          <div className="hidden shrink-0 gap-md md:flex">
+          <div ref={arrowsRef} className="hidden shrink-0 gap-md md:flex">
             <GlyphButton
               label="Prethodna recenzija"
               glyph="‹"
