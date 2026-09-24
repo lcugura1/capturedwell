@@ -78,6 +78,16 @@ function Field({
 const INPUT =
   'w-full bg-transparent text-field text-ink placeholder:text-ink-subtle focus:outline-none focus-visible:outline-none'
 
+/**
+ * How the form unfolds and folds away. The lightbox's curve, a little
+ * quicker: this is a panel making room on the page, not a photograph
+ * arriving, and it should be done before anyone waits for it.
+ */
+const FOLD_MS = 320
+const FOLD_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)'
+
+const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+
 type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
@@ -105,6 +115,13 @@ export function ReviewForm() {
   const widgetId = useRef<string | null>(null)
   const firstField = useRef<HTMLInputElement>(null)
   const opener = useRef<HTMLButtonElement>(null)
+  const openerRow = useRef<HTMLDivElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+  // The closed row's height, measured as it goes. The form grows out of
+  // exactly that and shrinks back into it, so neither direction ends in a
+  // jump when one element is swapped for the other.
+  const openerHeight = useRef(0)
+  const closing = useRef(false)
   // Set by `cancel`, so focus goes back to the button only when the visitor
   // closed the form themselves — never on the first render of the page.
   const closedByVisitor = useRef(false)
@@ -143,8 +160,28 @@ export function ReviewForm() {
   }, [open, status.kind])
 
   useEffect(() => {
-    if (open) firstField.current?.focus()
-    else if (closedByVisitor.current) opener.current?.focus()
+    if (open) {
+      firstField.current?.focus()
+      const form = formRef.current
+      if (!form || still()) return
+      form.style.overflow = 'hidden'
+      const grow = form.animate(
+        [
+          { height: `${openerHeight.current}px`, opacity: 0 },
+          { height: `${form.offsetHeight}px`, opacity: 1 },
+        ],
+        { duration: FOLD_MS, easing: FOLD_EASE },
+      )
+      grow.onfinish = grow.oncancel = () => form.style.removeProperty('overflow')
+    } else if (closedByVisitor.current) {
+      opener.current?.focus()
+      if (!still()) {
+        openerRow.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: FOLD_MS / 2,
+          easing: FOLD_EASE,
+        })
+      }
+    }
   }, [open])
 
   /**
@@ -154,12 +191,29 @@ export function ReviewForm() {
    * that closes as if nothing happened would hide a review that arrives.
    */
   function cancel() {
-    if (status.kind === 'sending') return
-    closedByVisitor.current = true
-    setText('')
-    setToken(null)
-    setStatus({ kind: 'idle' })
-    setOpen(false)
+    if (status.kind === 'sending' || closing.current) return
+    const close = () => {
+      closing.current = false
+      closedByVisitor.current = true
+      setText('')
+      setToken(null)
+      setStatus({ kind: 'idle' })
+      setOpen(false)
+    }
+
+    const form = formRef.current
+    if (!form || still()) return close()
+    closing.current = true
+    form.style.overflow = 'hidden'
+    const shrink = form.animate(
+      [
+        { height: `${form.offsetHeight}px`, opacity: 1 },
+        { height: `${openerHeight.current}px`, opacity: 0 },
+      ],
+      { duration: FOLD_MS, easing: FOLD_EASE, fill: 'forwards' },
+    )
+    // `oncancel` too: a dropped animation (a background tab) must still close.
+    shrink.onfinish = shrink.oncancel = close
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -206,12 +260,18 @@ export function ReviewForm() {
 
   if (!open) {
     return (
-      <div className="flex flex-wrap items-center gap-x-md gap-y-sm px-gutter">
+      <div
+        ref={openerRow}
+        className="flex flex-wrap items-center gap-x-md gap-y-sm px-gutter"
+      >
         <p className="m-0 text-body text-ink-muted">Radili smo zajedno?</p>
         <button
           ref={opener}
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            openerHeight.current = openerRow.current?.offsetHeight ?? 0
+            setOpen(true)
+          }}
           aria-expanded={false}
           className="inline-flex h-12 items-center gap-xs rounded-pill bg-solid px-md text-label text-bg transition-colors duration-150 ease-out-soft hover:bg-solid-hover"
         >
@@ -237,6 +297,7 @@ export function ReviewForm() {
 
   return (
     <form
+      ref={formRef}
       onSubmit={submit}
       onKeyDown={(event) => {
         if (event.key === 'Escape') cancel()

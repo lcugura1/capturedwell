@@ -79,6 +79,7 @@ export function Lightbox({
   // `index` would scroll the track back under the finger that just moved it:
   // scroll → index changes → effect scrolls → fights the gesture.
   const settledRef = useRef(index)
+  const counterRef = useRef<HTMLSpanElement>(null)
   // The index the photo opened at, so the genie animates the right slide and
   // swiping away afterwards does not replay it. State rather than a ref
   // because the render reads it, and a ref read during render is exactly
@@ -339,6 +340,38 @@ export function Lightbox({
     }
   }, [photos.length, onIndexChange])
 
+  // The counter, though, follows the finger. Waiting for `scrollend` left it
+  // a beat behind every swipe — the photo was already on screen while the
+  // number still named the last one. It is written straight into the DOM,
+  // once a frame at most, rather than through state: a re-render of the
+  // whole viewer per scroll frame would cost the swipe its smoothness, and
+  // the number is all that changes. Where the track comes to rest is where
+  // `settle` puts `index`, so the two always end on the same photograph.
+  useEffect(() => {
+    const track = trackRef.current
+    const number = counterRef.current
+    if (!track || !number) return
+
+    let frame = 0
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const width = track.clientWidth
+        if (width === 0) return
+        const shown = String(
+          Math.max(0, Math.min(photos.length - 1, Math.round(track.scrollLeft / width))) +
+            1,
+        )
+        if (number.textContent !== shown) number.textContent = shown
+      })
+    }
+    track.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      track.removeEventListener('scroll', onScroll)
+    }
+  }, [photos.length])
+
   useScrollLock()
 
   useEffect(() => {
@@ -580,7 +613,9 @@ export function Lightbox({
           aria-hidden="true"
           className="absolute inset-x-0 bottom-lg m-0 text-center text-label tabular-nums text-ink-subtle"
         >
-          <span className="text-ink">{index + 1}</span>
+          <span ref={counterRef} className="text-ink">
+            {index + 1}
+          </span>
           <span className="px-1.5">/</span>
           {photos.length}
         </p>
