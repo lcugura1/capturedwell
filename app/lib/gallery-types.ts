@@ -87,8 +87,6 @@ export type PageImage = {
 export type Review = {
   id: string
   name: string
-  /** Where the reviewer is found: Instagram, LinkedIn, a website. */
-  link?: { href: string; label: string }
   /** Plain text. Paragraphs are separated by a blank line. */
   text: string
   /** Newest first, like everything else Damir adds. */

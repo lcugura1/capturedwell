@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SectionTitle } from '~/components/SectionTitle'
 import { Photo } from '~/components/Photo'
-import { Dot } from '~/components/Dot'
 import { ReviewForm } from '~/components/ReviewForm'
 import { gallery } from '~/lib/gallery'
 import { reviewsNewestFirst, type Review } from '~/lib/gallery-types'
@@ -27,23 +26,6 @@ const cover = gallery.pages.reviews
 const coverPhone = cover ? gallery.pages.reviewsMobile : undefined
 
 /**
- * A reviewer's link, only if it is an ordinary web address.
- *
- * The href was typed by a stranger into a form. Damir reads every review
- * before it is published, but he reads the text, not the markup of a link
- * he never sees — so a `javascript:` URL is refused here as well as where
- * the review is submitted, rather than trusted to either check alone.
- */
-function safeHref(href: string): string | null {
-  try {
-    const url = new URL(href)
-    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null
-  } catch {
-    return null
-  }
-}
-
-/**
  * How many lines a review shows before it folds.
  *
  * The strip is as tall as its longest review, and the section has to fit one
@@ -56,7 +38,6 @@ const FOLD_LINES = 'line-clamp-4'
 const FOLD = `${FOLD_LINES} [@media(max-height:50rem)]:line-clamp-3`
 
 function ReviewItem({ review }: { review: Review }) {
-  const href = review.link ? safeHref(review.link.href) : null
   const textRef = useRef<HTMLParagraphElement>(null)
   const [open, setOpen] = useState(false)
   // Whether the text is actually cut off — only the browser knows, once the
@@ -112,24 +93,7 @@ function ReviewItem({ review }: { review: Review }) {
             </button>
           )}
         </blockquote>
-        <figcaption className="flex flex-wrap items-center gap-x-xs gap-y-2xs">
-          <span className="text-field text-ink">{review.name}</span>
-          {href && review.link && (
-            <>
-              <Dot size="xs" />
-              {/* `ugc nofollow`: the link was written by a visitor, and the
-                  site should not vouch for it to search engines. */}
-              <a
-                href={href}
-                target="_blank"
-                rel="ugc nofollow noreferrer"
-                className="text-label text-ink-muted transition-colors duration-150 ease-out-soft hover:text-ink"
-              >
-                {review.link.label}
-              </a>
-            </>
-          )}
-        </figcaption>
+        <figcaption className="text-field text-ink">{review.name}</figcaption>
       </figure>
     </li>
   )

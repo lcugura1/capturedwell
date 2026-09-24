@@ -113,5 +113,4 @@ Gallery.reviews?: Review[]                  // neobavezno: stari manifesti ga ne
   ni uz `prefers-reduced-motion`. Oba ruba trake se gase maskom na širinu gutter-a, da tekst
   ne udara u fotku ni u rub ekrana.
 - Alt bannera je generički („Fotografija Damira Sukopa"). Bolji ide u polje *Opis* fotke na Driveu.
-- Mateov link na Wfoliju je `https://@teskiplus` (neispravan) — prenosi se kao
-  `instagram.com/teskiplus`. Potvrditi s Damirom.
+- Recenzije nemaju linkove na profile (2026-09-24), ni nove ni one s Wfolija.
