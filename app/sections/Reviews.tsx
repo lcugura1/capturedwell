@@ -140,7 +140,7 @@ function ReviewItem({ review }: { review: Review }) {
  * enough that the strip is visibly moving by the time anyone has read the
  * title; most reviews are two lines, and a longer one folds anyway.
  */
-const AUTOPLAY_MS = 2000
+const AUTOPLAY_MS = 3000
 
 /** Move the strip by one review, either way. */
 function stepStrip(list: HTMLElement, direction: 1 | -1) {
