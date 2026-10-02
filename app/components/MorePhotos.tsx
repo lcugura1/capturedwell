@@ -13,7 +13,9 @@ import { photographs } from '~/lib/plural'
  *
  * The label counts what is left rather than naming the action. "pogledaj sve"
  * says nothing a visitor cannot already see; "još 13 fotografija" tells them
- * whether it is worth the click.
+ * whether it is worth the click. With nothing left to count it offers the
+ * photos up close instead, which on a phone's two columns of small tiles is
+ * reason enough on its own.
  */
 export function MorePhotos({ count, onClick }: { count: number; onClick: () => void }) {
   return (
@@ -25,7 +27,7 @@ export function MorePhotos({ count, onClick }: { count: number; onClick: () => v
         aria-haspopup="dialog"
         className="group inline-flex items-center gap-sm text-label text-ink-muted transition-colors duration-150 ease-out-soft hover:text-ink"
       >
-        još {count} {photographs(count)}
+        {count > 0 ? `još ${count} ${photographs(count)}` : 'pogledaj ih izbliza'}
         {/* Slides rather than scales on hover: the lightbox arrows scale
             because they sit over a photograph with nowhere to go, and this
             one is in the flow of the page, pointing at what comes next. */}

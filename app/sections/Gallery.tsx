@@ -120,7 +120,12 @@ export function Gallery() {
                 }}
               />
             )}
-            {rest > 0 && <MorePhotos count={rest} onClick={() => setOpenAt(SHOWN - 1)} />}
+            {/* Always there, not only when the grid is capped: on a phone the
+                tiles are small, and this is the way into the photographs at
+                full size. With nothing held back it opens on the first. */}
+            {inCategory.length > 0 && (
+              <MorePhotos count={rest} onClick={() => setOpenAt(rest > 0 ? SHOWN - 1 : 0)} />
+            )}
           </div>
         )
       })}

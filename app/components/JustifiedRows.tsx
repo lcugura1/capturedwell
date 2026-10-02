@@ -35,6 +35,20 @@ export function rowsOf(photos: PhotoType[], targetAspect = 2.6): PhotoType[][] {
   return rows
 }
 
+/**
+ * On a phone the same markup becomes two masonry columns instead.
+ *
+ * One row of full-width photos after another made ten photographs ten
+ * screens of scrolling. Two columns of rounded tiles show the set at a
+ * glance. The rows dissolve (`display: contents`) and CSS columns balance
+ * the photos by height, so there is one tree for both layouts: no second
+ * copy of the grid in the HTML, and no JavaScript deciding the layout after
+ * a prerendered page has already painted one.
+ *
+ * Columns fill top to bottom, so the left column holds the first half of
+ * the set. The lightbox follows the same order, which is the order of the
+ * photos, not of the screen.
+ */
 export function JustifiedRows({
   photos,
   targetAspect,
@@ -48,20 +62,23 @@ export function JustifiedRows({
 
   return (
     // Rows arrive in sequence rather than as a block.
-    <div className="flex flex-col gap-photo-gap" data-reveal-stagger="0.07">
+    <div
+      className="gap-x-masonry-gap px-masonry-gap max-sm:columns-2 sm:flex sm:flex-col sm:gap-photo-gap sm:px-0"
+      data-reveal-stagger="0.07"
+    >
       {rows.map((row, i) => {
         const rowSum = row.reduce((total, p) => total + aspect(p), 0)
         return (
-          <div key={i} className="flex flex-col gap-photo-gap sm:flex-row">
+          <div key={i} className="max-sm:contents sm:flex sm:flex-row sm:gap-photo-gap">
             {row.map((photo) => {
               // Share of the row this photo occupies, which is also the
               // share of the viewport it will be asked to fill.
               const share = Math.round((aspect(photo) / rowSum) * 100)
-              const sizes = `(max-width: 640px) 100vw, ${share}vw`
+              const sizes = `(max-width: 640px) 50vw, ${share}vw`
               return (
                 <div
                   key={photo.id}
-                  className="min-w-0"
+                  className="min-w-0 max-sm:mb-masonry-gap max-sm:break-inside-avoid max-sm:overflow-hidden max-sm:rounded-tile"
                   style={{ flex: `${aspect(photo)} 1 0` }}
                 >
                   {renderItem(photo, sizes)}

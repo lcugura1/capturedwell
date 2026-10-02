@@ -221,6 +221,9 @@
   /* Photos sit 6px apart. Deliberately below the spacing scale: the
      grid should read as one surface, not as separate cards. */
   --spacing-photo-gap: 0.375rem;
+  /* Phones are the exception: two columns of separate tiles, Pinterest-
+     style, so the gap is wider and the same width runs along the edges. */
+  --spacing-masonry-gap: 0.5rem;
   /* Breathing room around a photo in the lightbox, and asymmetric on
      purpose. The vertical value has to clear the close button; the
      horizontal one does not, and every pixel it gives up is width the
@@ -230,8 +233,9 @@
   --slide-pad-x: 1rem;
 
   /* ── radii ────────────────────────────────────────────────────────── */
-  /* Pills and dots. Photos are never rounded. */
+  /* Pills and dots. Photos are rounded only as phone gallery tiles. */
   --radius-pill: 999px;
+  --radius-tile: 1rem;
   --radius-focus: 0.125rem;
 
   /* ── motion ───────────────────────────────────────────────────────── */
