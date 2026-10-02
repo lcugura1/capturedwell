@@ -1,0 +1,17 @@
+# Addresses from the old Wfolio site, which Google still has indexed and
+# people still have bookmarked. Each lands on the section that replaced it.
+/portfolio    /#galerija    301
+/weddings     /#galerija    301
+/lifestyle    /#galerija    301
+/events       /#galerija    301
+/studio       /#galerija    301
+/contacts     /#kontakt     301
+/comments     /#recenzije   301
+/services     /             301
+
+# Client deliveries stay on Wfolio, which moves to the subdomain. Links Damir
+# has already sent keep working: the path is the same, only the host changes.
+# See docs/plan-drive-sync.md, section C.
+/disk/*       https://galerije.capturedwell.com/disk/:splat       301
+/share/*      https://galerije.capturedwell.com/share/:splat      301
+/downloads/*  https://galerije.capturedwell.com/downloads/:splat  301
