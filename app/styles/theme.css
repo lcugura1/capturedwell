@@ -222,8 +222,14 @@
      grid should read as one surface, not as separate cards. */
   --spacing-photo-gap: 0.375rem;
   /* Phones are the exception: two columns of separate tiles, Pinterest-
-     style, so the gap is wider and the same width runs along the edges. */
-  --spacing-masonry-gap: 0.5rem;
+     style, placed on a grid of tiny rows (components/JustifiedRows.tsx).
+     Everything is a fraction of the viewport so the placement, worked out
+     once at build time, holds at every phone width. A column is 200 units
+     wide and the gap 9; two columns and three gaps (edges included) are
+     427 units, which is the whole screen. ~8px of gap on a 390px phone.
+     Change these only together with MASONRY_* in that file. */
+  --masonry-unit: calc(100vw / 427);
+  --spacing-masonry-gap: calc(100vw * 9 / 427);
   /* Breathing room around a photo in the lightbox, and asymmetric on
      purpose. The vertical value has to clear the close button; the
      horizontal one does not, and every pixel it gives up is width the
