@@ -47,8 +47,14 @@ async function boundedText(request) {
   return new TextEncoder().encode(text).length > MAX_BODY_BYTES ? null : text
 }
 
-/** Whether Cloudflare's Turnstile vouches for this token, checked server-side. */
-async function human(env, token, ip) {
+/**
+ * Whether Cloudflare's Turnstile vouches for this token, checked server-side.
+ *
+ * The widget is allowed on more than one host (the domain and workers.dev),
+ * so `success` alone would accept a token solved on the other one. It must
+ * have been solved on the host it is being spent on.
+ */
+async function human(env, token, ip, hostname) {
   if (typeof token !== 'string' || !token || token.length > 2048) return false
   const body = new FormData()
   body.append('secret', env.TURNSTILE_SECRET_KEY)
@@ -57,7 +63,7 @@ async function human(env, token, ip) {
   const res = await fetch(SITEVERIFY, { method: 'POST', body })
   if (!res.ok) return false
   const outcome = await res.json()
-  return outcome.success === true
+  return outcome.success === true && outcome.hostname === hostname
 }
 
 function newId() {
@@ -87,7 +93,16 @@ async function submit(request, env) {
   // answer as a person, so it has nothing to learn from.
   if (input?.website) return json({ ok: true })
 
-  if (!(await human(env, input?.turnstile, request.headers.get('cf-connecting-ip')))) {
+  // Before Turnstile, so a flood is refused without a siteverify round-trip
+  // each. Turnstile alone bounds the cost of a submission, not the number:
+  // solvers are cheap, and every one that passes is a mail in Damir's inbox.
+  const ip = request.headers.get('cf-connecting-ip')
+  if (ip && !(await env.REVIEW_LIMIT.limit({ key: ip })).success) {
+    return fail('Previše pokušaja. Pokušaj ponovno za minutu.', 429)
+  }
+
+  const host = new URL(request.url).hostname
+  if (!(await human(env, input?.turnstile, ip, host))) {
     return fail('Provjera nije uspjela. Osvježi stranicu i pokušaj ponovno.', 403)
   }
 
