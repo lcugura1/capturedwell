@@ -60,12 +60,11 @@ export function About() {
             was reading as a section break. */}
         <p className="-mt-2 m-0 text-h2 text-ink lg:mt-0">{SITE.owner.toLowerCase()}.</p>
         <div className="flex max-w-[32.5rem] flex-col gap-5 text-body text-ink-body">
-          <p className="m-0 text-pretty">
-            Fotograf sam portreta i lifestylea, sa strašću za autentične trenutke.
-          </p>
-          <p className="m-0 text-pretty">
-            Radim s parovima, brendovima i organizatorima evenata.
-          </p>
+          {SITE.bio.map((paragraph) => (
+            <p key={paragraph} className="m-0 text-pretty">
+              {paragraph}
+            </p>
+          ))}
         </div>
       </div>
     </section>

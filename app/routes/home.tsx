@@ -11,25 +11,21 @@ import { useScrollSpy } from '~/hooks/useScrollSpy'
 import { useReveal } from '~/hooks/useReveal'
 import { SITE } from '~/lib/site'
 
+// What Google shows as the result's headline, and the line under it.
+const TITLE = `${SITE.name} — ${SITE.owner} — ${SITE.role}, ${SITE.city}`
+const DESCRIPTION = SITE.bio.join(' ')
+
 export const meta: MetaFunction = () => [
-  { title: `${SITE.name} — ${SITE.owner}, ${SITE.role}` },
-  {
-    name: 'description',
-    content:
-      `${SHOOTS} Fotografiram ljude onakve kakvi jesu kad zaborave na objektiv.`,
-  },
-  { property: 'og:title', content: `${SITE.name} — ${SITE.owner}` },
+  { title: TITLE },
+  { name: 'description', content: DESCRIPTION },
+  { property: 'og:title', content: TITLE },
+  { property: 'og:description', content: DESCRIPTION },
   { property: 'og:type', content: 'website' },
   { property: 'og:locale', content: 'hr_HR' },
   { property: 'og:url', content: SITE.url },
 ]
 
 const SECTION_IDS = SECTIONS.map((s) => s.id)
-
-// The list of occasions, sentence-cased for the search result. Built from
-// the categories rather than typed out again: the last time it was typed
-// out it went stale the day they were renamed.
-const SHOOTS = `${SITE.shoots.join(', ').replace(/^./, (c) => c.toUpperCase())}.`
 
 /**
  * The whole site.
