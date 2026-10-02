@@ -27,7 +27,9 @@ const SHOOT_COLOURS = [
  */
 const chosen = gallery.pages.hero
 const widest = [...gallery.photos].sort((a, b) => aspect(b) - aspect(a))[0]
-const hero = chosen ?? widest
+export const hero = chosen ?? widest
+/** Where `hero` lives in R2. Exported with it for the link preview. */
+export const heroKind = chosen ? 'page' : 'img'
 
 /**
  * An optional second cover, for phones.
@@ -77,7 +79,7 @@ export function Hero() {
               photo={hero}
               mobile={heroPhone}
               objectPosition={HERO_FOCUS}
-              kind={chosen ? 'page' : 'img'}
+              kind={heroKind}
               sizes="100vw"
               fill
               priority

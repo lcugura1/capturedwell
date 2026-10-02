@@ -20,8 +20,8 @@ export const links: LinksFunction = () => [
   // handed to a third party. Preloaded because the wordmark and every
   // heading depend on it — a late font is a visible reflow.
   { rel: 'preload', href: fontUrl, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
-  // The mark is the `c` from Damir's logo, not the wordmark: at 16px a
-  // 6.7:1 wordmark is three pixels tall and reads as a smudge.
+  // `c_` in Quicksand on a transparent ground; the SVG follows the browser's
+  // theme, the PNG fallbacks cannot. See design/brand/README.md.
   { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
   { rel: 'icon', href: '/favicon-32.png', type: 'image/png', sizes: '32x32' },
   { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
