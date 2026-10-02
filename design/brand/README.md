@@ -6,7 +6,7 @@
 |---|---|
 | `capturedwell.png` | original od Damira, 500 × 500, wordmark ~350 px širine |
 | `capturedwell-logo.svg` | **ovo koristimo** — vektoriziran iz PNG-a |
-| `capturedwell-mark.svg` | kvadratni znak za favicon: samo slovo `c` iz logotipa |
+| `capturedwell-mark.svg` | samo slovo `c` iz logotipa — bivši favicon, više se ne koristi |
 
 SVG je jedan `<path>` s `fill="currentColor"`, viewBox `0 0 1000 155.8`.
 Boja se postavlja CSS-om (`color`), pa isti fajl radi i bijel na tamnoj pozadini
@@ -35,14 +35,19 @@ Blur (`-f 12`) je ključan. Bez njega potrace prati i šum antialiasa, pa ispadn
 
 Slova su Damirova, interpunkcija je naša. Vektorizirana točka je izvađena iz putanje, a na njeno mjesto nacrtana podvlaka — u debljini poteza izmjerenoj sa stabala slova `l` (24.8), spuštena u prostor ispod bazne linije koji rep slova `p` ionako zauzima. Zato se čita kao dio istog slovopisa, a ne kao nalijepljen znak.
 
-### Favicon nije wordmark
+### Favicon je `c_` u Quicksandu
 
-`capturedwell-mark.svg` je samo slovo `c`. Wordmark ima omjer 6.7:1 — u kvadratnoj ikoni od 16 px bio bi tri piksela visok i čitao bi se kao mrlja. `c` je autentičan oblik iz Damirovog logotipa i preživi tu veličinu.
+`public/favicon.svg` je `c_` iz `fonts/static/Quicksand-Bold.ttf`, pretvoren u putanju (fontTools), na **prozirnoj** pozadini. Damirova odluka: ni slovo `c` iz logotipa ni cijeli wordmark mu nisu bili lijepi, a font mora biti Quicksand, iako sam logo nije.
 
-Varijanta „c + podvlaka" je isprobana i neupotrebljiva: njih dvoje stoje na suprotnim krajevima wordmarka, pa im zajednički okvir stisne slovo u ništa.
+Boja prati temu preglednika preko `@media (prefers-color-scheme: dark)` unutar SVG-a: `#111` na svijetloj traci kartica, `#ededed` na tamnoj.
+
+PNG ne može pratiti temu, pa nosi kompromis:
+- `favicon-32.png` (preglednici bez SVG faviconā): srednje siva `#808080`, čitljiva na obje podloge.
+- `apple-touch-icon.png` (180 px): svijetli glif. iOS prozirnost na početnom zaslonu ionako ispuni crnom, pa tamni glif tamo ne bi bio vidljiv.
 
 ```sh
-node scripts/rasterize.mjs public/favicon.svg public/icon 32 180
+# glif s fill="#808080" → 32, s fill="#ededed" → 180
+node scripts/rasterize.mjs <glyph.svg> <prefix> 32 180
 ```
 
 ### Ako Damir ikad nađe originalni vektor
